@@ -8,8 +8,8 @@ claims to support and semantically accurate about the represented units.
 
 - Explicit integration selection and optional Composer-package autodetection are implemented.
 - Explicit selections and strict autodetection reject installed package majors that have not been verified.
-- `illuminate/cache`, `illuminate/http`, `illuminate/support`, `illuminate/process`, and `illuminate/queue` cover stable
-  unit-bearing APIs across Laravel 11 through 13.
+- `illuminate/cache`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`, `illuminate/process`, and
+  `illuminate/queue` cover stable unit-bearing APIs across Laravel 11 through 13.
 - The loader can select major-specific stub files when a supported upstream signature differs; Illuminate Process uses
   this for Laravel 13's `CarbonInterval|int` timeout boundary.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
@@ -25,7 +25,7 @@ suite. Integration scope remains curated: add APIs only when their physical unit
 
 ## Future Candidates
 
-Continue the Laravel 11 through 13 integration sweep with `illuminate/filesystem` and `illuminate/cookie`. Preserve
-version-specific upstream alternatives when a signature differs
+Complete the current Laravel 11 through 13 integration sweep with `illuminate/cookie`. Preserve version-specific upstream
+alternatives when a signature differs
 between supported majors, and avoid timestamps or count-like integers whose physical semantics are not represented by
 Yumemi's native duration and quantity brands.

@@ -1,0 +1,72 @@
+<?php
+
+namespace Illuminate\Contracts\Filesystem;
+
+interface Filesystem
+{
+    /**
+     * @return int
+     * @yumemi-return unit_int<'byte'>
+     */
+    public function size($path);
+}
+
+namespace Illuminate\Filesystem;
+
+class Filesystem
+{
+    /**
+     * @return int|bool
+     * @phpstan-return unit_int<'byte'>|false
+     * @yumemi-return unit_int<'byte'>|false
+     */
+    public function put($path, $contents, $lock = false)
+    {
+    }
+
+    /**
+     * @return int
+     * @yumemi-return unit_int<'byte'>
+     */
+    public function prepend($path, $data)
+    {
+    }
+
+    /**
+     * @return int
+     * @yumemi-return unit_int<'byte'>
+     */
+    public function append($path, $data, $lock = false)
+    {
+    }
+
+    /**
+     * @return int
+     * @yumemi-return unit_int<'byte'>
+     */
+    public function size($path)
+    {
+    }
+}
+
+class FilesystemAdapter
+{
+    /**
+     * @return int
+     * @yumemi-return unit_int<'byte'>
+     */
+    public function size($path)
+    {
+    }
+}
+
+class LockableFile
+{
+    /**
+     * @return int
+     * @yumemi-return unit_int<'byte'>
+     */
+    public function size()
+    {
+    }
+}

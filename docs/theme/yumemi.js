@@ -17,6 +17,7 @@
         "integrations.html": [
             { id: "version-policy", title: "Version Policy" },
             { id: "illuminate-cache", title: "Illuminate Cache" },
+            { id: "illuminate-filesystem", title: "Illuminate Filesystem" },
             { id: "illuminate-http", title: "Illuminate HTTP" },
             { id: "illuminate-support", title: "Illuminate Support" },
             { id: "illuminate-process", title: "Illuminate Process" },

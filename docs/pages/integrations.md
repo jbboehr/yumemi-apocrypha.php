@@ -44,6 +44,15 @@ function recordCacheAttempt(RateLimiter $limiter): void
 Plain integers are rejected at annotated boundaries. Existing `DateTimeInterface`, `DateInterval`, closure, and nullable
 alternatives remain valid where Laravel accepts them, as do calls that omit an optional duration.
 
+## Illuminate Filesystem
+
+Enable `illuminate/filesystem` to brand file-size results and the byte counts returned by local `put()`, `prepend()`, and
+`append()` operations as `byte` values. This covers the filesystem contract, local filesystem, filesystem adapter, and
+`LockableFile` size APIs.
+
+Last-modification values are timestamps rather than durations or byte counts and remain unbranded. Adapter write methods
+that report only success or failure also remain ordinary booleans.
+
 ## Illuminate HTTP
 
 Enable `illuminate/http` to brand request timeouts, retry delays, and fake-upload sizes.

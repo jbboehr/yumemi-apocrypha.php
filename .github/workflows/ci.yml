@@ -126,6 +126,18 @@ jobs:
             fail-fast: false
             matrix:
                 include:
+                    - integration: illuminate-filesystem
+                      integration-label: Illuminate Filesystem
+                      illuminate-version: "11"
+                      php-version: "8.2"
+                    - integration: illuminate-filesystem
+                      integration-label: Illuminate Filesystem
+                      illuminate-version: "12"
+                      php-version: "8.2"
+                    - integration: illuminate-filesystem
+                      integration-label: Illuminate Filesystem
+                      illuminate-version: "13"
+                      php-version: "8.3"
                     - illuminate-version: "11"
                       package-mode: source
                       php-version: "8.2"
