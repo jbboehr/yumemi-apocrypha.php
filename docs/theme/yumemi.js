@@ -20,6 +20,7 @@
             { id: "illuminate-http", title: "Illuminate HTTP" },
             { id: "illuminate-support", title: "Illuminate Support" },
             { id: "illuminate-process", title: "Illuminate Process" },
+            { id: "illuminate-queue", title: "Illuminate Queue" },
             { id: "limitations", title: "Limitations" },
         ],
         "contributing/maintaining-integrations.html": [

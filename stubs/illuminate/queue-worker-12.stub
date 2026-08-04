@@ -1,0 +1,83 @@
+<?php
+
+namespace Illuminate\Queue;
+
+class WorkerOptions
+{
+    /**
+     * @var int|int[]
+     * @phpstan-var unit_int<'second'>|array<unit_int<'second'>>
+     * @yumemi-var unit_int<'second'>|array<unit_int<'second'>>
+     */
+    public $backoff;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'1048576 * byte'>
+     */
+    public $memory;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $timeout;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $sleep;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $rest;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $stopWhenEmptyFor;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $maxTime;
+
+    /**
+     * @param int|int[] $backoff
+     * @param int $memory
+     * @param int $timeout
+     * @param int $sleep
+     * @param int $maxTime
+     * @param int $rest
+     * @param int $stopWhenEmptyFor
+     *
+     * @phpstan-param unit_int<'second'>|array<unit_int<'second'>> $backoff
+     * @yumemi-param unit_int<'second'>|array<unit_int<'second'>> $backoff
+     * @yumemi-param unit_int<'1048576 * byte'> $memory
+     * @yumemi-param unit_int<'second'> $timeout
+     * @yumemi-param unit_int<'second'> $sleep
+     * @yumemi-param unit_int<'second'> $maxTime
+     * @yumemi-param unit_int<'second'> $rest
+     * @yumemi-param unit_int<'second'> $stopWhenEmptyFor
+     */
+    public function __construct(
+        $name = 'default',
+        $backoff = 0,
+        $memory = 128,
+        $timeout = 60,
+        $sleep = 3,
+        $maxTries = 1,
+        $force = false,
+        $stopWhenEmpty = false,
+        $maxJobs = 0,
+        $maxTime = 0,
+        $rest = 0,
+        $stopWhenEmptyFor = 0,
+    ) {
+    }
+}

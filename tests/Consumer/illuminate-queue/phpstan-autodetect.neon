@@ -1,0 +1,7 @@
+parameters:
+    level: max
+    paths:
+        - cases
+    tmpDir: tmp/phpstan-autodetect
+    yumemiApocrypha:
+        autoDetect: true

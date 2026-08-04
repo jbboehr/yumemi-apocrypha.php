@@ -99,6 +99,7 @@
         "test:consumer:illuminate-http": "make test-consumer-illuminate-http",
         "test:consumer:illuminate-http:archive": "make test-consumer-illuminate-http-archive",
         "test:consumer:illuminate-process": "make test-consumer-illuminate-process",
+        "test:consumer:illuminate-queue": "make test-consumer-illuminate-queue",
         "test:consumer:illuminate-support": "make test-consumer-illuminate-support",
         "test:consumer:manual": "make test-consumer-manual"
     },

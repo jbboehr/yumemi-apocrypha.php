@@ -1,0 +1,5 @@
+parameters:
+    stubFiles:
+        - ../../stubs/illuminate/queue.stub
+        - ../../stubs/illuminate/queue-worker-11.stub
+        - ../../stubs/illuminate/queue-worker-12.stub

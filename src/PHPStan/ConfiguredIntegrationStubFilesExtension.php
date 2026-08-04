@@ -80,6 +80,23 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 13 => [__DIR__ . '/../../stubs/illuminate/process-13.stub'],
             ],
         ],
+        'illuminate/queue' => [
+            'majors' => [11, 12, 13],
+            'files' => [
+                __DIR__ . '/../../stubs/illuminate/queue.stub',
+                __DIR__ . '/../../stubs/illuminate/queue-worker-11.stub',
+            ],
+            'filesByMajor' => [
+                12 => [
+                    __DIR__ . '/../../stubs/illuminate/queue.stub',
+                    __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
+                ],
+                13 => [
+                    __DIR__ . '/../../stubs/illuminate/queue.stub',
+                    __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
+                ],
+            ],
+        ],
         'illuminate/support' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/support.stub'],

@@ -95,6 +95,20 @@ Enable `illuminate/process` to require `second` values for `PendingProcess::time
 Laravel 13 also accepts `CarbonInterval` at these boundaries. Apocrypha selects a major-specific stub so this alternative
 remains valid on Laravel 13 without incorrectly allowing it on Laravel 11 or 12.
 
+## Illuminate Queue
+
+Enable `illuminate/queue` to brand delayed dispatches, job release delays, and physical `WorkerOptions` values.
+
+| API concern                                      | Unit               |
+| ------------------------------------------------ | ------------------ |
+| Delayed dispatch and job release                 | `second`           |
+| Worker backoff, timeout, sleep, rest, and lifetime | `second`         |
+| Worker memory limit                              | `1048576 * byte`   |
+
+The memory limit is measured in binary megabytes by Laravel's worker implementation, so Apocrypha uses the exact scale
+`1048576 * byte`. Attempt counts, maximum jobs, and other dimensionless controls remain ordinary integers. Laravel 12
+added `stopWhenEmptyFor`; major-specific worker stubs preserve the Laravel 11 constructor and property surface.
+
 ## Limitations
 
 - Most stubs cover signatures shared by all verified majors. A major-specific stub is selected where a supported

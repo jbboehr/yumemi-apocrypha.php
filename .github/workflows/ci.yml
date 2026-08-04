@@ -250,6 +250,18 @@ jobs:
                       integration-label: Illuminate Process
                       illuminate-version: "13"
                       php-version: "8.3"
+                    - integration: illuminate-queue
+                      integration-label: Illuminate Queue
+                      illuminate-version: "11"
+                      php-version: "8.2"
+                    - integration: illuminate-queue
+                      integration-label: Illuminate Queue
+                      illuminate-version: "12"
+                      php-version: "8.2"
+                    - integration: illuminate-queue
+                      integration-label: Illuminate Queue
+                      illuminate-version: "13"
+                      php-version: "8.3"
                     - integration: illuminate-support
                       integration-label: Illuminate Support
                       illuminate-version: "11"

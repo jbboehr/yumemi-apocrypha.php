@@ -44,6 +44,9 @@ if [[ $PACKAGE_MODE == archive ]]; then
         stubs/illuminate/http.stub
         stubs/illuminate/process.stub
         stubs/illuminate/process-13.stub
+        stubs/illuminate/queue.stub
+        stubs/illuminate/queue-worker-11.stub
+        stubs/illuminate/queue-worker-12.stub
         stubs/illuminate/support.stub
     )
     for path in "${required_paths[@]}"; do
@@ -68,7 +71,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-process|illuminate-support|manual] [framework-major]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|manual] [framework-major]\n' "$0" >&2
     exit 2
 fi
 
@@ -305,14 +308,14 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-process | illuminate-support)
+    illuminate-process | illuminate-queue | illuminate-support)
         run_simple_illuminate_integration
         ;;
     manual)
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-process|illuminate-support|manual] [framework-major]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|manual] [framework-major]\n' "$0" >&2
         exit 2
         ;;
 esac

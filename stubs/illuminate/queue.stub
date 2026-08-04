@@ -1,0 +1,61 @@
+<?php
+
+namespace Illuminate\Contracts\Queue;
+
+interface Queue
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function later($delay, $job, $data = '', $queue = null);
+
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function laterOn($queue, $delay, $job, $data = '');
+}
+
+interface Job
+{
+    /**
+     * @param int $delay
+     *
+     * @yumemi-param unit_int<'second'> $delay
+     */
+    public function release($delay = 0);
+}
+
+namespace Illuminate\Queue\Jobs;
+
+abstract class Job
+{
+    /**
+     * @param int $delay
+     *
+     * @yumemi-param unit_int<'second'> $delay
+     */
+    public function release($delay = 0)
+    {
+    }
+}
+
+namespace Illuminate\Queue;
+
+trait InteractsWithQueue
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function release($delay = 0)
+    {
+    }
+}
