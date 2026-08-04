@@ -230,3 +230,53 @@ jobs:
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
               run: tests/Consumer/run ${{ matrix.package-mode }} illuminate-http ${{ matrix.illuminate-version }}
+
+    illuminate-support:
+        name: Illuminate Support ${{ matrix.illuminate-version }} / PHP ${{ matrix.php-version }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - illuminate-version: "11"
+                      php-version: "8.2"
+                    - illuminate-version: "12"
+                      php-version: "8.2"
+                    - illuminate-version: "13"
+                      php-version: "8.3"
+        steps:
+            - name: Checkout Apocrypha
+              uses: actions/checkout@v7
+
+            - name: Checkout Yumemi
+              uses: actions/checkout@v7
+              with:
+                  path: tmp/yumemi
+                  repository: jbboehr/yumemi.php
+
+            - name: Install PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  coverage: none
+                  extensions: gmp
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer:v2
+
+            - name: Get Composer cache directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Composer packages
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-support-${{ matrix.illuminate-version }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-support-
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
+                      ${{ runner.os }}-php-composer-
+
+            - name: Test integration
+              env:
+                  YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
+              run: tests/Consumer/run source illuminate-support ${{ matrix.illuminate-version }}

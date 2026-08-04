@@ -18,6 +18,7 @@
             { id: "version-policy", title: "Version Policy" },
             { id: "illuminate-cache", title: "Illuminate Cache" },
             { id: "illuminate-http", title: "Illuminate HTTP" },
+            { id: "illuminate-support", title: "Illuminate Support" },
             { id: "limitations", title: "Limitations" },
         ],
         "contributing/maintaining-integrations.html": [

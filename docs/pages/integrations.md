@@ -5,7 +5,7 @@ a record of verified behavior, not a promise to support every future or historic
 
 ## Version Policy
 
-Both current integrations accept Laravel majors 11, 12, and 13. CI resolves the latest compatible release of each major
+All current integrations accept Laravel majors 11, 12, and 13. CI resolves the latest compatible release of each major
 instead of pinning the snapshots below. An unknown future major is rejected until its signatures and semantics have been
 reviewed.
 
@@ -73,6 +73,20 @@ function configureRemoteArchive(PendingRequest $request): void
     $request->timeout(unit(250, 'millisecond')); // PHPStan rejects milliseconds at this seconds boundary.
 }
 ```
+
+## Illuminate Support
+
+Enable `illuminate/support` to brand framework timing helpers and benchmark results.
+
+| API concern                         | Unit          |
+| ----------------------------------- | ------------- |
+| `Benchmark` measurements            | `millisecond` |
+| `Sleep::sleep()` duration           | `second`      |
+| `Sleep::usleep()` duration          | `microsecond` |
+| `Timebox::call()` minimum duration  | `microsecond` |
+
+The fluent `Sleep::for($value)->seconds()` form is not annotated because the unit is selected after the numeric value
+crosses the first method boundary. The direct `sleep()` and `usleep()` entry points have unambiguous units.
 
 ## Limitations
 

@@ -1,0 +1,78 @@
+<?php
+
+namespace Illuminate\Support;
+
+class Benchmark
+{
+    /**
+     * @template TBenchmarkables of \Closure|array<callable>
+     *
+     * @param TBenchmarkables $benchmarkables
+     * @param int $iterations
+     * @return (TBenchmarkables is \Closure ? float : array<float>)
+     *
+     * @phpstan-return (TBenchmarkables is \Closure
+     *     ? unit_float<'millisecond'>
+     *     : array<unit_float<'millisecond'>>)
+     * @yumemi-return (TBenchmarkables is \Closure
+     *     ? unit_float<'millisecond'>
+     *     : array<unit_float<'millisecond'>>)
+     */
+    public static function measure(\Closure|array $benchmarkables, int $iterations = 1): array|float
+    {
+    }
+
+    /**
+     * @template TReturn
+     *
+     * @param callable(): TReturn $callback
+     * @return array{0: TReturn, 1: float}
+     *
+     * @phpstan-return array{0: TReturn, 1: unit_float<'millisecond'>}
+     * @yumemi-return array{0: TReturn, 1: unit_float<'millisecond'>}
+     */
+    public static function value(callable $callback): array
+    {
+    }
+}
+
+class Sleep
+{
+    /**
+     * @param int|float $duration
+     * @return static
+     *
+     * @phpstan-param unit_int<'microsecond'>|unit_float<'microsecond'> $duration
+     * @yumemi-param unit_int<'microsecond'>|unit_float<'microsecond'> $duration
+     */
+    public static function usleep($duration)
+    {
+    }
+
+    /**
+     * @param int|float $duration
+     * @return static
+     *
+     * @phpstan-param unit_int<'second'>|unit_float<'second'> $duration
+     * @yumemi-param unit_int<'second'>|unit_float<'second'> $duration
+     */
+    public static function sleep($duration)
+    {
+    }
+}
+
+class Timebox
+{
+    /**
+     * @template TCallReturnType
+     *
+     * @param callable(): TCallReturnType $callback
+     * @param int $microseconds
+     * @return TCallReturnType
+     *
+     * @yumemi-param unit_int<'microsecond'> $microseconds
+     */
+    public function call(callable $callback, int $microseconds)
+    {
+    }
+}

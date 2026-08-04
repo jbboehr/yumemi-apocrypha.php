@@ -1,7 +1,7 @@
 .DEFAULT: all
 .PHONY: all coverage-branch docs docs-check docs-serve test-consumer-illuminate-cache \
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
-	test-consumer-manual
+	test-consumer-illuminate-support test-consumer-manual
 
 BRANCH_COVERAGE_OUTPUT ?= coverage/branch
 BRANCH_COVERAGE_SOURCE ?= src
@@ -9,6 +9,7 @@ BRANCH_COVERAGE_TESTS ?=
 BRANCH_COVERAGE_XDEBUG_ERROR := Xdebug is not loaded; enter nix develop .\#xdebug.
 ILLUMINATE_CACHE_MAJOR ?= 12
 ILLUMINATE_HTTP_MAJOR ?= 12
+ILLUMINATE_SUPPORT_MAJOR ?= 12
 
 all:
 
@@ -43,6 +44,9 @@ test-consumer-illuminate-http:
 
 test-consumer-illuminate-http-archive:
 	tests/Consumer/run archive illuminate-http $(ILLUMINATE_HTTP_MAJOR)
+
+test-consumer-illuminate-support:
+	tests/Consumer/run source illuminate-support $(ILLUMINATE_SUPPORT_MAJOR)
 
 test-consumer-manual:
 	tests/Consumer/run source manual 12

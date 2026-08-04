@@ -42,6 +42,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
         stubs/illuminate/cache.stub
         stubs/illuminate/http.stub
+        stubs/illuminate/support.stub
     )
     for path in "${required_paths[@]}"; do
         if [[ ! -e $package_dir/$path ]]; then
@@ -65,7 +66,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|manual] [framework-major]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-support|manual] [framework-major]\n' "$0" >&2
     exit 2
 fi
 
@@ -239,6 +240,35 @@ run_illuminate_http() {
         "::timeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given"
 }
 
+run_simple_illuminate_integration() {
+    local integration=${FIXTURE_SUITE#illuminate-}
+    local project_dir=$WORK_DIR/$FIXTURE_SUITE
+    local package=illuminate/$integration
+    local expected_diagnostics=()
+
+    if [[ ! $FRAMEWORK_MAJOR =~ ^(11|12|13)$ ]]; then
+        printf '%s consumer tests require framework major 11, 12, or 13.\n' "$package" >&2
+        exit 2
+    fi
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/$FIXTURE_SUITE/." "$project_dir/"
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev "$package:^$FRAMEWORK_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php"
+    run_phpstan_case "$project_dir" phpstan.neon valid.php
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+}
+
 run_manual() {
     local project_dir=$WORK_DIR/manual
 
@@ -269,11 +299,14 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
+    illuminate-support)
+        run_simple_illuminate_integration
+        ;;
     manual)
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|manual] [framework-major]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-support|manual] [framework-major]\n' "$0" >&2
         exit 2
         ;;
 esac
