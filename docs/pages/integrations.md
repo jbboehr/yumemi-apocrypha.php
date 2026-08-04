@@ -1,7 +1,7 @@
 # Integrations
 
 Apocrypha deliberately covers a small set of stable, useful, and unambiguous unit-bearing boundaries. The table below is
-a record of verified behavior, not a promise to support every future or historical Laravel major indefinitely.
+a record of verified behavior, not a promise to support every future or historical package major indefinitely.
 
 ## Version Policy
 
@@ -10,8 +10,48 @@ future major is rejected until its signatures and semantics have been reviewed.
 
 | Package family      | Verified majors | Latest verification snapshots      | Checked    |
 | ------------------- | --------------- | ---------------------------------- | ---------- |
+| Guzzle              | 7, 8            | `7.15.2`, `8.0.1`                  | 2026-08-04 |
 | Illuminate packages | 11, 12, 13      | `v11.51.0`, `v12.64.0`, `v13.23.0` | 2026-08-03 |
 | Symfony Stopwatch   | 6, 7, 8         | `v6.4.24`, `v7.4.8`, `v8.1.0`      | 2026-08-04 |
+
+## Guzzle
+
+Enable `guzzlehttp/guzzle` to brand selected request options, retry delays, progress byte counts, and transfer times.
+The same open request-option shape applies to `Client` construction, concrete convenience methods such as `get()`, and
+the synchronous and asynchronous methods shared with `ClientInterface`.
+
+| API concern                                        | Unit          |
+| -------------------------------------------------- | ------------- |
+| Total, connection, and stream read timeouts        | `second`      |
+| Request delay and retry-delay callback result      | `millisecond` |
+| Expect/Continue threshold and progress byte counts | `byte`        |
+| `TransferStats` transfer time                      | `second`      |
+
+<!-- yumemi-example: guzzle-invalid -->
+
+```php
+<?php
+
+use GuzzleHttp\Client;
+
+use function jbboehr\Yumemi\unit;
+
+function fetchRemoteReport(Client $client): void
+{
+    $client->request('GET', '/reports', ['timeout' => unit(2, 'second')]);
+    $client->request('GET', '/reports', [
+        'timeout' => unit(250, 'millisecond'), // PHPStan rejects milliseconds at this seconds boundary.
+    ]);
+}
+```
+
+The request-option shape is open: headers, authentication, handlers, and other options that Guzzle accepts remain
+available without being restated by Apocrypha. The `expect` option retains Guzzle's `bool` alternative. Progress
+callbacks receive four `byte`-branded integer parameters; annotate a named callback's parameters when its body needs to
+retain those brands. Major-specific stubs preserve the different retry-delay callback signatures in Guzzle 7 and 8.
+
+Handler-stat arrays and generic header access remain unbranded because their units depend on a runtime or literal key.
+Pool-only option callbacks, cookie ages, and internal handler configuration are outside this bounded integration.
 
 ## Illuminate Cache
 

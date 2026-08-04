@@ -18,13 +18,14 @@ gains coverage; a missing or renamed upstream declaration must fail before seman
 Run one major locally with:
 
 ```shell
+GUZZLE_MAJOR=8 make test-consumer-guzzle
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
 SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 ```
 
-Laravel 13 requires PHP 8.3 or later, and Symfony Stopwatch 8 requires PHP 8.4.1 or later. The CI matrix selects a
-compatible PHP version automatically.
+Laravel 13 requires PHP 8.3 or later, and Symfony Stopwatch 8 requires PHP 8.4.1 or later. Guzzle 7 and 8 both run on
+the repository's PHP 8.2 baseline. The CI matrix selects a compatible PHP version automatically.
 
 ## Verify Package Behavior
 

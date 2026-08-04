@@ -1,0 +1,4 @@
+parameters:
+    stubFiles:
+        - ../../stubs/guzzle/guzzle.stub
+        - ../../stubs/guzzle/guzzle-7.stub

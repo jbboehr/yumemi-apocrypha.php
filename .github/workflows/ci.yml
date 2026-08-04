@@ -119,6 +119,56 @@ jobs:
             - name: Run PHPUnit
               run: vendor/bin/phpunit --colors=never --no-coverage
 
+    guzzle:
+        name: Guzzle ${{ matrix.guzzle-version }} / PHP ${{ matrix.php-version }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - guzzle-version: "7"
+                      package-mode: source
+                      php-version: "8.2"
+                    - guzzle-version: "8"
+                      package-mode: archive
+                      php-version: "8.2"
+        steps:
+            - name: Checkout Apocrypha
+              uses: actions/checkout@v7
+
+            - name: Checkout Yumemi
+              uses: actions/checkout@v7
+              with:
+                  path: tmp/yumemi
+                  repository: jbboehr/yumemi.php
+
+            - name: Install PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  coverage: none
+                  extensions: gmp
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer:v2
+
+            - name: Get Composer cache directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Composer packages
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-guzzle-${{ matrix.guzzle-version }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-guzzle-
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
+                      ${{ runner.os }}-php-composer-
+
+            - name: Test integration
+              env:
+                  YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
+              run: tests/Consumer/run ${{ matrix.package-mode }} guzzle ${{ matrix.guzzle-version }}
+
     illuminate-cache:
         name: Illuminate Cache ${{ matrix.illuminate-version }} / PHP ${{ matrix.php-version }}
         runs-on: ubuntu-latest

@@ -1,0 +1,31 @@
+<?php
+
+namespace GuzzleHttp;
+
+final class TransferStats
+{
+    /**
+     * @param float|null $transferTime
+     *
+     * @phpstan-param unit_float<'second'>|null $transferTime
+     * @yumemi-param unit_float<'second'>|null $transferTime
+     */
+    public function __construct(
+        \Psr\Http\Message\RequestInterface $request,
+        ?\Psr\Http\Message\ResponseInterface $response = null,
+        ?float $transferTime = null,
+        $handlerErrorData = null,
+        array $handlerStats = [],
+    ) {
+    }
+
+    /**
+     * @return float|null
+     *
+     * @phpstan-return unit_float<'second'>|null
+     * @yumemi-return unit_float<'second'>|null
+     */
+    public function getTransferTime(): ?float
+    {
+    }
+}

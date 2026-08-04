@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Add unit-aware request options, retry delays, progress callbacks, and transfer times for Guzzle 7 and 8.
 - Add unit-aware duration and memory results for Symfony Stopwatch 6, 7, and 8.
 
 ### Changed
@@ -18,6 +19,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Removed
 
 ### Fixed
+
+- Resolve integration package versions from the analyzed Composer project instead of PHPStan's bundled dependencies.
 
 ### Security
 

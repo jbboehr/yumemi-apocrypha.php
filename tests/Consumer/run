@@ -35,12 +35,16 @@ if [[ $PACKAGE_MODE == archive ]]; then
     required_paths=(
         apocrypha.neon
         composer.json
+        docs/GUZZLE-COPYRIGHT
         docs/LARAVEL-COPYRIGHT
         docs/LICENSE_EXCEPTION.md
         docs/SYMFONY-COPYRIGHT
         docs/pages/images/yumemi-banner.png
         extension.neon
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
+        stubs/guzzle/guzzle-7.stub
+        stubs/guzzle/guzzle-8.stub
+        stubs/guzzle/guzzle.stub
         stubs/illuminate/cache.stub
         stubs/illuminate/cookie.stub
         stubs/illuminate/filesystem.stub
@@ -75,7 +79,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
     exit 2
 fi
 
@@ -314,6 +318,42 @@ run_symfony_stopwatch() {
         "recordProfileDurationInSeconds expects unit_float<'second'>|unit_int<'second'>, unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'> given"
 }
 
+run_guzzle() {
+    local project_dir=$WORK_DIR/guzzle
+    local documentation_case=$project_dir/cases/documentation-invalid.php
+    local expected_diagnostics=()
+
+    if [[ ! $PACKAGE_MAJOR =~ ^(7|8)$ ]]; then
+        printf 'Guzzle consumer tests require package major 7 or 8.\n' >&2
+        exit 2
+    fi
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/guzzle/." "$project_dir/"
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev "guzzlehttp/guzzle:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php"
+    php "$PROJECT_ROOT/tests/Documentation/extract-markdown-example.php" \
+        "$PROJECT_ROOT/docs/pages/integrations.md" guzzle-invalid > "$documentation_case"
+    run_phpstan_case "$project_dir" phpstan.neon valid.php
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    if [[ -f $project_dir/cases/valid-$PACKAGE_MAJOR.php ]]; then
+        run_phpstan_case "$project_dir" phpstan.neon "valid-$PACKAGE_MAJOR.php"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$PACKAGE_MAJOR.php"
+    fi
+    run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
+        "array{timeout: unit_int<'1/1000 * second'>} given"
+}
+
 run_manual() {
     local project_dir=$WORK_DIR/manual
 
@@ -338,6 +378,9 @@ run_manual() {
 }
 
 case $FIXTURE_SUITE in
+    guzzle)
+        run_guzzle
+        ;;
     illuminate-cache)
         run_illuminate_cache
         ;;
@@ -354,7 +397,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
         exit 2
         ;;
 esac

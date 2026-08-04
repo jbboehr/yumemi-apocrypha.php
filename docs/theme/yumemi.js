@@ -16,6 +16,7 @@
         ],
         "integrations.html": [
             { id: "version-policy", title: "Version Policy" },
+            { id: "guzzle", title: "Guzzle" },
             { id: "illuminate-cache", title: "Illuminate Cache" },
             { id: "illuminate-cookie", title: "Illuminate Cookie" },
             { id: "illuminate-filesystem", title: "Illuminate Filesystem" },

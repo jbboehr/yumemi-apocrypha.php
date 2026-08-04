@@ -7,8 +7,8 @@
 Curated PHPStan unit annotations for third-party PHP packages, built on [Yumemi](https://github.com/jbboehr/yumemi.php).
 
 The package is under active development and has no tagged release. It currently covers selected unit-bearing APIs in
-Illuminate Cache, Cookie, Filesystem, HTTP, Process, Queue, and Support across Laravel 11, 12, and 13, plus Symfony
-Stopwatch across majors 6, 7, and 8.
+Guzzle 7 and 8; Illuminate Cache, Cookie, Filesystem, HTTP, Process, Queue, and Support across Laravel 11, 12, and 13;
+and Symfony Stopwatch across majors 6, 7, and 8.
 
 ```shell
 composer require --dev jbboehr/yumemi:dev-master jbboehr/yumemi-apocrypha:dev-master \
@@ -47,5 +47,6 @@ See the [documentation index](docs/pages/README.md) for installation, integratio
 
 Yumemi Apocrypha is licensed under `AGPL-3.0-only WITH romic-exception`. See [LICENSE.md](LICENSE.md) and the
 [Romic Exception](docs/LICENSE_EXCEPTION.md). Contributions follow the terms in [CONTRIBUTING.md](CONTRIBUTING.md). The
-bundled integration declarations describe Laravel and Symfony APIs; see the [Laravel MIT notice](docs/LARAVEL-COPYRIGHT)
-and [Symfony MIT notice](docs/SYMFONY-COPYRIGHT).
+bundled integration declarations describe Guzzle, Laravel, and Symfony APIs; see the
+[Guzzle MIT notice](docs/GUZZLE-COPYRIGHT), [Laravel MIT notice](docs/LARAVEL-COPYRIGHT), and
+[Symfony MIT notice](docs/SYMFONY-COPYRIGHT).

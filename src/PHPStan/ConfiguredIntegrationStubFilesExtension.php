@@ -65,6 +65,19 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      *     the road judgeth every vow by the burden borne unto its summit.
      */
     private const SUPPORTED_INTEGRATIONS = [
+        'guzzlehttp/guzzle' => [
+            'majors' => [7, 8],
+            'files' => [
+                __DIR__ . '/../../stubs/guzzle/guzzle.stub',
+                __DIR__ . '/../../stubs/guzzle/guzzle-7.stub',
+            ],
+            'filesByMajor' => [
+                8 => [
+                    __DIR__ . '/../../stubs/guzzle/guzzle.stub',
+                    __DIR__ . '/../../stubs/guzzle/guzzle-8.stub',
+                ],
+            ],
+        ],
         'illuminate/cache' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
@@ -189,10 +202,41 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         $this->autoDetect = $autoDetect;
         $this->strictAutoDetect = $strictAutoDetect;
         $this->supportedIntegrations = $supportedIntegrations ?? self::SUPPORTED_INTEGRATIONS;
+
+        // PHPStan's PHAR registers its bundled dependencies alongside the analyzed project's Composer data. Select the
+        // dataset containing Apocrypha so an internal dependency cannot mask the consumer's installed package major.
+        $projectPackageResolver = static function (string $package): ?array {
+            foreach (array_reverse(InstalledVersions::getAllRawData()) as $installed) {
+                $root = $installed['root'];
+                $versions = $installed['versions'];
+                if (
+                    $root['name'] !== 'jbboehr/yumemi-apocrypha'
+                    && !isset($versions['jbboehr/yumemi-apocrypha'])
+                ) {
+                    continue;
+                }
+
+                if ($root['name'] === $package) {
+                    return $root;
+                }
+
+                $metadata = $versions[$package] ?? null;
+
+                return is_array($metadata) ? $metadata : null;
+            }
+
+            return null;
+        };
+
         $this->packageInstalledResolver = $packageInstalledResolver
-            ?? static fn (string $package): bool => InstalledVersions::isInstalled($package);
-        $this->packageVersionResolver = $packageVersionResolver ?? static function (string $package): ?string {
-            return InstalledVersions::getPrettyVersion($package) ?? InstalledVersions::getVersion($package);
+            ?? static fn (string $package): bool => $projectPackageResolver($package) !== null;
+        $this->packageVersionResolver = $packageVersionResolver ?? static function (string $package) use (
+            $projectPackageResolver,
+        ): ?string {
+            $metadata = $projectPackageResolver($package);
+            $version = $metadata['pretty_version'] ?? $metadata['version'] ?? null;
+
+            return is_string($version) ? $version : null;
         };
     }
 

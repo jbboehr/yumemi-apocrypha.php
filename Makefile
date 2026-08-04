@@ -1,5 +1,6 @@
 .DEFAULT: all
-.PHONY: all coverage-branch docs docs-check docs-serve test-consumer-illuminate-cache \
+.PHONY: all coverage-branch docs docs-check docs-serve test-consumer-guzzle test-consumer-guzzle-archive \
+	test-consumer-illuminate-cache \
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-filesystem test-consumer-illuminate-process \
 	test-consumer-illuminate-queue \
@@ -11,6 +12,7 @@ BRANCH_COVERAGE_SOURCE ?= src
 BRANCH_COVERAGE_TESTS ?=
 BRANCH_COVERAGE_XDEBUG_ERROR := Xdebug is not loaded; enter nix develop .\#xdebug.
 ILLUMINATE_CACHE_MAJOR ?= 12
+GUZZLE_MAJOR ?= 8
 ILLUMINATE_COOKIE_MAJOR ?= 12
 ILLUMINATE_FILESYSTEM_MAJOR ?= 12
 ILLUMINATE_HTTP_MAJOR ?= 12
@@ -40,6 +42,12 @@ docs-check: docs
 
 docs-serve:
 	mdbook serve docs --hostname 127.0.0.1
+
+test-consumer-guzzle:
+	tests/Consumer/run source guzzle $(GUZZLE_MAJOR)
+
+test-consumer-guzzle-archive:
+	tests/Consumer/run archive guzzle $(GUZZLE_MAJOR)
 
 test-consumer-illuminate-cache:
 	tests/Consumer/run source illuminate-cache $(ILLUMINATE_CACHE_MAJOR)

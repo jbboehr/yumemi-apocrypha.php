@@ -8,11 +8,13 @@ claims to support and semantically accurate about the represented units.
 
 - Explicit integration selection and optional Composer-package autodetection are implemented.
 - Explicit selections and strict autodetection reject installed package majors that have not been verified.
+- `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
+  transfer times across Guzzle 7 and 8.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
   `illuminate/process`, and `illuminate/queue` cover stable unit-bearing APIs across Laravel 11 through 13.
 - `symfony/stopwatch` covers event and period durations and memory results across Symfony Stopwatch 6 through 8.
 - The loader can select major-specific stub files when a supported upstream signature differs; Illuminate Process uses
-  this for Laravel 13's `CarbonInterval|int` timeout boundary.
+  this for Laravel 13's `CarbonInterval|int` timeout boundary, and Guzzle uses it for retry callback signatures.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   and a representative Composer archive.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
@@ -53,14 +55,11 @@ whose useful data is dynamic or context-dependent.
 
 ### Candidate Order
 
-The leading candidates that can provide value without first extending Yumemi's type system are:
+The leading remaining candidates that can provide value without first extending Yumemi's type system are:
 
-1. `guzzlehttp/guzzle`: seconds for timeouts, milliseconds for delays, and bytes for thresholds and progress callbacks.
-   The integration should cover selected option shapes, callback parameters, and direct transfer-statistic accessors
-   without attempting to restate every request option.
-2. `mjaschen/phpgeo`: selected distance and bearing APIs use existing units and have unusually clear physical meaning.
+1. `mjaschen/phpgeo`: selected distance and bearing APIs use existing units and have unusually clear physical meaning.
    Complete coordinate coverage would become more precise after Yumemi supports branded float ranges.
-3. `james-heinrich/getid3`: file sizes, durations, bitrates, sample rates, frame rates, and media dimensions provide
+2. `james-heinrich/getid3`: file sizes, durations, bitrates, sample rates, frame rates, and media dimensions provide
    high measurement density, but its large format-dependent result arrays require a deliberately bounded and
    maintainable shape rather than an attempted transcription of all metadata.
 
@@ -105,6 +104,6 @@ Future Yumemi types improve these integrations in different ways:
   or a physical length under an assumed resolution; twips and EMUs are fixed document units; typographic point names
   must match the effective registry. Do not silently approximate these distinctions for the sake of broader coverage.
 
-Provisionally, add a bounded Guzzle integration next. Then decide the pixel and OOXML unit model and implement branded
-integer ranges before expanding into the document and image package group. Float ranges can follow when phpgeo or
-another coordinate-heavy integration supplies the concrete acceptance tests.
+With the bounded Guzzle integration in place, implement branded integer ranges, then decide the pixel and OOXML unit
+model before expanding into the document and image package group. Float ranges can follow when phpgeo or another
+coordinate-heavy integration supplies the concrete acceptance tests.

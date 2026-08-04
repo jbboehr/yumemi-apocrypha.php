@@ -94,6 +94,8 @@
         "docs:serve": "make docs-serve",
         "infection": "infection --no-progress",
         "infection:ci": "infection --no-progress --min-msi=90 --min-covered-msi=90",
+        "test:consumer:guzzle": "make test-consumer-guzzle",
+        "test:consumer:guzzle:archive": "make test-consumer-guzzle-archive",
         "test:consumer:illuminate-cache": "make test-consumer-illuminate-cache",
         "test:consumer:illuminate-cache:archive": "make test-consumer-illuminate-cache-archive",
         "test:consumer:illuminate-cookie": "make test-consumer-illuminate-cookie",
