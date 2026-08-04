@@ -60,7 +60,12 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      * @logion [OSD 83:47] Bind thy sandals before the mountain darkeneth, and carry the bread entrusted unto thee; for
      *     the road judgeth every vow by the burden borne unto its summit.
      */
-    private const SUPPORTED_INTEGRATIONS = [];
+    private const SUPPORTED_INTEGRATIONS = [
+        'illuminate/cache' => [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
+        ],
+    ];
 
     /**
      * @var list<string>

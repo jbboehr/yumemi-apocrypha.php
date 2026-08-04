@@ -92,7 +92,9 @@
         "docs": "make docs",
         "docs:check": "make docs-check",
         "docs:serve": "make docs-serve",
-        "infection": "infection --no-progress"
+        "infection": "infection --no-progress",
+        "test:consumer:illuminate-cache": "make test-consumer-illuminate-cache",
+        "test:consumer:illuminate-cache:archive": "make test-consumer-illuminate-cache-archive"
     },
     "config": {
         "allow-plugins": {
