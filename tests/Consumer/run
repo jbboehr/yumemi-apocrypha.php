@@ -41,6 +41,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         extension.neon
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
         stubs/illuminate/cache.stub
+        stubs/illuminate/http.stub
     )
     for path in "${required_paths[@]}"; do
         if [[ ! -e $package_dir/$path ]]; then
@@ -171,9 +172,54 @@ run_illuminate_cache() {
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
 }
 
+run_illuminate_http() {
+    local project_dir=$WORK_DIR/illuminate-http
+    local expected_diagnostics=(
+        "::timeout() expects unit_float<'second'>|unit_int<'second'>, int given"
+        "::timeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given"
+        "::timeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'meter'> given"
+        "::connectTimeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'minute'> given"
+        "::retry() expects (Closure(int, mixed): int)|unit_int<'1/1000 * second'>, 250 given"
+        "::retry() expects (Closure(int, mixed): int)|unit_int<'1/1000 * second'>, unit_int<'second'> given"
+        "::retry() expects array<int, unit_int<'1/1000 * second'>>|int, array<int, int> given"
+        "::retry() expects array<int, unit_int<'1/1000 * second'>>|int, array<int, unit_int<'second'>> given"
+        "::retry() expects (Closure(int, mixed): int)|unit_int<'1/1000 * second'>, Closure(int, mixed): 250 given"
+        "FileFactory::create() expects string|unit_int<'1024 * octet'>, int given"
+        "FileFactory::create() expects string|unit_int<'1024 * octet'>, unit_int<'1000 * octet'> given"
+        "FileFactory::create() expects string|unit_int<'1024 * octet'>, unit_int<'second'> given"
+        "File::create() expects string|unit_int<'1024 * octet'>, int given"
+        "File::size() expects unit_int<'1024 * octet'>, unit_int<'1000 * octet'> given"
+        "acceptHttpSeconds expects unit_int<'second'>, unit_int<'octet'> given"
+    )
+
+    if [[ ! $FRAMEWORK_MAJOR =~ ^(11|12|13)$ ]]; then
+        printf 'Illuminate HTTP consumer tests require framework major 11, 12, or 13.\n' >&2
+        exit 2
+    fi
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/illuminate-http/." "$project_dir/"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev "illuminate/http:^$FRAMEWORK_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php"
+    run_phpstan_case "$project_dir" phpstan.neon valid.php
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+}
+
 case $FIXTURE_SUITE in
     illuminate-cache)
         run_illuminate_cache
+        ;;
+    illuminate-http)
+        run_illuminate_http
         ;;
     *)
         printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http] [framework-major]\n' "$0" >&2
