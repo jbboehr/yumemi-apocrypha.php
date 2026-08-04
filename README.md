@@ -47,6 +47,4 @@ See the [documentation index](docs/pages/README.md) for installation, integratio
 
 Yumemi Apocrypha is licensed under `AGPL-3.0-only WITH romic-exception`. See [LICENSE.md](LICENSE.md) and the
 [Romic Exception](docs/LICENSE_EXCEPTION.md). Contributions follow the terms in [CONTRIBUTING.md](CONTRIBUTING.md). The
-bundled integration declarations describe Guzzle, Laravel, phpgeo, and Symfony APIs; see the
-[Guzzle MIT notice](docs/GUZZLE-COPYRIGHT), [Laravel MIT notice](docs/LARAVEL-COPYRIGHT),
-[phpgeo MIT notice](docs/PHPGEO-COPYRIGHT), and [Symfony MIT notice](docs/SYMFONY-COPYRIGHT).
+bundled integration declarations describe third-party APIs; see the [third-party notices](docs/THIRD_PARTY_NOTICES.md).

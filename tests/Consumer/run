@@ -35,11 +35,8 @@ if [[ $PACKAGE_MODE == archive ]]; then
     required_paths=(
         apocrypha.neon
         composer.json
-        docs/GUZZLE-COPYRIGHT
-        docs/LARAVEL-COPYRIGHT
         docs/LICENSE_EXCEPTION.md
-        docs/PHPGEO-COPYRIGHT
-        docs/SYMFONY-COPYRIGHT
+        docs/THIRD_PARTY_NOTICES.md
         docs/pages/images/yumemi-banner.png
         extension.neon
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
