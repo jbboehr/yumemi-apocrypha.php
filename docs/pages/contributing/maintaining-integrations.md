@@ -19,7 +19,7 @@ Run one major locally with:
 
 ```shell
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
-ILLUMINATE_HTTP_MAJOR=12 make test-consumer-illuminate-http
+ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
 ```
 
 Laravel 13 requires PHP 8.3 or later. The CI matrix selects a compatible PHP version automatically.
@@ -35,10 +35,12 @@ points, legal notices, and stubs are present while tests and development tooling
 
 ## Add An Integration
 
-1. Add the package and finite verified-major list to `SUPPORTED_INTEGRATIONS`.
+1. Add the package and finite verified-major list to `SUPPORTED_INTEGRATIONS`; select major-specific files when the
+   verified signatures differ.
 2. Add its stub beneath `stubs/<vendor>/` with ordinary fallback PHPDoc and structurally matching `@yumemi-*` tags.
 3. Add parser tests for promoted parameter, return, property, callback, collection, and union forms used by the stub.
-4. Add an isolated Composer consumer with upstream reflection, accepted calls, rejected calls, and autodetection.
+4. Add an isolated Composer consumer with upstream reflection, accepted calls, rejected calls, and autodetection. Use
+   the generic consumer path unless the integration needs documentation extraction or another package-specific step.
 5. Add every verified major to CI with a PHP version supported by that upstream release.
 6. Document exact units, alternatives, limitations, and verification snapshots.
 

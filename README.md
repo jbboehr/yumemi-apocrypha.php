@@ -6,8 +6,8 @@
 
 Curated PHPStan unit annotations for third-party PHP packages, built on [Yumemi](https://github.com/jbboehr/yumemi.php).
 
-The package is under active development and has no tagged release. It currently covers unit-bearing Illuminate Cache and
-HTTP APIs across Laravel 11, 12, and 13.
+The package is under active development and has no tagged release. It currently covers selected unit-bearing APIs in
+Illuminate Cache, Cookie, Filesystem, HTTP, Process, Queue, and Support across Laravel 11, 12, and 13.
 
 ```shell
 composer require --dev jbboehr/yumemi:dev-master jbboehr/yumemi-apocrypha:dev-master \

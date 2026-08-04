@@ -324,9 +324,9 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.integration }}-${{ matrix.illuminate-version }}
+                  key: ${{ runner.os }}-${{ matrix.integration }}-${{ matrix.illuminate-version }}
                   restore-keys: |
-                      ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.integration }}-
+                      ${{ runner.os }}-${{ matrix.integration }}-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
 

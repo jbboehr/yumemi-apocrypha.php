@@ -54,9 +54,9 @@ positional arguments forwarded to `make()`. Absolute expiration timestamps also 
 
 ## Illuminate Filesystem
 
-Enable `illuminate/filesystem` to brand file-size results and the byte counts returned by local `put()`, `prepend()`, and
-`append()` operations as `byte` values. This covers the filesystem contract, local filesystem, filesystem adapter, and
-`LockableFile` size APIs.
+Enable `illuminate/filesystem` to brand file-size results and the byte counts returned by local `put()`, `prepend()`,
+and `append()` operations as `byte` values. This covers the filesystem contract, local filesystem, filesystem adapter,
+and `LockableFile` size APIs.
 
 Last-modification values are timestamps rather than durations or byte counts and remain unbranded. Adapter write methods
 that report only success or failure also remain ordinary booleans.
@@ -95,12 +95,12 @@ function configureRemoteArchive(PendingRequest $request): void
 
 Enable `illuminate/support` to brand framework timing helpers and benchmark results.
 
-| API concern                         | Unit          |
-| ----------------------------------- | ------------- |
-| `Benchmark` measurements            | `millisecond` |
-| `Sleep::sleep()` duration           | `second`      |
-| `Sleep::usleep()` duration          | `microsecond` |
-| `Timebox::call()` minimum duration  | `microsecond` |
+| API concern                        | Unit          |
+| ---------------------------------- | ------------- |
+| `Benchmark` measurements           | `millisecond` |
+| `Sleep::sleep()` duration          | `second`      |
+| `Sleep::usleep()` duration         | `microsecond` |
+| `Timebox::call()` minimum duration | `microsecond` |
 
 The fluent `Sleep::for($value)->seconds()` form is not annotated because the unit is selected after the numeric value
 crosses the first method boundary. The direct `sleep()` and `usleep()` entry points have unambiguous units.
@@ -109,18 +109,18 @@ crosses the first method boundary. The direct `sleep()` and `usleep()` entry poi
 
 Enable `illuminate/process` to require `second` values for `PendingProcess::timeout()` and `idleTimeout()`.
 
-Laravel 13 also accepts `CarbonInterval` at these boundaries. Apocrypha selects a major-specific stub so this alternative
-remains valid on Laravel 13 without incorrectly allowing it on Laravel 11 or 12.
+Laravel 13 also accepts `CarbonInterval` at these boundaries. Apocrypha selects a major-specific stub so this
+alternative remains valid on Laravel 13 without incorrectly allowing it on Laravel 11 or 12.
 
 ## Illuminate Queue
 
 Enable `illuminate/queue` to brand delayed dispatches, job release delays, and physical `WorkerOptions` values.
 
-| API concern                                      | Unit               |
-| ------------------------------------------------ | ------------------ |
-| Delayed dispatch and job release                 | `second`           |
+| API concern                                        | Unit             |
+| -------------------------------------------------- | ---------------- |
+| Delayed dispatch and job release                   | `second`         |
 | Worker backoff, timeout, sleep, rest, and lifetime | `second`         |
-| Worker memory limit                              | `1048576 * byte`   |
+| Worker memory limit                                | `1048576 * byte` |
 
 The memory limit is measured in binary megabytes by Laravel's worker implementation, so Apocrypha uses the exact scale
 `1048576 * byte`. Attempt counts, maximum jobs, and other dimensionless controls remain ordinary integers. Laravel 12

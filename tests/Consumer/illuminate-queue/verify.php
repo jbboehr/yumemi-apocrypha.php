@@ -78,3 +78,15 @@ if ($workerParameters[array_key_last($workerParameters)] !== $expectedLastParame
         implode(', ', $workerParameters),
     ));
 }
+
+$worker = new ReflectionClass(Illuminate\Queue\WorkerOptions::class);
+$expectedProperties = ['backoff', 'memory', 'timeout', 'sleep', 'rest', 'maxTime'];
+if ($major >= 12) {
+    $expectedProperties[] = 'stopWhenEmptyFor';
+}
+
+foreach ($expectedProperties as $property) {
+    if (!$worker->hasProperty($property)) {
+        throw new RuntimeException(sprintf('WorkerOptions::$%s does not exist for major %d.', $property, $major));
+    }
+}

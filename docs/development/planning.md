@@ -26,6 +26,5 @@ suite. Integration scope remains curated: add APIs only when their physical unit
 ## Future Candidates
 
 Evaluate further integrations from observed application value rather than package breadth. Preserve version-specific
-upstream alternatives when a signature differs
-between supported majors, and avoid timestamps or count-like integers whose physical semantics are not represented by
-Yumemi's native duration and quantity brands.
+upstream alternatives when a signature differs between supported majors, and avoid timestamps or count-like integers
+whose physical semantics are not represented by Yumemi's native duration and quantity brands.

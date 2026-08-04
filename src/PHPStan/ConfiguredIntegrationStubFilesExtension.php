@@ -200,7 +200,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      */
     public function getFiles(): array
     {
-        $explicit = array_values(array_unique($this->integrations));
+        $explicit = $this->integrations;
         sort($explicit, SORT_STRING);
 
         foreach ($explicit as $integration) {
@@ -226,7 +226,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 }
 
                 $version = ($this->packageVersionResolver)($integration);
-                if (!$this->supportsVersion($integration, $version)) {
+                if ($this->supportedMajor($integration, $version) === null) {
                     if ($this->strictAutoDetect) {
                         $this->throwUnsupportedVersion($integration, $version);
                     }
@@ -246,11 +246,11 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         foreach ($integrations as $integration) {
             $configuration = $this->supportedIntegrations[$integration];
             $version = $versions[$integration] ?? $this->explicitVersion($integration);
-            if (!$this->supportsVersion($integration, $version)) {
+            $major = $this->supportedMajor($integration, $version);
+            if ($major === null) {
                 $this->throwUnsupportedVersion($integration, $version);
             }
 
-            $major = (int) ltrim(explode('.', $version ?? '', 2)[0], 'v');
             $configuredFiles = $configuration['filesByMajor'][$major] ?? $configuration['files'];
 
             foreach ($configuredFiles as $file) {
@@ -286,13 +286,15 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      * @logion [OSD 58:13] Compare the pilgrim's seal with the years appointed unto the road, and admit him only while
      *     both testimonies agree; for an old permission cannot command a gate raised after its covenant.
      */
-    private function supportsVersion(string $integration, ?string $version): bool
+    private function supportedMajor(string $integration, ?string $version): ?int
     {
         if ($version === null || preg_match('/^v?([1-9][0-9]*)(?:\\.|$)/', $version, $matches) !== 1) {
-            return false;
+            return null;
         }
 
-        return in_array((int) $matches[1], $this->supportedIntegrations[$integration]['majors'], true);
+        $major = (int) $matches[1];
+
+        return in_array($major, $this->supportedIntegrations[$integration]['majors'], true) ? $major : null;
     }
 
     /**
