@@ -1,0 +1,26 @@
+<?php
+
+namespace Illuminate\Process;
+
+class PendingProcess
+{
+    /**
+     * @param int $timeout
+     * @return $this
+     *
+     * @yumemi-param unit_int<'second'> $timeout
+     */
+    public function timeout(int $timeout)
+    {
+    }
+
+    /**
+     * @param int $timeout
+     * @return $this
+     *
+     * @yumemi-param unit_int<'second'> $timeout
+     */
+    public function idleTimeout(int $timeout)
+    {
+    }
+}

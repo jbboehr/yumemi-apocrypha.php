@@ -231,18 +231,36 @@ jobs:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
               run: tests/Consumer/run ${{ matrix.package-mode }} illuminate-http ${{ matrix.illuminate-version }}
 
-    illuminate-support:
-        name: Illuminate Support ${{ matrix.illuminate-version }} / PHP ${{ matrix.php-version }}
+    additional-illuminate-integrations:
+        name: ${{ matrix.integration-label }} ${{ matrix.illuminate-version }} / PHP ${{ matrix.php-version }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
                 include:
-                    - illuminate-version: "11"
+                    - integration: illuminate-process
+                      integration-label: Illuminate Process
+                      illuminate-version: "11"
                       php-version: "8.2"
-                    - illuminate-version: "12"
+                    - integration: illuminate-process
+                      integration-label: Illuminate Process
+                      illuminate-version: "12"
                       php-version: "8.2"
-                    - illuminate-version: "13"
+                    - integration: illuminate-process
+                      integration-label: Illuminate Process
+                      illuminate-version: "13"
+                      php-version: "8.3"
+                    - integration: illuminate-support
+                      integration-label: Illuminate Support
+                      illuminate-version: "11"
+                      php-version: "8.2"
+                    - integration: illuminate-support
+                      integration-label: Illuminate Support
+                      illuminate-version: "12"
+                      php-version: "8.2"
+                    - integration: illuminate-support
+                      integration-label: Illuminate Support
+                      illuminate-version: "13"
                       php-version: "8.3"
         steps:
             - name: Checkout Apocrypha
@@ -270,13 +288,13 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-support-${{ matrix.illuminate-version }}
+                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.integration }}-${{ matrix.illuminate-version }}
                   restore-keys: |
-                      ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-support-
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-${{ matrix.integration }}-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
 
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
-              run: tests/Consumer/run source illuminate-support ${{ matrix.illuminate-version }}
+              run: tests/Consumer/run source ${{ matrix.integration }} ${{ matrix.illuminate-version }}

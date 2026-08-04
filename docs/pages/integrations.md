@@ -88,9 +88,17 @@ Enable `illuminate/support` to brand framework timing helpers and benchmark resu
 The fluent `Sleep::for($value)->seconds()` form is not annotated because the unit is selected after the numeric value
 crosses the first method boundary. The direct `sleep()` and `usleep()` entry points have unambiguous units.
 
+## Illuminate Process
+
+Enable `illuminate/process` to require `second` values for `PendingProcess::timeout()` and `idleTimeout()`.
+
+Laravel 13 also accepts `CarbonInterval` at these boundaries. Apocrypha selects a major-specific stub so this alternative
+remains valid on Laravel 13 without incorrectly allowing it on Laravel 11 or 12.
+
 ## Limitations
 
-- Stubs cover signatures shared by all verified majors; version-specific APIs are not yet annotated.
+- Most stubs cover signatures shared by all verified majors. A major-specific stub is selected where a supported
+  signature differs, as with Illuminate Process on Laravel 13.
 - Native branded arguments are not converted. Dimensionally compatible but differently scaled units remain invalid.
 - Dynamic or unsupported unit expressions lose Yumemi's precise brand according to the core extension's normal rules.
 - Enabling Apocrypha enables Yumemi's parser-based optional-tag promotion, with the associated PHPStan upgrade and

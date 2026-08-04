@@ -55,7 +55,11 @@ use PHPStan\PhpDoc\StubFilesExtension;
 final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtension
 {
     /**
-     * @var array<string, array{majors: non-empty-list<int>, files: non-empty-list<string>}>
+     * @var array<string, array{
+     *     majors: non-empty-list<int>,
+     *     files: non-empty-list<string>,
+     *     filesByMajor?: array<int, non-empty-list<string>>
+     * }>
      *
      * @logion [OSD 83:47] Bind thy sandals before the mountain darkeneth, and carry the bread entrusted unto thee; for
      *     the road judgeth every vow by the burden borne unto its summit.
@@ -68,6 +72,13 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         'illuminate/http' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/http.stub'],
+        ],
+        'illuminate/process' => [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../stubs/illuminate/process.stub'],
+            'filesByMajor' => [
+                13 => [__DIR__ . '/../../stubs/illuminate/process-13.stub'],
+            ],
         ],
         'illuminate/support' => [
             'majors' => [11, 12, 13],
@@ -96,7 +107,11 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     private readonly bool $strictAutoDetect;
 
     /**
-     * @var array<string, array{majors: non-empty-list<int>, files: non-empty-list<string>}>
+     * @var array<string, array{
+     *     majors: non-empty-list<int>,
+     *     files: non-empty-list<string>,
+     *     filesByMajor?: array<int, non-empty-list<string>>
+     * }>
      *
      * @logion [OSD 44:91] The custodians copied the covenant upon cedar and bronze alike, yet altered not one appointed
      *     province; for the substance of the tablet serveth the witness, but cannot enlarge its dominion.
@@ -121,7 +136,11 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
 
     /**
      * @param list<string> $integrations
-     * @param array<string, array{majors: non-empty-list<int>, files: non-empty-list<string>}>|null $supportedIntegrations
+     * @param array<string, array{
+     *     majors: non-empty-list<int>,
+     *     files: non-empty-list<string>,
+     *     filesByMajor?: array<int, non-empty-list<string>>
+     * }>|null $supportedIntegrations
      * @param (Closure(string): bool)|null $packageInstalledResolver
      * @param (Closure(string): ?string)|null $packageVersionResolver
      *
@@ -206,7 +225,10 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 $this->throwUnsupportedVersion($integration, $version);
             }
 
-            foreach ($configuration['files'] as $file) {
+            $major = (int) ltrim(explode('.', $version ?? '', 2)[0], 'v');
+            $configuredFiles = $configuration['filesByMajor'][$major] ?? $configuration['files'];
+
+            foreach ($configuredFiles as $file) {
                 $path = realpath($file);
                 if ($path === false) {
                     throw new LogicException(sprintf('Configured Yumemi Apocrypha stub file does not exist: %s.', $file));

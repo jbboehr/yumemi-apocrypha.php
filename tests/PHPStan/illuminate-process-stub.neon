@@ -1,0 +1,4 @@
+parameters:
+    stubFiles:
+        - ../../stubs/illuminate/process.stub
+        - ../../stubs/illuminate/process-13.stub

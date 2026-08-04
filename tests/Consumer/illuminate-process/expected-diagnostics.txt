@@ -1,0 +1,5 @@
+PendingProcess::timeout() expects
+unit_int<'second'>, int given
+unit_int<'minute'> given
+PendingProcess::idleTimeout() expects
+unit_int<'1/1000 * second'> given

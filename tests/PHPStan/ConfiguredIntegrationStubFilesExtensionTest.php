@@ -304,9 +304,32 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         $extension->getFiles();
     }
 
+    public function testMajorSpecificStubFilesOverrideCommonFiles(): void
+    {
+        $supported = $this->supported();
+        $supported['vendor/one'] = [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../apocrypha.neon'],
+            'filesByMajor' => [13 => [__DIR__ . '/../../extension.neon']],
+        ];
+
+        $extension = $this->extension(
+            integrations: ['vendor/one'],
+            supported: $supported,
+            installed: static fn (): bool => true,
+            version: static fn (): string => 'v13.2.1',
+        );
+
+        self::assertSame([realpath(__DIR__ . '/../../extension.neon')], $extension->getFiles());
+    }
+
     /**
      * @param list<string> $integrations
-     * @param array<string, array{majors: non-empty-list<int>, files: non-empty-list<string>}>|null $supported
+     * @param array<string, array{
+     *     majors: non-empty-list<int>,
+     *     files: non-empty-list<string>,
+     *     filesByMajor?: array<int, non-empty-list<string>>
+     * }>|null $supported
      * @param (\Closure(string): bool)|null $installed
      * @param (\Closure(string): ?string)|null $version
      */
@@ -329,7 +352,11 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
     }
 
     /**
-     * @return array<string, array{majors: non-empty-list<int>, files: non-empty-list<string>}>
+     * @return array<string, array{
+     *     majors: non-empty-list<int>,
+     *     files: non-empty-list<string>,
+     *     filesByMajor?: array<int, non-empty-list<string>>
+     * }>
      */
     private function supported(): array
     {

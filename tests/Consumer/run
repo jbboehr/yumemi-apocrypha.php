@@ -42,6 +42,8 @@ if [[ $PACKAGE_MODE == archive ]]; then
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
         stubs/illuminate/cache.stub
         stubs/illuminate/http.stub
+        stubs/illuminate/process.stub
+        stubs/illuminate/process-13.stub
         stubs/illuminate/support.stub
     )
     for path in "${required_paths[@]}"; do
@@ -66,7 +68,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-support|manual] [framework-major]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-process|illuminate-support|manual] [framework-major]\n' "$0" >&2
     exit 2
 fi
 
@@ -114,7 +116,7 @@ run_phpstan_case() {
     local expected_diagnostics=("$@")
     local phpstan=(vendor/bin/phpstan analyse --no-progress --error-format=raw --configuration="$configuration")
 
-    if [[ $case_file == valid.php ]]; then
+    if [[ $case_file == valid*.php ]]; then
         (
             cd -- "$project_dir"
             "${phpstan[@]}" "cases/$case_file"
@@ -265,6 +267,10 @@ run_simple_illuminate_integration() {
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    if [[ -f $project_dir/cases/valid-$FRAMEWORK_MAJOR.php ]]; then
+        run_phpstan_case "$project_dir" phpstan.neon "valid-$FRAMEWORK_MAJOR.php"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$FRAMEWORK_MAJOR.php"
+    fi
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
 }
@@ -299,14 +305,14 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-support)
+    illuminate-process | illuminate-support)
         run_simple_illuminate_integration
         ;;
     manual)
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-support|manual] [framework-major]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-http|illuminate-process|illuminate-support|manual] [framework-major]\n' "$0" >&2
         exit 2
         ;;
 esac

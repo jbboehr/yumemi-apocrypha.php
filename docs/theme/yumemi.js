@@ -19,6 +19,7 @@
             { id: "illuminate-cache", title: "Illuminate Cache" },
             { id: "illuminate-http", title: "Illuminate HTTP" },
             { id: "illuminate-support", title: "Illuminate Support" },
+            { id: "illuminate-process", title: "Illuminate Process" },
             { id: "limitations", title: "Limitations" },
         ],
         "contributing/maintaining-integrations.html": [

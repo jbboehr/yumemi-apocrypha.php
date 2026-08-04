@@ -1,0 +1,28 @@
+<?php
+
+namespace Illuminate\Process;
+
+class PendingProcess
+{
+    /**
+     * @param \Carbon\CarbonInterval|int $timeout
+     * @return $this
+     *
+     * @phpstan-param \Carbon\CarbonInterval|unit_int<'second'> $timeout
+     * @yumemi-param \Carbon\CarbonInterval|unit_int<'second'> $timeout
+     */
+    public function timeout(\Carbon\CarbonInterval|int $timeout)
+    {
+    }
+
+    /**
+     * @param \Carbon\CarbonInterval|int $timeout
+     * @return $this
+     *
+     * @phpstan-param \Carbon\CarbonInterval|unit_int<'second'> $timeout
+     * @yumemi-param \Carbon\CarbonInterval|unit_int<'second'> $timeout
+     */
+    public function idleTimeout(\Carbon\CarbonInterval|int $timeout)
+    {
+    }
+}
