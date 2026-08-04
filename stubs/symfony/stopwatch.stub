@@ -1,0 +1,47 @@
+<?php
+
+namespace Symfony\Component\Stopwatch;
+
+class StopwatchEvent
+{
+    /**
+     * @return int|float
+     *
+     * @phpstan-return unit_int<'millisecond'>|unit_float<'millisecond'>
+     * @yumemi-return unit_int<'millisecond'>|unit_float<'millisecond'>
+     */
+    public function getDuration(): int|float
+    {
+    }
+
+    /**
+     * @return int
+     *
+     * @yumemi-return unit_int<'byte'>
+     */
+    public function getMemory(): int
+    {
+    }
+}
+
+class StopwatchPeriod
+{
+    /**
+     * @return int|float
+     *
+     * @phpstan-return unit_int<'millisecond'>|unit_float<'millisecond'>
+     * @yumemi-return unit_int<'millisecond'>|unit_float<'millisecond'>
+     */
+    public function getDuration(): int|float
+    {
+    }
+
+    /**
+     * @return int
+     *
+     * @yumemi-return unit_int<'byte'>
+     */
+    public function getMemory(): int
+    {
+    }
+}

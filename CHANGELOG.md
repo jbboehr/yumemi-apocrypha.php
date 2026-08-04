@@ -9,6 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Add unit-aware duration and memory results for Symfony Stopwatch 6, 7, and 8.
+
 ### Changed
 
 ### Deprecated

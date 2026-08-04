@@ -5,11 +5,13 @@ a record of verified behavior, not a promise to support every future or historic
 
 ## Version Policy
 
-All current integrations accept Laravel majors 11, 12, and 13. CI resolves the latest compatible release of each major
-instead of pinning the snapshots below. An unknown future major is rejected until its signatures and semantics have been
-reviewed.
+CI resolves the latest compatible release of each verified major instead of pinning the snapshots below. An unknown
+future major is rejected until its signatures and semantics have been reviewed.
 
-The latest documented verification snapshots are `v11.51.0`, `v12.64.0`, and `v13.23.0`, checked on 2026-08-03.
+| Package family      | Verified majors | Latest verification snapshots      | Checked    |
+| ------------------- | --------------- | ---------------------------------- | ---------- |
+| Illuminate packages | 11, 12, 13      | `v11.51.0`, `v12.64.0`, `v13.23.0` | 2026-08-03 |
+| Symfony Stopwatch   | 6, 7, 8         | `v6.4.24`, `v7.4.8`, `v8.1.0`      | 2026-08-04 |
 
 ## Illuminate Cache
 
@@ -125,6 +127,36 @@ Enable `illuminate/queue` to brand delayed dispatches, job release delays, and p
 The memory limit is measured in binary megabytes by Laravel's worker implementation, so Apocrypha uses the exact scale
 `1048576 * byte`. Attempt counts, maximum jobs, and other dimensionless controls remain ordinary integers. Laravel 12
 added `stopWhenEmptyFor`; major-specific worker stubs preserve the Laravel 11 constructor and property surface.
+
+## Symfony Stopwatch
+
+Enable `symfony/stopwatch` to brand elapsed durations and memory results from `StopwatchEvent` and `StopwatchPeriod`.
+
+| API concern     | Unit          |
+| --------------- | ------------- |
+| `getDuration()` | `millisecond` |
+| `getMemory()`   | `byte`        |
+
+Duration results retain Symfony's `int|float` alternative: ordinary precision returns integers, while the
+`morePrecision` mode may return floats. Both alternatives carry the same millisecond unit.
+
+<!-- yumemi-example: symfony-stopwatch-invalid -->
+
+```php
+<?php
+
+use Symfony\Component\Stopwatch\Stopwatch;
+
+/** @param unit_int<'second'>|unit_float<'second'> $duration */
+function recordProfileDurationInSeconds(int|float $duration): void {}
+
+$event = (new Stopwatch())->start('render-report');
+
+recordProfileDurationInSeconds($event->getDuration()); // PHPStan rejects milliseconds at this seconds boundary.
+```
+
+Origins and relative start and end times remain unbranded. They are clock coordinates, not elapsed durations, and
+Yumemi's native brands do not represent coordinate origins.
 
 ## Limitations
 

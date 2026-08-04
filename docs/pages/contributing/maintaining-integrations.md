@@ -20,9 +20,11 @@ Run one major locally with:
 ```shell
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
+SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 ```
 
-Laravel 13 requires PHP 8.3 or later. The CI matrix selects a compatible PHP version automatically.
+Laravel 13 requires PHP 8.3 or later, and Symfony Stopwatch 8 requires PHP 8.4.1 or later. The CI matrix selects a
+compatible PHP version automatically.
 
 ## Verify Package Behavior
 

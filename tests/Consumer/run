@@ -8,7 +8,7 @@ PROJECT_ROOT=$(cd -- "$FIXTURES_DIR/../.." && pwd)
 readonly PROJECT_ROOT
 readonly PACKAGE_MODE=${1:-source}
 readonly FIXTURE_SUITE=${2:-illuminate-cache}
-readonly FRAMEWORK_MAJOR=${3:-12}
+readonly PACKAGE_MAJOR=${3:-12}
 readonly YUMEMI_PACKAGE_DIR=${YUMEMI_PACKAGE_DIR:-$PROJECT_ROOT/..}
 
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/yumemi-apocrypha-consumer.XXXXXXXX")
@@ -37,6 +37,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         composer.json
         docs/LARAVEL-COPYRIGHT
         docs/LICENSE_EXCEPTION.md
+        docs/SYMFONY-COPYRIGHT
         docs/pages/images/yumemi-banner.png
         extension.neon
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
@@ -50,6 +51,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         stubs/illuminate/queue-worker-11.stub
         stubs/illuminate/queue-worker-12.stub
         stubs/illuminate/support.stub
+        stubs/symfony/stopwatch.stub
     )
     for path in "${required_paths[@]}"; do
         if [[ ! -e $package_dir/$path ]]; then
@@ -73,7 +75,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|manual] [framework-major]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
     exit 2
 fi
 
@@ -166,7 +168,7 @@ run_illuminate_cache() {
         "expects unit_int<'minute'>, unit_int<'second'> given"
     )
 
-    if [[ ! $FRAMEWORK_MAJOR =~ ^(11|12|13)$ ]]; then
+    if [[ ! $PACKAGE_MAJOR =~ ^(11|12|13)$ ]]; then
         printf 'Illuminate Cache consumer tests require framework major 11, 12, or 13.\n' >&2
         exit 2
     fi
@@ -178,7 +180,7 @@ run_illuminate_cache() {
     if [[ -n $yumemi_repository_json ]]; then
         composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
     fi
-    composer --working-dir="$project_dir" require --dev "illuminate/cache:^$FRAMEWORK_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" require --dev "illuminate/cache:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
@@ -221,7 +223,7 @@ run_illuminate_http() {
         "acceptHttpSeconds expects unit_int<'second'>, unit_int<'octet'> given"
     )
 
-    if [[ ! $FRAMEWORK_MAJOR =~ ^(11|12|13)$ ]]; then
+    if [[ ! $PACKAGE_MAJOR =~ ^(11|12|13)$ ]]; then
         printf 'Illuminate HTTP consumer tests require framework major 11, 12, or 13.\n' >&2
         exit 2
     fi
@@ -233,7 +235,7 @@ run_illuminate_http() {
     if [[ -n $yumemi_repository_json ]]; then
         composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
     fi
-    composer --working-dir="$project_dir" require --dev "illuminate/http:^$FRAMEWORK_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" require --dev "illuminate/http:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
@@ -253,7 +255,7 @@ run_simple_illuminate_integration() {
     local package=illuminate/$integration
     local expected_diagnostics=()
 
-    if [[ ! $FRAMEWORK_MAJOR =~ ^(11|12|13)$ ]]; then
+    if [[ ! $PACKAGE_MAJOR =~ ^(11|12|13)$ ]]; then
         printf '%s consumer tests require framework major 11, 12, or 13.\n' "$package" >&2
         exit 2
     fi
@@ -266,24 +268,56 @@ run_simple_illuminate_integration() {
     if [[ -n $yumemi_repository_json ]]; then
         composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
     fi
-    composer --working-dir="$project_dir" require --dev "$package:^$FRAMEWORK_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" require --dev "$package:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
-    if [[ -f $project_dir/cases/valid-$FRAMEWORK_MAJOR.php ]]; then
-        run_phpstan_case "$project_dir" phpstan.neon "valid-$FRAMEWORK_MAJOR.php"
-        run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$FRAMEWORK_MAJOR.php"
+    if [[ -f $project_dir/cases/valid-$PACKAGE_MAJOR.php ]]; then
+        run_phpstan_case "$project_dir" phpstan.neon "valid-$PACKAGE_MAJOR.php"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$PACKAGE_MAJOR.php"
     fi
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
 }
 
+run_symfony_stopwatch() {
+    local project_dir=$WORK_DIR/symfony-stopwatch
+    local documentation_case=$project_dir/cases/documentation-invalid.php
+    local expected_diagnostics=()
+
+    if [[ ! $PACKAGE_MAJOR =~ ^(6|7|8)$ ]]; then
+        printf 'Symfony Stopwatch consumer tests require package major 6, 7, or 8.\n' >&2
+        exit 2
+    fi
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/symfony-stopwatch/." "$project_dir/"
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev "symfony/stopwatch:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php"
+    php "$PROJECT_ROOT/tests/Documentation/extract-markdown-example.php" \
+        "$PROJECT_ROOT/docs/pages/integrations.md" symfony-stopwatch-invalid > "$documentation_case"
+    run_phpstan_case "$project_dir" phpstan.neon valid.php
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
+        "recordProfileDurationInSeconds expects unit_float<'second'>|unit_int<'second'>, unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'> given"
+}
+
 run_manual() {
     local project_dir=$WORK_DIR/manual
 
-    if [[ $FRAMEWORK_MAJOR != 12 ]]; then
+    if [[ $PACKAGE_MAJOR != 12 ]]; then
         printf 'The manual-registration smoke test uses Illuminate Cache major 12.\n' >&2
         exit 2
     fi
@@ -295,7 +329,7 @@ run_manual() {
     if [[ -n $yumemi_repository_json ]]; then
         composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
     fi
-    composer --working-dir="$project_dir" require --dev "illuminate/cache:^$FRAMEWORK_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" require --dev "illuminate/cache:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     run_phpstan_case "$project_dir" phpstan.neon valid.php
@@ -313,11 +347,14 @@ case $FIXTURE_SUITE in
     illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-support)
         run_simple_illuminate_integration
         ;;
+    symfony-stopwatch)
+        run_symfony_stopwatch
+        ;;
     manual)
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|manual] [framework-major]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
         exit 2
         ;;
 esac

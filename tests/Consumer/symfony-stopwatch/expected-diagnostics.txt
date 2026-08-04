@@ -1,0 +1,4 @@
+recordStopwatchSeconds expects unit_float<'second'>|unit_int<'second'>, unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'> given
+recordStopwatchDistance expects unit_float<'meter'>|unit_int<'meter'>, unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'> given
+recordStopwatchKilobytes expects unit_int<'1000 * octet'>, unit_int<'octet'> given
+recordStopwatchMemoryDuration expects unit_int<'second'>, unit_int<'octet'> given

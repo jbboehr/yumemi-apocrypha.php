@@ -23,6 +23,7 @@
             { id: "illuminate-support", title: "Illuminate Support" },
             { id: "illuminate-process", title: "Illuminate Process" },
             { id: "illuminate-queue", title: "Illuminate Queue" },
+            { id: "symfony-stopwatch", title: "Symfony Stopwatch" },
             { id: "limitations", title: "Limitations" },
         ],
         "contributing/maintaining-integrations.html": [
