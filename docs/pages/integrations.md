@@ -12,6 +12,7 @@ future major is rejected until its signatures and semantics have been reviewed.
 | ------------------- | --------------- | ---------------------------------- | ---------- |
 | Guzzle              | 7, 8            | `7.15.2`, `8.0.1`                  | 2026-08-04 |
 | Illuminate packages | 11, 12, 13      | `v11.51.0`, `v12.64.0`, `v13.23.0` | 2026-08-03 |
+| phpgeo              | 4, 5, 6         | `4.2.1`, `5.0.0`, `6.0.2`          | 2026-08-04 |
 | Symfony Stopwatch   | 6, 7, 8         | `v6.4.24`, `v7.4.8`, `v8.1.0`      | 2026-08-04 |
 
 ## Guzzle
@@ -167,6 +168,49 @@ Enable `illuminate/queue` to brand delayed dispatches, job release delays, and p
 The memory limit is measured in binary megabytes by Laravel's worker implementation, so Apocrypha uses the exact scale
 `1048576 * byte`. Attempt counts, maximum jobs, and other dimensionless controls remain ordinary integers. Laravel 12
 added `stopWhenEmptyFor`; major-specific worker stubs preserve the Laravel 11 constructor and property surface.
+
+## phpgeo
+
+Enable `mjaschen/phpgeo` to brand phpgeo's selected distance, area, bearing, and tolerance boundaries.
+
+| API concern                                    | Unit        |
+| ---------------------------------------------- | ----------- |
+| Distances, lengths, perimeters, and tolerances | `meter`     |
+| Polygon area                                   | `meter ^ 2` |
+| Bearings and destination-bearing inputs        | `degree`    |
+
+This covers the distance calculators and their coordinate convenience method; line, polyline, and polygon measurements;
+cardinal-direction components; destination calculations; bounds expansion; perpendicular-distance utilities; polyline
+simplification tolerance.
+
+<!-- yumemi-example: phpgeo-invalid -->
+
+```php
+<?php
+
+use Location\Bearing\BearingSpherical;
+use Location\Coordinate;
+
+use function jbboehr\Yumemi\unit;
+
+function projectSurveyPoint(BearingSpherical $bearing, Coordinate $origin): void
+{
+    $bearing->calculateDestination($origin, unit(45.0, 'degree'), unit(500.0, 'meter'));
+    $bearing->calculateDestination(
+        $origin,
+        unit(0.5, 'radian'), // PHPStan rejects radians at this degree boundary.
+        unit(500.0, 'meter'),
+    );
+}
+```
+
+Native boundaries do not convert values. A `kilometer` value is dimensionally compatible with a meter distance but is
+not definitionally equivalent, so convert it before calling phpgeo.
+
+Latitude and longitude remain ordinary floats. They are angular coordinates with distinct origins and bounded domains,
+not interchangeable angle magnitudes. Dimensionless fractions, inverse flattening, iteration controls, and geometry
+counts also remain unbranded. Bearing brands express degrees but do not encode phpgeo's `0` through `360` range because
+branded float ranges are not yet available.
 
 ## Symfony Stopwatch
 

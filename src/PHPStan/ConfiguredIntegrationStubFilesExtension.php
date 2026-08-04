@@ -122,6 +122,10 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/support.stub'],
         ],
+        'mjaschen/phpgeo' => [
+            'majors' => [4, 5, 6],
+            'files' => [__DIR__ . '/../../stubs/phpgeo/phpgeo.stub'],
+        ],
         'symfony/stopwatch' => [
             'majors' => [6, 7, 8],
             'files' => [__DIR__ . '/../../stubs/symfony/stopwatch.stub'],

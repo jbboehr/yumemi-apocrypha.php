@@ -1,0 +1,443 @@
+<?php
+
+namespace Location\Distance;
+
+interface DistanceInterface
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getDistance(\Location\Coordinate $point1, \Location\Coordinate $point2): float;
+}
+
+class Haversine implements DistanceInterface
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getDistance(\Location\Coordinate $point1, \Location\Coordinate $point2): float
+    {
+    }
+}
+
+class Vincenty implements DistanceInterface
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getDistance(\Location\Coordinate $point1, \Location\Coordinate $point2): float
+    {
+    }
+}
+
+namespace Location;
+
+class Coordinate
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getDistance(Coordinate $coordinate, \Location\Distance\DistanceInterface $calculator): float
+    {
+    }
+
+    /**
+     * @param float $allowedDistance
+     *
+     * @phpstan-param unit_float<'meter'> $allowedDistance
+     * @yumemi-param unit_float<'meter'> $allowedDistance
+     */
+    public function hasSameLocation(Coordinate $coordinate, float $allowedDistance = .001): bool
+    {
+    }
+}
+
+class Line
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getLength(\Location\Distance\DistanceInterface $calculator): float
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function getBearing(\Location\Bearing\BearingInterface $bearingCalculator): float
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function getFinalBearing(\Location\Bearing\BearingInterface $bearingCalculator): float
+    {
+    }
+}
+
+class Polyline
+{
+    /**
+     * @param float $allowedDistance
+     *
+     * @phpstan-param unit_float<'meter'> $allowedDistance
+     * @yumemi-param unit_float<'meter'> $allowedDistance
+     */
+    public function addUniquePoint(Coordinate $point, float $allowedDistance = .001): void
+    {
+    }
+
+    /**
+     * @param float $allowedDistance
+     *
+     * @phpstan-param unit_float<'meter'> $allowedDistance
+     * @yumemi-param unit_float<'meter'> $allowedDistance
+     */
+    public function containsPoint(Coordinate $point, float $allowedDistance = .001): bool
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getLength(\Location\Distance\DistanceInterface $calculator): float
+    {
+    }
+}
+
+class Polygon
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getPerimeter(\Location\Distance\DistanceInterface $calculator): float
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter ^ 2'>
+     * @yumemi-return unit_float<'meter ^ 2'>
+     */
+    public function getArea(): float
+    {
+    }
+}
+
+namespace Location\Bearing;
+
+interface BearingInterface
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function calculateBearing(\Location\Coordinate $point1, \Location\Coordinate $point2): float;
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function calculateFinalBearing(\Location\Coordinate $point1, \Location\Coordinate $point2): float;
+
+    /**
+     * @param float $bearing
+     * @param float $distance
+     *
+     * @phpstan-param unit_float<'degree'> $bearing
+     * @phpstan-param unit_float<'meter'> $distance
+     * @yumemi-param unit_float<'degree'> $bearing
+     * @yumemi-param unit_float<'meter'> $distance
+     */
+    public function calculateDestination(
+        \Location\Coordinate $point,
+        float $bearing,
+        float $distance,
+    ): \Location\Coordinate;
+}
+
+class BearingSpherical implements BearingInterface
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function calculateBearing(\Location\Coordinate $point1, \Location\Coordinate $point2): float
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function calculateFinalBearing(\Location\Coordinate $point1, \Location\Coordinate $point2): float
+    {
+    }
+
+    /**
+     * @param float $bearing
+     * @param float $distance
+     *
+     * @phpstan-param unit_float<'degree'> $bearing
+     * @phpstan-param unit_float<'meter'> $distance
+     * @yumemi-param unit_float<'degree'> $bearing
+     * @yumemi-param unit_float<'meter'> $distance
+     */
+    public function calculateDestination(
+        \Location\Coordinate $point,
+        float $bearing,
+        float $distance,
+    ): \Location\Coordinate {
+    }
+}
+
+class BearingEllipsoidal implements BearingInterface
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function calculateBearing(\Location\Coordinate $point1, \Location\Coordinate $point2): float
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function calculateFinalBearing(\Location\Coordinate $point1, \Location\Coordinate $point2): float
+    {
+    }
+
+    /**
+     * @param float $bearing
+     * @param float $distance
+     *
+     * @phpstan-param unit_float<'degree'> $bearing
+     * @phpstan-param unit_float<'meter'> $distance
+     * @yumemi-param unit_float<'degree'> $bearing
+     * @yumemi-param unit_float<'meter'> $distance
+     */
+    public function calculateDestination(
+        \Location\Coordinate $point,
+        float $bearing,
+        float $distance,
+    ): \Location\Coordinate {
+    }
+
+    /**
+     * @param float $bearing
+     * @param float $distance
+     * @return float
+     *
+     * @phpstan-param unit_float<'degree'> $bearing
+     * @phpstan-param unit_float<'meter'> $distance
+     * @phpstan-return unit_float<'degree'>
+     * @yumemi-param unit_float<'degree'> $bearing
+     * @yumemi-param unit_float<'meter'> $distance
+     * @yumemi-return unit_float<'degree'>
+     */
+    public function calculateDestinationFinalBearing(
+        \Location\Coordinate $point,
+        float $bearing,
+        float $distance,
+    ): float {
+    }
+}
+
+namespace Location\CardinalDirection;
+
+class CardinalDirectionDistances
+{
+    /**
+     * @param float $north
+     *
+     * @phpstan-param unit_float<'meter'> $north
+     * @yumemi-param unit_float<'meter'> $north
+     */
+    public function setNorth(float $north): self
+    {
+    }
+
+    /**
+     * @param float $east
+     *
+     * @phpstan-param unit_float<'meter'> $east
+     * @yumemi-param unit_float<'meter'> $east
+     */
+    public function setEast(float $east): self
+    {
+    }
+
+    /**
+     * @param float $south
+     *
+     * @phpstan-param unit_float<'meter'> $south
+     * @yumemi-param unit_float<'meter'> $south
+     */
+    public function setSouth(float $south): self
+    {
+    }
+
+    /**
+     * @param float $west
+     *
+     * @phpstan-param unit_float<'meter'> $west
+     * @yumemi-param unit_float<'meter'> $west
+     */
+    public function setWest(float $west): self
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getNorth(): float
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getEast(): float
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getSouth(): float
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getWest(): float
+    {
+    }
+}
+
+namespace Location\Factory;
+
+class BoundsFactory
+{
+    /**
+     * @param float $distance
+     *
+     * @phpstan-param unit_float<'meter'> $distance
+     * @yumemi-param unit_float<'meter'> $distance
+     */
+    public static function expandFromCenterCoordinate(
+        \Location\Coordinate $center,
+        float $distance,
+        \Location\Bearing\BearingInterface $bearing,
+    ): \Location\Bounds {
+    }
+}
+
+namespace Location\Utility;
+
+class PerpendicularDistance
+{
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getPerpendicularDistance(\Location\Coordinate $point, \Location\Line $line): float
+    {
+    }
+}
+
+class PointToLineDistance
+{
+    /**
+     * @param float $epsilon
+     *
+     * @phpstan-param unit_float<'meter'> $epsilon
+     * @yumemi-param unit_float<'meter'> $epsilon
+     */
+    public function __construct(\Location\Distance\DistanceInterface $distanceCalculator, float $epsilon = 0.001)
+    {
+    }
+
+    /**
+     * @return float
+     *
+     * @phpstan-return unit_float<'meter'>
+     * @yumemi-return unit_float<'meter'>
+     */
+    public function getDistance(\Location\Coordinate $point, \Location\Line $line): float
+    {
+    }
+}
+
+namespace Location\Processor\Polyline;
+
+class SimplifyDouglasPeucker implements SimplifyInterface
+{
+    /**
+     * @param float $tolerance
+     *
+     * @phpstan-param unit_float<'meter'> $tolerance
+     * @yumemi-param unit_float<'meter'> $tolerance
+     */
+    public function __construct(float $tolerance)
+    {
+    }
+}

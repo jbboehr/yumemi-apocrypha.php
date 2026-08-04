@@ -38,6 +38,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         docs/GUZZLE-COPYRIGHT
         docs/LARAVEL-COPYRIGHT
         docs/LICENSE_EXCEPTION.md
+        docs/PHPGEO-COPYRIGHT
         docs/SYMFONY-COPYRIGHT
         docs/pages/images/yumemi-banner.png
         extension.neon
@@ -55,6 +56,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         stubs/illuminate/queue-worker-11.stub
         stubs/illuminate/queue-worker-12.stub
         stubs/illuminate/support.stub
+        stubs/phpgeo/phpgeo.stub
         stubs/symfony/stopwatch.stub
     )
     for path in "${required_paths[@]}"; do
@@ -79,7 +81,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|phpgeo|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
     exit 2
 fi
 
@@ -354,6 +356,38 @@ run_guzzle() {
         "array{timeout: unit_int<'1/1000 * second'>} given"
 }
 
+run_phpgeo() {
+    local project_dir=$WORK_DIR/phpgeo
+    local documentation_case=$project_dir/cases/documentation-invalid.php
+    local expected_diagnostics=()
+
+    if [[ ! $PACKAGE_MAJOR =~ ^(4|5|6)$ ]]; then
+        printf 'phpgeo consumer tests require package major 4, 5, or 6.\n' >&2
+        exit 2
+    fi
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/phpgeo/." "$project_dir/"
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev "mjaschen/phpgeo:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php"
+    php "$PROJECT_ROOT/tests/Documentation/extract-markdown-example.php" \
+        "$PROJECT_ROOT/docs/pages/integrations.md" phpgeo-invalid > "$documentation_case"
+    run_phpstan_case "$project_dir" phpstan.neon valid.php
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
+        "calculateDestination() expects unit_float<'arc_degree'>, unit_float<'radian'> given"
+}
+
 run_manual() {
     local project_dir=$WORK_DIR/manual
 
@@ -390,6 +424,9 @@ case $FIXTURE_SUITE in
     illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-support)
         run_simple_illuminate_integration
         ;;
+    phpgeo)
+        run_phpgeo
+        ;;
     symfony-stopwatch)
         run_symfony_stopwatch
         ;;
@@ -397,7 +434,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|phpgeo|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
         exit 2
         ;;
 esac

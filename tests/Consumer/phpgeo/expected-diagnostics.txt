@@ -1,0 +1,9 @@
+unit_float<'meter'>, float given
+unit_float<'meter'>, unit_float<'1000 * meter'> given
+unit_float<'meter'>, unit_float<'1/100 * meter'> given
+unit_float<'meter'>, unit_float<'second'> given
+unit_float<'arc_degree'>, float given
+unit_float<'arc_degree'>, unit_float<'radian'> given
+unit_float<'radian'>, unit_float<'arc_degree'> given
+unit_float<'1000 * meter'>, unit_float<'meter'> given
+unit_float<'meter'>, unit_float<'meter ^ 2'> given

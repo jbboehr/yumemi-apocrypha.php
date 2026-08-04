@@ -21,6 +21,7 @@ Run one major locally with:
 GUZZLE_MAJOR=8 make test-consumer-guzzle
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
+PHPGEO_MAJOR=6 make test-consumer-phpgeo
 SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 ```
 

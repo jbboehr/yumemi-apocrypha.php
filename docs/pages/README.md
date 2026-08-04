@@ -7,7 +7,8 @@ Yumemi Apocrypha supplies curated PHPStan unit annotations for third-party PHP p
 Yumemi's core package.
 
 The current integrations cover selected Guzzle request and transfer boundaries, unit-bearing Illuminate APIs for
-verified Laravel releases, and duration and memory results from verified Symfony Stopwatch releases.
+verified Laravel releases, phpgeo distance and bearing calculations, and duration and memory results from verified
+Symfony Stopwatch releases.
 
 ## Start Here
 

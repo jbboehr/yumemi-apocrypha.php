@@ -12,6 +12,8 @@ claims to support and semantically accurate about the represented units.
   transfer times across Guzzle 7 and 8.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
   `illuminate/process`, and `illuminate/queue` cover stable unit-bearing APIs across Laravel 11 through 13.
+- `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
+  phpgeo 4 through 6 while leaving coordinate origins unbranded.
 - `symfony/stopwatch` covers event and period durations and memory results across Symfony Stopwatch 6 through 8.
 - The loader can select major-specific stub files when a supported upstream signature differs; Illuminate Process uses
   this for Laravel 13's `CarbonInterval|int` timeout boundary, and Guzzle uses it for retry callback signatures.
@@ -55,11 +57,9 @@ whose useful data is dynamic or context-dependent.
 
 ### Candidate Order
 
-The leading remaining candidates that can provide value without first extending Yumemi's type system are:
+The leading remaining candidate that can provide value without first extending Yumemi's type system is:
 
-1. `mjaschen/phpgeo`: selected distance and bearing APIs use existing units and have unusually clear physical meaning.
-   Complete coordinate coverage would become more precise after Yumemi supports branded float ranges.
-2. `james-heinrich/getid3`: file sizes, durations, bitrates, sample rates, frame rates, and media dimensions provide
+1. `james-heinrich/getid3`: file sizes, durations, bitrates, sample rates, frame rates, and media dimensions provide
    high measurement density, but its large format-dependent result arrays require a deliberately bounded and
    maintainable shape rather than an attempted transcription of all metadata.
 
@@ -104,6 +104,6 @@ Future Yumemi types improve these integrations in different ways:
   or a physical length under an assumed resolution; twips and EMUs are fixed document units; typographic point names
   must match the effective registry. Do not silently approximate these distinctions for the sake of broader coverage.
 
-With the bounded Guzzle integration in place, implement branded integer ranges, then decide the pixel and OOXML unit
-model before expanding into the document and image package group. Float ranges can follow when phpgeo or another
-coordinate-heavy integration supplies the concrete acceptance tests.
+With the bounded Guzzle and phpgeo integrations in place, implement branded integer ranges, then decide the pixel and
+OOXML unit model before expanding into the document and image package group. Float ranges can follow when coordinate
+coverage supplies the concrete acceptance tests.
