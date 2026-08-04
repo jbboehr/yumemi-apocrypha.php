@@ -44,6 +44,14 @@ function recordCacheAttempt(RateLimiter $limiter): void
 Plain integers are rejected at annotated boundaries. Existing `DateTimeInterface`, `DateInterval`, closure, and nullable
 alternatives remain valid where Laravel accepts them, as do calls that omit an optional duration.
 
+## Illuminate Cookie
+
+Enable `illuminate/cookie` to require a `minute` value for the lifetime accepted by
+`Illuminate\Contracts\Cookie\Factory::make()` and `CookieJar::make()`.
+
+The variadic cookie queue API is not annotated because the same call may receive either a prebuilt cookie or the
+positional arguments forwarded to `make()`. Absolute expiration timestamps also remain unbranded.
+
 ## Illuminate Filesystem
 
 Enable `illuminate/filesystem` to brand file-size results and the byte counts returned by local `put()`, `prepend()`, and

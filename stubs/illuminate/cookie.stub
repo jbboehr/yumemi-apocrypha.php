@@ -1,0 +1,46 @@
+<?php
+
+namespace Illuminate\Contracts\Cookie;
+
+interface Factory
+{
+    /**
+     * @param int $minutes
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function make(
+        $name,
+        $value,
+        $minutes = 0,
+        $path = null,
+        $domain = null,
+        $secure = null,
+        $httpOnly = true,
+        $raw = false,
+        $sameSite = null,
+    );
+}
+
+namespace Illuminate\Cookie;
+
+class CookieJar
+{
+    /**
+     * @param int $minutes
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function make(
+        $name,
+        $value,
+        $minutes = 0,
+        $path = null,
+        $domain = null,
+        $secure = null,
+        $httpOnly = true,
+        $raw = false,
+        $sameSite = null,
+    ) {
+    }
+}

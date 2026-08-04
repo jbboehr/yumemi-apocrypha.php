@@ -126,6 +126,18 @@ jobs:
             fail-fast: false
             matrix:
                 include:
+                    - integration: illuminate-cookie
+                      integration-label: Illuminate Cookie
+                      illuminate-version: "11"
+                      php-version: "8.2"
+                    - integration: illuminate-cookie
+                      integration-label: Illuminate Cookie
+                      illuminate-version: "12"
+                      php-version: "8.2"
+                    - integration: illuminate-cookie
+                      integration-label: Illuminate Cookie
+                      illuminate-version: "13"
+                      php-version: "8.3"
                     - integration: illuminate-filesystem
                       integration-label: Illuminate Filesystem
                       illuminate-version: "11"

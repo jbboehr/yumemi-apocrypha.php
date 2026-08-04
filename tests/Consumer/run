@@ -41,6 +41,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         extension.neon
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
         stubs/illuminate/cache.stub
+        stubs/illuminate/cookie.stub
         stubs/illuminate/filesystem.stub
         stubs/illuminate/http.stub
         stubs/illuminate/process.stub
@@ -72,7 +73,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|manual] [framework-major]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|manual] [framework-major]\n' "$0" >&2
     exit 2
 fi
 
@@ -309,14 +310,14 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-support)
+    illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-support)
         run_simple_illuminate_integration
         ;;
     manual)
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|manual] [framework-major]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|manual] [framework-major]\n' "$0" >&2
         exit 2
         ;;
 esac
