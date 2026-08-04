@@ -1,6 +1,85 @@
 # Integrations
 
-The supported integration matrix and its exact unit annotations will be documented here as each integration is moved
-from Yumemi.
+Apocrypha deliberately covers a small set of stable, useful, and unambiguous unit-bearing boundaries. The table below is
+a record of verified behavior, not a promise to support every future or historical Laravel major indefinitely.
+
+## Version Policy
+
+Both current integrations accept Laravel majors 11, 12, and 13. CI resolves the latest compatible release of each major
+instead of pinning the snapshots below. An unknown future major is rejected until its signatures and semantics have been
+reviewed.
+
+The latest documented verification snapshots are `v11.51.0`, `v12.64.0`, and `v13.23.0`, checked on 2026-08-03.
+
+## Illuminate Cache
+
+Enable `illuminate/cache` to brand duration boundaries in cache contracts and repositories, stores, locks,
+`RateLimiter`, and `RateLimiting\Limit`.
+
+| API concern                             | Unit                           |
+| --------------------------------------- | ------------------------------ |
+| Cache TTLs, lock durations, rate limits | `second`                       |
+| Lock retry sleep                        | `millisecond`                  |
+| `Limit::perMinute()` and `perMinutes()` | `minute`                       |
+| `Limit::perHour()`                      | `hour`                         |
+| `Limit::perDay()`                       | `day`                          |
+| Available/default cache time            | returned or stored as `second` |
+
+<!-- yumemi-example: illuminate-cache-invalid -->
+
+```php
+<?php
+
+use Illuminate\Cache\RateLimiter;
+
+use function jbboehr\Yumemi\unit;
+
+function recordCacheAttempt(RateLimiter $limiter): void
+{
+    $limiter->hit('report', unit(30, 'second'));
+    $limiter->hit('report', unit(2, 'minute')); // PHPStan rejects minutes at this seconds boundary.
+}
+```
+
+Plain integers are rejected at annotated boundaries. Existing `DateTimeInterface`, `DateInterval`, closure, and nullable
+alternatives remain valid where Laravel accepts them, as do calls that omit an optional duration.
+
+## Illuminate HTTP
+
+Enable `illuminate/http` to brand request timeouts, retry delays, and fake-upload sizes.
+
+| API concern                               | Unit          |
+| ----------------------------------------- | ------------- |
+| Request and connection timeout            | `second`      |
+| Retry scalar, schedule, or callback delay | `millisecond` |
+| Fake-upload size argument                 | `1024 * byte` |
+| Fake-upload reported size                 | `byte`        |
+
+Laravel's fake-upload API describes its input as kilobytes but computes it by multiplying the supplied value by 1024.
+Apocrypha therefore uses the exact unit `1024 * byte`; the decimal UDUNITS `kilobyte` is not definitionally equivalent.
+
+<!-- yumemi-example: illuminate-http-invalid -->
+
+```php
+<?php
+
+use Illuminate\Http\Client\PendingRequest;
+
+use function jbboehr\Yumemi\unit;
+
+function configureRemoteArchive(PendingRequest $request): void
+{
+    $request->timeout(unit(30, 'second'));
+    $request->timeout(unit(250, 'millisecond')); // PHPStan rejects milliseconds at this seconds boundary.
+}
+```
+
+## Limitations
+
+- Stubs cover signatures shared by all verified majors; version-specific APIs are not yet annotated.
+- Native branded arguments are not converted. Dimensionally compatible but differently scaled units remain invalid.
+- Dynamic or unsupported unit expressions lose Yumemi's precise brand according to the core extension's normal rules.
+- Enabling Apocrypha enables Yumemi's parser-based optional-tag promotion, with the associated PHPStan upgrade and
+  extension-conflict risk.
 
 [Documentation index](./) · [Repository README](https://github.com/jbboehr/yumemi-apocrypha.php)

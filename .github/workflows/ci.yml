@@ -91,6 +91,10 @@ jobs:
             - name: Run PHPUnit
               run: vendor/bin/phpunit --colors=never --no-coverage
 
+            - name: Run mutation tests
+              if: matrix.php-version == '8.2'
+              run: composer infection:ci
+
     lowest-dependencies:
         name: Lowest dependencies / PHP 8.2
         runs-on: ubuntu-latest
@@ -167,6 +171,12 @@ jobs:
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
               run: tests/Consumer/run ${{ matrix.package-mode }} illuminate-cache ${{ matrix.illuminate-version }}
+
+            - name: Test manual registration
+              if: matrix.illuminate-version == '12'
+              env:
+                  YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
+              run: tests/Consumer/run source manual 12
 
     illuminate-http:
         name: Illuminate HTTP ${{ matrix.illuminate-version }} / PHP ${{ matrix.php-version }}

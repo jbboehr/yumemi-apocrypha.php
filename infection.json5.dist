@@ -3,7 +3,6 @@
         directories: [
             "src",
         ],
-        excludes: [],
     },
     timeout: 20,
     threads: "max",

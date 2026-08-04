@@ -1,6 +1,7 @@
 .DEFAULT: all
 .PHONY: all coverage-branch docs docs-check docs-serve test-consumer-illuminate-cache \
-	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive
+	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
+	test-consumer-manual
 
 BRANCH_COVERAGE_OUTPUT ?= coverage/branch
 BRANCH_COVERAGE_SOURCE ?= src
@@ -42,3 +43,6 @@ test-consumer-illuminate-http:
 
 test-consumer-illuminate-http-archive:
 	tests/Consumer/run archive illuminate-http $(ILLUMINATE_HTTP_MAJOR)
+
+test-consumer-manual:
+	tests/Consumer/run source manual 12

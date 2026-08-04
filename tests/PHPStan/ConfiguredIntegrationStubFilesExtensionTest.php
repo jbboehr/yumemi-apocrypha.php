@@ -92,10 +92,29 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([realpath(__DIR__ . '/../../extension.neon')], $extension->getFiles());
     }
 
+    public function testAutodetectionInspectsSupportedIntegrationsInStableOrder(): void
+    {
+        $resolved = [];
+        $extension = $this->extension(
+            autoDetect: true,
+            supported: array_reverse($this->supported(), true),
+            installed: static fn (): bool => true,
+            version: static function (string $package) use (&$resolved): string {
+                $resolved[] = $package;
+
+                return '12.0.0';
+            },
+        );
+
+        $extension->getFiles();
+
+        self::assertSame(['vendor/one', 'vendor/two'], $resolved);
+    }
+
     public function testExplicitAndAutodetectedIntegrationsFormAUnion(): void
     {
         $extension = $this->extension(
-            integrations: ['vendor/one'],
+            integrations: ['vendor/two'],
             autoDetect: true,
             installed: static fn (): bool => true,
             version: static fn (): string => '11.x-dev',
@@ -105,6 +124,33 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
             realpath(__DIR__ . '/../../apocrypha.neon'),
             realpath(__DIR__ . '/../../extension.neon'),
         ], $extension->getFiles());
+    }
+
+    public function testUnknownExplicitIntegrationsAreValidatedInStableOrder(): void
+    {
+        $extension = $this->extension(
+            integrations: ['vendor/zeta', 'vendor/alpha'],
+            installed: static function (): never {
+                self::fail('Unknown integrations must be rejected before package inspection.');
+            },
+        );
+
+        $this->expectExceptionMessage('Unsupported Yumemi Apocrypha integration "vendor/alpha";');
+
+        $extension->getFiles();
+    }
+
+    public function testSupportedNamesInConfigurationErrorAreSorted(): void
+    {
+        $supported = $this->supported();
+        $extension = $this->extension(
+            integrations: ['vendor/unknown'],
+            supported: array_reverse($supported, true),
+        );
+
+        $this->expectExceptionMessage('supported integrations: vendor/one, vendor/two.');
+
+        $extension->getFiles();
     }
 
     public function testUnknownExplicitIntegrationIsRejectedBeforePackageInspection(): void
@@ -207,6 +253,34 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         );
 
         self::assertSame([], $extension->getFiles());
+    }
+
+    public function testNonStrictAutodetectionContinuesAfterAnInvalidIntegration(): void
+    {
+        $extension = $this->extension(
+            autoDetect: true,
+            strictAutoDetect: false,
+            installed: static fn (): bool => true,
+            version: static fn (string $package): string => $package === 'vendor/one' ? '14.0.0' : '12.0.0',
+        );
+
+        self::assertSame([realpath(__DIR__ . '/../../extension.neon')], $extension->getFiles());
+    }
+
+    public function testVersionMajorMustBeginTheComposerVersion(): void
+    {
+        $extension = $this->extension(
+            integrations: ['vendor/one'],
+            installed: static fn (): bool => true,
+            version: static fn (): string => 'dev-feature-12.0.0',
+        );
+
+        $this->expectExceptionMessage(
+            'Unable to determine the installed major version of Yumemi Apocrypha integration "vendor/one" from '
+                . '"dev-feature-12.0.0".',
+        );
+
+        $extension->getFiles();
     }
 
     public function testMissingStubFileIsAnInternalLogicError(): void

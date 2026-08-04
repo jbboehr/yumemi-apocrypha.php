@@ -1,0 +1,12 @@
+includes:
+    - vendor/jbboehr/yumemi/extension.neon
+    - vendor/jbboehr/yumemi-apocrypha/extension.neon
+
+parameters:
+    level: max
+    paths:
+        - cases
+    tmpDir: tmp/phpstan
+    yumemiApocrypha:
+        integrations:
+            - illuminate/cache

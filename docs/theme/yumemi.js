@@ -4,7 +4,30 @@
     "use strict";
 
     // mdBook only supplies headings for the active page. Keep this outline synchronized with public h2/h3 headings.
-    const headingsByChapter = {};
+    const headingsByChapter = {
+        "index.html": [{ id: "start-here", title: "Start Here" }],
+        "getting-started.html": [
+            { id: "installation", title: "Installation" },
+            { id: "automatic-registration", title: "Automatic Registration" },
+            { id: "select-integrations", title: "Select Integrations" },
+            { id: "autodetect-integrations", title: "Autodetect Integrations" },
+            { id: "manual-registration", title: "Manual Registration" },
+            { id: "verify-analysis", title: "Verify Analysis" },
+        ],
+        "integrations.html": [
+            { id: "version-policy", title: "Version Policy" },
+            { id: "illuminate-cache", title: "Illuminate Cache" },
+            { id: "illuminate-http", title: "Illuminate HTTP" },
+            { id: "limitations", title: "Limitations" },
+        ],
+        "contributing/maintaining-integrations.html": [
+            { id: "before-changing-a-stub", title: "Before Changing A Stub" },
+            { id: "verify-upstream-signatures", title: "Verify Upstream Signatures" },
+            { id: "verify-package-behavior", title: "Verify Package Behavior" },
+            { id: "add-an-integration", title: "Add An Integration" },
+            { id: "compatibility-decisions", title: "Compatibility Decisions" },
+        ],
+    };
 
     function createHeadingList(pageUrl, headings) {
         const list = document.createElement("ol");

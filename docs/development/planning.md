@@ -4,13 +4,15 @@ Yumemi Apocrypha is the separately versioned home for curated unit-aware integra
 primary maintenance obligation is to keep every enabled stub structurally compatible with the upstream versions it
 claims to support and semantically accurate about the represented units.
 
-## Initial Milestone
+## Current Scope
 
-- Provide explicit and optional automatic integration selection.
-- Reject stale integrations by default when an installed package major has not been verified.
-- Migrate the existing `illuminate/cache` and `illuminate/http` integrations for Laravel 11 through 13.
-- Verify every supported major through isolated Composer consumer projects.
-- Keep Yumemi's generic `@yumemi-*` annotation mechanism in the core package.
+- Explicit integration selection and optional Composer-package autodetection are implemented.
+- Explicit selections and strict autodetection reject installed package majors that have not been verified.
+- `illuminate/cache` and `illuminate/http` cover their shared unit-bearing APIs across Laravel 11 through 13.
+- Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
+  and a representative Composer archive.
+- Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
+  stubs and their selection policy.
 
 ## Maintenance Policy
 

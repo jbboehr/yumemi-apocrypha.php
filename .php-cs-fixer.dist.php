@@ -42,10 +42,6 @@ $finder = PhpCsFixer\Finder::create()
     ->in([
         __DIR__ . '/src',
         __DIR__ . '/tests',
-    ])
-    ->notPath([
-        // Keep expected diagnostic line numbers stable in analyzed consumer fixtures.
-        'Consumer/cases',
     ]);
 
 return (new PhpCsFixer\Config())

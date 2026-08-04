@@ -93,10 +93,12 @@
         "docs:check": "make docs-check",
         "docs:serve": "make docs-serve",
         "infection": "infection --no-progress",
+        "infection:ci": "infection --no-progress --min-msi=90 --min-covered-msi=90",
         "test:consumer:illuminate-cache": "make test-consumer-illuminate-cache",
         "test:consumer:illuminate-cache:archive": "make test-consumer-illuminate-cache-archive",
         "test:consumer:illuminate-http": "make test-consumer-illuminate-http",
-        "test:consumer:illuminate-http:archive": "make test-consumer-illuminate-http-archive"
+        "test:consumer:illuminate-http:archive": "make test-consumer-illuminate-http-archive",
+        "test:consumer:manual": "make test-consumer-manual"
     },
     "config": {
         "allow-plugins": {
