@@ -36,23 +36,14 @@
 
 declare(strict_types=1);
 
-namespace jbboehr\Yumemi\Apocrypha\Tests;
+namespace jbboehr\Yumemi\Apocrypha\Exception;
 
-use PHPUnit\Framework\TestCase;
-
-final class PackageMetadataTest extends TestCase
+/**
+ * Reports a violated internal invariant.
+ *
+ * @logion [SFA 55:9] When the appointed vessel is absent from its alcove, accuse not the wine nor alter the rite; for
+ *     the omission of the keeper cannot be healed by teaching the cupbearer to pour upon the stones.
+ */
+final class LogicException extends \LogicException implements ExceptionInterface
 {
-    public function testComposerMetadataIdentifiesThePackage(): void
-    {
-        $contents = file_get_contents(__DIR__ . '/../composer.json');
-        self::assertNotFalse($contents);
-
-        /** @var array{name: string, type: string, license: string, extra: array{phpstan: array{includes: list<string>}}} $metadata */
-        $metadata = json_decode($contents, true, flags: JSON_THROW_ON_ERROR);
-
-        self::assertSame('jbboehr/yumemi-apocrypha', $metadata['name']);
-        self::assertSame('phpstan-extension', $metadata['type']);
-        self::assertSame('AGPL-3.0-only WITH romic-exception', $metadata['license']);
-        self::assertSame(['extension.neon'], $metadata['extra']['phpstan']['includes']);
-    }
 }

@@ -1,0 +1,22 @@
+parameters:
+    yumemiApocrypha:
+        integrations: []
+        autoDetect: false
+        strictAutoDetect: true
+
+parametersSchema:
+    yumemiApocrypha: structure([
+        integrations: listOf(string()),
+        autoDetect: bool(),
+        strictAutoDetect: bool(),
+    ])
+
+services:
+    -
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\ConfiguredIntegrationStubFilesExtension
+        arguments:
+            integrations: %yumemiApocrypha.integrations%
+            autoDetect: %yumemiApocrypha.autoDetect%
+            strictAutoDetect: %yumemiApocrypha.strictAutoDetect%
+        tags:
+            - phpstan.stubFilesExtension

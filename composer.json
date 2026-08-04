@@ -78,6 +78,13 @@
             "jbboehr\\Yumemi\\Apocrypha\\Tests\\": "tests"
         }
     },
+    "extra": {
+        "phpstan": {
+            "includes": [
+                "extension.neon"
+            ]
+        }
+    },
     "scripts": {
         "coverage:branch": "make coverage-branch",
         "cs": "php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff",
