@@ -1,0 +1,16 @@
+.direnv
+.envrc
+.idea
+.php-cs-fixer.cache
+.phpunit.result.cache
+.phpunit.cache/
+.phpbench/
+.pre-commit-cache
+*.log
+clover.xml
+result*
+/.pre-commit-config.yaml
+/coverage/
+/build/
+/tmp/
+/vendor/
