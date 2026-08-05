@@ -16,6 +16,7 @@
         ],
         "integrations.html": [
             { id: "version-policy", title: "Version Policy" },
+            { id: "carbon", title: "Carbon" },
             { id: "guzzle", title: "Guzzle" },
             { id: "getid3", title: "getID3" },
             { id: "illuminate-cache", title: "Illuminate Cache" },

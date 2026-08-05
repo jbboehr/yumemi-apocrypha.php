@@ -48,13 +48,15 @@ namespace jbboehr\Yumemi\Apocrypha\PHPStan;
  *     position: non-negative-int,
  *     name: non-empty-string,
  *     type: non-empty-string,
- *     majors?: non-empty-list<int>
+ *     majors?: non-empty-list<int>,
+ *     minimumVersions?: non-empty-array<int, non-empty-string>
  * }
  * @phpstan-type PropertyBoundary array{
  *     class: non-empty-string,
  *     property: non-empty-string,
  *     type: non-empty-string,
- *     majors?: non-empty-list<int>
+ *     majors?: non-empty-list<int>,
+ *     minimumVersions?: non-empty-array<int, non-empty-string>
  * }
  * @phpstan-type ReturnBoundary array{
  *     class: non-empty-string,
@@ -62,7 +64,8 @@ namespace jbboehr\Yumemi\Apocrypha\PHPStan;
  *     method: non-empty-string,
  *     type: non-empty-string,
  *     strategy?: 'benchmark-measure'|'benchmark-value',
- *     majors?: non-empty-list<int>
+ *     majors?: non-empty-list<int>,
+ *     minimumVersions?: non-empty-array<int, non-empty-string>
  * }
  * @phpstan-type IntegrationBoundaries array{
  *     arguments: list<ArgumentBoundary>,
@@ -181,7 +184,7 @@ final class LarastanCompatibilityIntegrationMetadata
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 4, 'name' => 'sleep', 'type' => "unit_int<'second'>"],
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 9, 'name' => 'maxTime', 'type' => "unit_int<'second'>"],
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 10, 'name' => 'rest', 'type' => "unit_int<'second'>"],
-                ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 11, 'name' => 'stopWhenEmptyFor', 'type' => "unit_int<'second'>", 'majors' => [12, 13]],
+                ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 11, 'name' => 'stopWhenEmptyFor', 'type' => "unit_int<'second'>", 'majors' => [11, 12, 13], 'minimumVersions' => [11 => '11.53.0']],
             ],
             'properties' => [
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'backoff', 'type' => "unit_int<'second'>|array<unit_int<'second'>>"],
@@ -190,7 +193,7 @@ final class LarastanCompatibilityIntegrationMetadata
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'sleep', 'type' => "unit_int<'second'>"],
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'rest', 'type' => "unit_int<'second'>"],
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'maxTime', 'type' => "unit_int<'second'>"],
-                ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'stopWhenEmptyFor', 'type' => "unit_int<'second'>", 'majors' => [12, 13]],
+                ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'stopWhenEmptyFor', 'type' => "unit_int<'second'>", 'majors' => [11, 12, 13], 'minimumVersions' => [11 => '11.53.0']],
             ],
             'returns' => [],
         ],
@@ -222,15 +225,28 @@ final class LarastanCompatibilityIntegrationMetadata
     }
 
     /**
-     * Determines whether a boundary belongs to an installed package major.
+     * Determines whether a boundary belongs to an installed package version.
      *
-     * @param array{majors?: non-empty-list<int>, ...} $boundary
+     * @param array{
+     *     majors?: non-empty-list<int>,
+     *     minimumVersions?: non-empty-array<int, non-empty-string>,
+     *     ...
+     * } $boundary
      *
      * @logion [SFA 69:59] The old gate refuseth neither spring nor autumn, yet it openeth each season beneath its own
      *     sign; for constancy is not blindness unto the appointed hour.
      */
-    public static function supportsMajor(array $boundary, int $major): bool
+    public static function supportsVersion(array $boundary, int $major, string $version): bool
     {
-        return !isset($boundary['majors']) || in_array($major, $boundary['majors'], true);
+        if (isset($boundary['majors']) && !in_array($major, $boundary['majors'], true)) {
+            return false;
+        }
+
+        $minimumVersion = $boundary['minimumVersions'][$major] ?? null;
+        $normalizedVersion = ltrim($version, 'v');
+
+        return $minimumVersion === null
+            || $normalizedVersion === $major . '.x-dev'
+            || version_compare($normalizedVersion, $minimumVersion, '>=');
     }
 }

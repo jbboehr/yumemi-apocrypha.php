@@ -88,6 +88,22 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
 
     #[RunInSeparateProcess]
     #[PreserveGlobalState(false)]
+    public function testMajorDevelopmentReplacementUsesTheLatestMinorVersionProfile(): void
+    {
+        $this->reloadInstalledPackageMetadata([
+            'replaced' => ['11.x-dev'],
+        ], 'illuminate/queue');
+        $extension = new ConfiguredIntegrationStubFilesExtension(['illuminate/queue'], false, true);
+
+        self::assertSame('11.x-dev', $extension->getSelectedVersion('illuminate/queue'));
+        self::assertSame([
+            realpath(__DIR__ . '/../../stubs/illuminate/queue.stub'),
+            realpath(__DIR__ . '/../../stubs/illuminate/queue-worker-12.stub'),
+        ], $extension->getFiles());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
     public function testDefaultVersionResolverPrefersADirectVersionOverReplacementMetadata(): void
     {
         $this->reloadInstalledPackageMetadata([
@@ -501,6 +517,57 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([realpath(__DIR__ . '/../../extension.neon')], $extension->getFiles());
     }
 
+    public function testHighestMatchingMinimumVersionProfileOverridesMajorSpecificFiles(): void
+    {
+        $supported = $this->supported();
+        $supported['vendor/one'] = [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../apocrypha.neon'],
+            'filesByMajor' => [12 => [__DIR__ . '/../../apocrypha.neon']],
+            'filesByMinimumVersion' => [
+                12 => [
+                    '12.0.0' => [__DIR__ . '/../../apocrypha.neon'],
+                    '12.4.0' => [__DIR__ . '/../../extension.neon'],
+                ],
+            ],
+        ];
+
+        $extension = $this->extension(
+            integrations: ['vendor/one'],
+            supported: $supported,
+            installed: static fn (): bool => true,
+            version: static fn (): string => 'v12.4.0',
+        );
+
+        self::assertSame([realpath(__DIR__ . '/../../extension.neon')], $extension->getFiles());
+        self::assertSame(12, $extension->getSelectedMajor('vendor/one'));
+        self::assertSame('v12.4.0', $extension->getSelectedVersion('vendor/one'));
+    }
+
+    public function testVersionProfileFallsBackToTheEarlierMatchingThreshold(): void
+    {
+        $supported = $this->supported();
+        $supported['vendor/one'] = [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../extension.neon'],
+            'filesByMinimumVersion' => [
+                12 => [
+                    '12.0.0' => [__DIR__ . '/../../apocrypha.neon'],
+                    '12.4.0' => [__DIR__ . '/../../extension.neon'],
+                ],
+            ],
+        ];
+
+        $extension = $this->extension(
+            integrations: ['vendor/one'],
+            supported: $supported,
+            installed: static fn (): bool => true,
+            version: static fn (): string => '12.3.9',
+        );
+
+        self::assertSame([realpath(__DIR__ . '/../../apocrypha.neon')], $extension->getFiles());
+    }
+
     public function testLarastanThreeSelectsTheAdapterInsteadOfIlluminateStubs(): void
     {
         $extension = new ConfiguredIntegrationStubFilesExtension(
@@ -633,7 +700,8 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
-     *     filesByMajor?: array<int, non-empty-list<string>>
+     *     filesByMajor?: array<int, non-empty-list<string>>,
+     *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>|null $supported
      * @param (\Closure(string): bool)|null $installed
      * @param (\Closure(string): ?string)|null $version
@@ -661,7 +729,8 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
-     *     filesByMajor?: array<int, non-empty-list<string>>
+     *     filesByMajor?: array<int, non-empty-list<string>>,
+     *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>
      */
     private function supported(): array

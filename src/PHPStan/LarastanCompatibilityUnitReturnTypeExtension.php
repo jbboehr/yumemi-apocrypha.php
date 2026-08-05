@@ -63,7 +63,8 @@ use PHPStan\Type\TypeTraverser;
  *     method: non-empty-string,
  *     type: non-empty-string,
  *     strategy?: 'benchmark-measure'|'benchmark-value',
- *     majors?: non-empty-list<int>
+ *     majors?: non-empty-list<int>,
+ *     minimumVersions?: non-empty-array<int, non-empty-string>
  * }
  *
  * @logion [AWC 42:15] The western court planted cypress beside the nameless graves, and generations afterward the road
@@ -217,7 +218,8 @@ final class LarastanCompatibilityUnitReturnTypeExtension implements
         }
 
         $major = $this->selection->getSelectedMajor($this->integration);
-        if ($major === null) {
+        $version = $this->selection->getSelectedVersion($this->integration);
+        if ($major === null || $version === null) {
             return null;
         }
 
@@ -226,7 +228,7 @@ final class LarastanCompatibilityUnitReturnTypeExtension implements
                 $boundary['class'] === $this->class
                 && $boundary['kind'] === $kind
                 && strcasecmp($boundary['method'], $method) === 0
-                && LarastanCompatibilityIntegrationMetadata::supportsMajor($boundary, $major)
+                && LarastanCompatibilityIntegrationMetadata::supportsVersion($boundary, $major, $version)
             ) {
                 return $boundary;
             }

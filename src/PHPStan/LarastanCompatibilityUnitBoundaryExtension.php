@@ -79,7 +79,8 @@ use PHPStan\Type\VerbosityLevel;
  *     class: non-empty-string,
  *     property: non-empty-string,
  *     type: non-empty-string,
- *     majors?: non-empty-list<int>
+ *     majors?: non-empty-list<int>,
+ *     minimumVersions?: non-empty-array<int, non-empty-string>
  * }
  *
  * @implements Rule<Expr>
@@ -228,7 +229,8 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
             }
 
             $major = $this->selection->getSelectedMajor($integration);
-            if ($major === null) {
+            $version = $this->selection->getSelectedVersion($integration);
+            if ($major === null || $version === null) {
                 continue;
             }
 
@@ -246,7 +248,7 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
                 if (
                     $boundary['kind'] !== $kind
                     || strcasecmp($boundary['method'], $method) !== 0
-                    || !LarastanCompatibilityIntegrationMetadata::supportsMajor($boundary, $major)
+                    || !LarastanCompatibilityIntegrationMetadata::supportsVersion($boundary, $major, $version)
                     || !$this->matchesReceiver($receiver, $boundary['class'])
                 ) {
                     continue;
@@ -466,14 +468,15 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
             }
 
             $major = $this->selection->getSelectedMajor($integration);
-            if ($major === null) {
+            $version = $this->selection->getSelectedVersion($integration);
+            if ($major === null || $version === null) {
                 continue;
             }
 
             foreach ($metadata['properties'] as $boundary) {
                 if (
                     $boundary['property'] !== $property
-                    || !LarastanCompatibilityIntegrationMetadata::supportsMajor($boundary, $major)
+                    || !LarastanCompatibilityIntegrationMetadata::supportsVersion($boundary, $major, $version)
                     || !$this->matchesReceiver($receiver, $boundary['class'])
                 ) {
                     continue;

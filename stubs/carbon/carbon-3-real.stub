@@ -1,0 +1,283 @@
+<?php
+
+namespace Carbon;
+
+/**
+ * @method float diffInRealMicroseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealMilliseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealSeconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealMinutes(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealHours(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method CarbonInterface addRealMicroseconds(int|float $value = 1)
+ * @method CarbonInterface subRealMicroseconds(int|float $value = 1)
+ * @method CarbonInterface addRealMilliseconds(int|float $value = 1)
+ * @method CarbonInterface subRealMilliseconds(int|float $value = 1)
+ * @method CarbonInterface addRealSeconds(int|float $value = 1)
+ * @method CarbonInterface subRealSeconds(int|float $value = 1)
+ * @method CarbonInterface addRealMinutes(int|float $value = 1)
+ * @method CarbonInterface subRealMinutes(int|float $value = 1)
+ * @method CarbonInterface addRealHours(int|float $value = 1)
+ * @method CarbonInterface subRealHours(int|float $value = 1)
+ * @phpstan-method unit_float<'microsecond'> diffInRealMicroseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'millisecond'> diffInRealMilliseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'second'> diffInRealSeconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'minute'> diffInRealMinutes(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'hour'> diffInRealHours(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method CarbonInterface addRealMicroseconds(unit_int<'microsecond'>|unit_float<'microsecond'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMicroseconds(unit_int<'microsecond'>|unit_float<'microsecond'> $value = 1)
+ * @phpstan-method CarbonInterface addRealMilliseconds(unit_int<'millisecond'>|unit_float<'millisecond'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMilliseconds(unit_int<'millisecond'>|unit_float<'millisecond'> $value = 1)
+ * @phpstan-method CarbonInterface addRealSeconds(unit_int<'second'>|unit_float<'second'> $value = 1)
+ * @phpstan-method CarbonInterface subRealSeconds(unit_int<'second'>|unit_float<'second'> $value = 1)
+ * @phpstan-method CarbonInterface addRealMinutes(unit_int<'minute'>|unit_float<'minute'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMinutes(unit_int<'minute'>|unit_float<'minute'> $value = 1)
+ * @phpstan-method CarbonInterface addRealHours(unit_int<'hour'>|unit_float<'hour'> $value = 1)
+ * @phpstan-method CarbonInterface subRealHours(unit_int<'hour'>|unit_float<'hour'> $value = 1)
+ */
+interface CarbonInterface
+{
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'microsecond'>
+     * @yumemi-return unit_float<'microsecond'>
+     */
+    public function diffInMicroseconds($date = null, bool $absolute = false): float;
+
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'millisecond'>
+     * @yumemi-return unit_float<'millisecond'>
+     */
+    public function diffInMilliseconds($date = null, bool $absolute = false): float;
+
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'second'>
+     * @yumemi-return unit_float<'second'>
+     */
+    public function diffInSeconds($date = null, bool $absolute = false): float;
+
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'minute'>
+     * @yumemi-return unit_float<'minute'>
+     */
+    public function diffInMinutes($date = null, bool $absolute = false): float;
+
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'hour'>
+     * @yumemi-return unit_float<'hour'>
+     */
+    public function diffInHours($date = null, bool $absolute = false): float;
+
+    /**
+     * @phpstan-return unit_float<'second'>
+     * @yumemi-return unit_float<'second'>
+     */
+    public function secondsSinceMidnight(): float;
+
+    /**
+     * @phpstan-return unit_float<'second'>
+     * @yumemi-return unit_float<'second'>
+     */
+    public function secondsUntilEndOfDay(): float;
+
+    /**
+     * @phpstan-param unit_int<'second'>|unit_float<'second'> $seconds
+     * @yumemi-param unit_int<'second'>|unit_float<'second'> $seconds
+     */
+    public static function sleep(int|float $seconds): void;
+
+}
+
+/**
+ * @method float diffInRealMicroseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealMilliseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealSeconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealMinutes(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealHours(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method CarbonInterface addRealMicroseconds(int|float $value = 1)
+ * @method CarbonInterface subRealMicroseconds(int|float $value = 1)
+ * @method CarbonInterface addRealMilliseconds(int|float $value = 1)
+ * @method CarbonInterface subRealMilliseconds(int|float $value = 1)
+ * @method CarbonInterface addRealSeconds(int|float $value = 1)
+ * @method CarbonInterface subRealSeconds(int|float $value = 1)
+ * @method CarbonInterface addRealMinutes(int|float $value = 1)
+ * @method CarbonInterface subRealMinutes(int|float $value = 1)
+ * @method CarbonInterface addRealHours(int|float $value = 1)
+ * @method CarbonInterface subRealHours(int|float $value = 1)
+ * @phpstan-method unit_float<'microsecond'> diffInRealMicroseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'millisecond'> diffInRealMilliseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'second'> diffInRealSeconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'minute'> diffInRealMinutes(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'hour'> diffInRealHours(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method CarbonInterface addRealMicroseconds(unit_int<'microsecond'>|unit_float<'microsecond'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMicroseconds(unit_int<'microsecond'>|unit_float<'microsecond'> $value = 1)
+ * @phpstan-method CarbonInterface addRealMilliseconds(unit_int<'millisecond'>|unit_float<'millisecond'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMilliseconds(unit_int<'millisecond'>|unit_float<'millisecond'> $value = 1)
+ * @phpstan-method CarbonInterface addRealSeconds(unit_int<'second'>|unit_float<'second'> $value = 1)
+ * @phpstan-method CarbonInterface subRealSeconds(unit_int<'second'>|unit_float<'second'> $value = 1)
+ * @phpstan-method CarbonInterface addRealMinutes(unit_int<'minute'>|unit_float<'minute'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMinutes(unit_int<'minute'>|unit_float<'minute'> $value = 1)
+ * @phpstan-method CarbonInterface addRealHours(unit_int<'hour'>|unit_float<'hour'> $value = 1)
+ * @phpstan-method CarbonInterface subRealHours(unit_int<'hour'>|unit_float<'hour'> $value = 1)
+ */
+class Carbon
+{
+}
+
+/**
+ * @method float diffInRealMicroseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealMilliseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealSeconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealMinutes(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method float diffInRealHours(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @method CarbonInterface addRealMicroseconds(int|float $value = 1)
+ * @method CarbonInterface subRealMicroseconds(int|float $value = 1)
+ * @method CarbonInterface addRealMilliseconds(int|float $value = 1)
+ * @method CarbonInterface subRealMilliseconds(int|float $value = 1)
+ * @method CarbonInterface addRealSeconds(int|float $value = 1)
+ * @method CarbonInterface subRealSeconds(int|float $value = 1)
+ * @method CarbonInterface addRealMinutes(int|float $value = 1)
+ * @method CarbonInterface subRealMinutes(int|float $value = 1)
+ * @method CarbonInterface addRealHours(int|float $value = 1)
+ * @method CarbonInterface subRealHours(int|float $value = 1)
+ * @phpstan-method unit_float<'microsecond'> diffInRealMicroseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'millisecond'> diffInRealMilliseconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'second'> diffInRealSeconds(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'minute'> diffInRealMinutes(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method unit_float<'hour'> diffInRealHours(\DateTimeInterface|string|null $date, bool $absolute = false)
+ * @phpstan-method CarbonInterface addRealMicroseconds(unit_int<'microsecond'>|unit_float<'microsecond'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMicroseconds(unit_int<'microsecond'>|unit_float<'microsecond'> $value = 1)
+ * @phpstan-method CarbonInterface addRealMilliseconds(unit_int<'millisecond'>|unit_float<'millisecond'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMilliseconds(unit_int<'millisecond'>|unit_float<'millisecond'> $value = 1)
+ * @phpstan-method CarbonInterface addRealSeconds(unit_int<'second'>|unit_float<'second'> $value = 1)
+ * @phpstan-method CarbonInterface subRealSeconds(unit_int<'second'>|unit_float<'second'> $value = 1)
+ * @phpstan-method CarbonInterface addRealMinutes(unit_int<'minute'>|unit_float<'minute'> $value = 1)
+ * @phpstan-method CarbonInterface subRealMinutes(unit_int<'minute'>|unit_float<'minute'> $value = 1)
+ * @phpstan-method CarbonInterface addRealHours(unit_int<'hour'>|unit_float<'hour'> $value = 1)
+ * @phpstan-method CarbonInterface subRealHours(unit_int<'hour'>|unit_float<'hour'> $value = 1)
+ */
+class CarbonImmutable
+{
+}
+
+class FactoryImmutable
+{
+    /**
+     * @phpstan-param unit_int<'second'>|unit_float<'second'> $seconds
+     * @yumemi-param unit_int<'second'>|unit_float<'second'> $seconds
+     */
+    public function sleep(int|float $seconds): void
+    {
+    }
+}
+
+final class WrapperClock
+{
+    /**
+     * @phpstan-param unit_int<'second'>|unit_float<'second'> $seconds
+     * @yumemi-param unit_int<'second'>|unit_float<'second'> $seconds
+     */
+    public function sleep(float|int $seconds): void
+    {
+    }
+}
+
+namespace Carbon\Traits;
+
+trait Difference
+{
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'microsecond'>
+     * @yumemi-return unit_float<'microsecond'>
+     */
+    public function diffInMicroseconds($date = null, bool $absolute = false): float
+    {
+    }
+
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'millisecond'>
+     * @yumemi-return unit_float<'millisecond'>
+     */
+    public function diffInMilliseconds($date = null, bool $absolute = false): float
+    {
+    }
+
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'second'>
+     * @yumemi-return unit_float<'second'>
+     */
+    public function diffInSeconds($date = null, bool $absolute = false): float
+    {
+    }
+
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'minute'>
+     * @yumemi-return unit_float<'minute'>
+     */
+    public function diffInMinutes($date = null, bool $absolute = false): float
+    {
+    }
+
+    /**
+     * @param \Carbon\CarbonInterface|\DateTimeInterface|string|null $date
+     * @param bool $absolute
+     *
+     * @phpstan-return unit_float<'hour'>
+     * @yumemi-return unit_float<'hour'>
+     */
+    public function diffInHours($date = null, bool $absolute = false): float
+    {
+    }
+
+    /**
+     * @phpstan-return unit_float<'second'>
+     * @yumemi-return unit_float<'second'>
+     */
+    public function secondsSinceMidnight(): float
+    {
+    }
+
+    /**
+     * @phpstan-return unit_float<'second'>
+     * @yumemi-return unit_float<'second'>
+     */
+    public function secondsUntilEndOfDay(): float
+    {
+    }
+}
+
+trait Date
+{
+    /**
+     * @phpstan-param unit_int<'second'>|unit_float<'second'> $seconds
+     * @yumemi-param unit_int<'second'>|unit_float<'second'> $seconds
+     */
+    public static function sleep(int|float $seconds): void
+    {
+    }
+}

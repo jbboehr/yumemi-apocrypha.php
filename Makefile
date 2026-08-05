@@ -1,5 +1,6 @@
 .DEFAULT: all
-.PHONY: all coverage-branch docs docs-check docs-serve test-consumer-getid3 test-consumer-getid3-archive \
+.PHONY: all coverage-branch docs docs-check docs-serve test-consumer-carbon test-consumer-carbon-archive \
+	test-consumer-getid3 test-consumer-getid3-archive \
 	test-consumer-guzzle test-consumer-guzzle-archive \
 	test-consumer-illuminate-cache \
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
@@ -14,6 +15,7 @@ BRANCH_COVERAGE_OUTPUT ?= coverage/branch
 BRANCH_COVERAGE_SOURCE ?= src
 BRANCH_COVERAGE_TESTS ?=
 BRANCH_COVERAGE_XDEBUG_ERROR := Xdebug is not loaded; enter nix develop .\#xdebug.
+CARBON_VERSION ?= 3
 ILLUMINATE_CACHE_MAJOR ?= 12
 ILLUMINATE_COMPATIBILITY_MODE ?= plain
 GETID3_VERSION ?= 2
@@ -29,6 +31,12 @@ PHPGEO_MAJOR ?= 6
 SYMFONY_STOPWATCH_MAJOR ?= 7
 
 all:
+
+test-consumer-carbon:
+	tests/Consumer/run source carbon $(CARBON_VERSION)
+
+test-consumer-carbon-archive:
+	tests/Consumer/run archive carbon $(CARBON_VERSION)
 
 coverage-branch:
 	@php -r 'if (!extension_loaded("xdebug")) { fwrite(STDERR, "$(BRANCH_COVERAGE_XDEBUG_ERROR)\n"); exit(1); }'

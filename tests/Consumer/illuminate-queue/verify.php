@@ -39,7 +39,7 @@ declare(strict_types=1);
 require __DIR__ . '/vendor/autoload.php';
 
 $version = Composer\InstalledVersions::getVersion('illuminate/queue')
-    ?? Composer\InstalledVersions::getPrettyVersion('laravel/framework');
+    ?? Composer\InstalledVersions::getVersion('laravel/framework');
 if ($version === null || preg_match('/^v?([1-9][0-9]*)\./', $version, $matches) !== 1) {
     throw new RuntimeException(sprintf('Unable to determine Illuminate Queue version from %s.', $version ?? 'null'));
 }
@@ -70,7 +70,8 @@ $workerParameters = array_map(
     static fn (ReflectionParameter $parameter): string => $parameter->getName(),
     (new ReflectionMethod(Illuminate\Queue\WorkerOptions::class, '__construct'))->getParameters(),
 );
-$expectedLastParameter = $major === 11 ? 'rest' : 'stopWhenEmptyFor';
+$supportsStopWhenEmptyFor = $major >= 12 || version_compare(ltrim($version, 'v'), '11.53.0', '>=');
+$expectedLastParameter = $supportsStopWhenEmptyFor ? 'stopWhenEmptyFor' : 'rest';
 if ($workerParameters[array_key_last($workerParameters)] !== $expectedLastParameter) {
     throw new RuntimeException(sprintf(
         'WorkerOptions expected final parameter $%s for major %d; found: %s.',
@@ -82,7 +83,7 @@ if ($workerParameters[array_key_last($workerParameters)] !== $expectedLastParame
 
 $worker = new ReflectionClass(Illuminate\Queue\WorkerOptions::class);
 $expectedProperties = ['backoff', 'memory', 'timeout', 'sleep', 'rest', 'maxTime'];
-if ($major >= 12) {
+if ($supportsStopWhenEmptyFor) {
     $expectedProperties[] = 'stopWhenEmptyFor';
 }
 

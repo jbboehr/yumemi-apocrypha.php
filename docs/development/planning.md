@@ -10,6 +10,9 @@ claims to support and semantically accurate about the represented units.
   packages and exact Composer replacements such as the Illuminate components supplied by `laravel/framework`.
 - Explicit selections and strict autodetection reject installed package versions that have not been verified, including
   releases below a package-specific minimum.
+- `nesbot/carbon` covers fixed-duration differences, adjustments, and waits from Carbon 2.62.1 through Carbon 3. Its
+  three complete profiles preserve Carbon 2's integer APIs, Carbon 3.0 through 3.1's `Real` compatibility aliases, and
+  Carbon 3.2 and later's `UTC` aliases without presenting calendar-relative operations as fixed durations.
 - `james-heinrich/getid3` covers a bounded open result shape for byte counts, durations, bitrates, sample rates, and
   frame rates from getID3 1.9.22 and later 1.x releases and 2.0.0-beta6 and later 2.x releases.
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
@@ -22,9 +25,10 @@ claims to support and semantically accurate about the represented units.
 - `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
   phpgeo 4 through 6 while leaving coordinate origins unbranded.
 - `symfony/stopwatch` covers event and period durations and memory results across Symfony Stopwatch 6 through 8.
-- The loader can enforce a minimum release within a major and select major-specific stub files when a supported upstream
-  signature differs. getID3 uses both mechanisms for its global 1.x and namespaced 2.x APIs; Illuminate Process and
-  Guzzle use major-specific files.
+- The loader can enforce a minimum release within a major and select major- or minor-version-specific stub files when a
+  supported upstream signature differs. Carbon uses three release profiles; Illuminate Queue distinguishes Laravel 11
+  before and after 11.53; getID3 uses minimum and major selection for its global 1.x and namespaced 2.x APIs; Illuminate
+  Process and Guzzle use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   a representative Composer archive, and Laravel 11 through 13 replacement metadata for every Illuminate integration.
   Every Illuminate subpackage and the combined framework fixture run both with and without Larastan.
@@ -87,8 +91,6 @@ The following packages remain valuable after a small amount of core semantic or 
 - `intervention/image` and `imagine/imagine`: pixel dimensions, signed coordinates, angles, and percentages are useful,
   but the integration first needs an explicit pixel model. Branded integer and float ranges would then express positive
   dimensions and bounded opacity more accurately.
-- `nesbot/carbon`: annotate only APIs with explicit fixed-duration semantics. Calendar-relative days, months, and years
-  must not be presented as fixed multiplicative durations.
 - `league/flysystem`: nonnegative file sizes are clear but provide less incremental value than the mixed-unit
   candidates.
 

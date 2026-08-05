@@ -59,7 +59,8 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
-     *     filesByMajor?: array<int, non-empty-list<string>>
+     *     filesByMajor?: array<int, non-empty-list<string>>,
+     *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>
      *
      * @logion [OSD 83:47] Bind thy sandals before the mountain darkeneth, and carry the bread entrusted unto thee; for
@@ -118,6 +119,14 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                     __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
                 ],
             ],
+            'filesByMinimumVersion' => [
+                11 => [
+                    '11.53.0' => [
+                        __DIR__ . '/../../stubs/illuminate/queue.stub',
+                        __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
+                    ],
+                ],
+            ],
         ],
         'illuminate/support' => [
             'majors' => [11, 12, 13],
@@ -137,6 +146,23 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         'mjaschen/phpgeo' => [
             'majors' => [4, 5, 6],
             'files' => [__DIR__ . '/../../stubs/phpgeo/phpgeo.stub'],
+        ],
+        'nesbot/carbon' => [
+            'majors' => [2, 3],
+            'minimumVersions' => [
+                2 => '2.62.1',
+                3 => '3.0.0',
+            ],
+            'files' => [__DIR__ . '/../../stubs/carbon/carbon-2.stub'],
+            'filesByMinimumVersion' => [
+                2 => [
+                    '2.62.1' => [__DIR__ . '/../../stubs/carbon/carbon-2.stub'],
+                ],
+                3 => [
+                    '3.0.0' => [__DIR__ . '/../../stubs/carbon/carbon-3-real.stub'],
+                    '3.2.0' => [__DIR__ . '/../../stubs/carbon/carbon-3-utc.stub'],
+                ],
+            ],
         ],
         'symfony/stopwatch' => [
             'majors' => [6, 7, 8],
@@ -169,7 +195,8 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
-     *     filesByMajor?: array<int, non-empty-list<string>>
+     *     filesByMajor?: array<int, non-empty-list<string>>,
+     *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>
      *
      * @logion [OSD 44:91] The custodians copied the covenant upon cedar and bronze alike, yet altered not one appointed
@@ -202,6 +229,14 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     private ?array $selectedMajors = null;
 
     /**
+     * @var array<string, string>|null
+     *
+     * @logion [AWC 64:39] During the famine the northern hospice kept a place at table for the absent pilgrims; and
+     *     when the snows withdrew, strangers entered bearing the old tokens, and the bread was sufficient for them all.
+     */
+    private ?array $selectedVersions = null;
+
+    /**
      * @logion [SFA 62:11] The lamp absent from the procession accuseth no keeper; but the lamp concealed beneath a
      *     borrowed veil requireth a witness before the hour may proceed.
      */
@@ -213,7 +248,8 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
-     *     filesByMajor?: array<int, non-empty-list<string>>
+     *     filesByMajor?: array<int, non-empty-list<string>>,
+     *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>|null $supportedIntegrations
      * @param (Closure(string): bool)|null $packageInstalledResolver
      * @param (Closure(string): ?string)|null $packageVersionResolver
@@ -300,14 +336,38 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     public function getFiles(): array
     {
         $files = [];
+        $selectedMajors = $this->selectedMajors();
+        $selectedVersions = $this->selectedVersions;
 
-        foreach ($this->selectedMajors() as $integration => $major) {
+        if ($selectedVersions === null) {
+            throw new LogicException('Selected integration versions were not resolved with their majors.');
+        }
+
+        foreach ($selectedMajors as $integration => $major) {
             if ($this->usesLarastanAdapter($integration)) {
                 continue;
             }
 
             $configuration = $this->supportedIntegrations[$integration];
             $configuredFiles = $configuration['filesByMajor'][$major] ?? $configuration['files'];
+            $version = $selectedVersions[$integration]
+                ?? throw new LogicException(sprintf('Selected integration "%s" has no resolved version.', $integration));
+            $filesByMinimumVersion = $configuration['filesByMinimumVersion'][$major] ?? [];
+            $normalizedVersion = ltrim($version, 'v');
+            $isMajorDevelopmentBranch = $normalizedVersion === $major . '.x-dev';
+
+            uksort(
+                $filesByMinimumVersion,
+                static fn (string $left, string $right): int => version_compare($right, $left),
+            );
+
+            foreach ($filesByMinimumVersion as $minimumVersion => $profileFiles) {
+                if ($isMajorDevelopmentBranch || version_compare($normalizedVersion, $minimumVersion, '>=')) {
+                    $configuredFiles = $profileFiles;
+
+                    break;
+                }
+            }
 
             foreach ($configuredFiles as $file) {
                 $path = realpath($file);
@@ -331,6 +391,19 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     public function getSelectedMajor(string $integration): ?int
     {
         return $this->selectedMajors()[$integration] ?? null;
+    }
+
+    /**
+     * Returns the verified installed version for a selected integration.
+     *
+     * @logion [SFA 41:67] The shepherd found the winter lamb beneath a thorn tree, and counted no journey wasted; for
+     *     mercy reckoneth the road by what is carried home.
+     */
+    public function getSelectedVersion(string $integration): ?string
+    {
+        $this->selectedMajors();
+
+        return $this->selectedVersions[$integration] ?? null;
     }
 
     /**
@@ -404,6 +477,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         $integrations = array_keys($selected);
         sort($integrations, SORT_STRING);
         $selectedMajors = [];
+        $selectedVersions = [];
 
         foreach ($integrations as $integration) {
             $version = $versions[$integration] ?? $this->explicitVersion($integration);
@@ -412,8 +486,15 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 $this->throwUnsupportedVersion($integration, $version);
             }
 
+            if ($version === null) {
+                throw new LogicException(sprintf('Selected integration "%s" has no resolved version.', $integration));
+            }
+
             $selectedMajors[$integration] = $major;
+            $selectedVersions[$integration] = $version;
         }
+
+        $this->selectedVersions = $selectedVersions;
 
         return $this->selectedMajors = $selectedMajors;
     }

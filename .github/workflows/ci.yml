@@ -119,6 +119,83 @@ jobs:
             - name: Run PHPUnit
               run: vendor/bin/phpunit --colors=never --no-coverage
 
+    carbon:
+        name: Carbon ${{ matrix.carbon-version }} / ${{ matrix.compatibility-mode }} / PHP ${{ matrix.php-version }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - carbon-version: "2.62.1"
+                      compatibility-mode: plain
+                      package-mode: source
+                      php-version: "8.2"
+                    - carbon-version: "2"
+                      compatibility-mode: plain
+                      package-mode: archive
+                      php-version: "8.2"
+                    - carbon-version: "3.0.0"
+                      compatibility-mode: plain
+                      package-mode: source
+                      php-version: "8.2"
+                    - carbon-version: "3.1.1"
+                      compatibility-mode: plain
+                      package-mode: source
+                      php-version: "8.2"
+                    - carbon-version: "3.2.0"
+                      compatibility-mode: plain
+                      package-mode: source
+                      php-version: "8.2"
+                    - carbon-version: "3"
+                      compatibility-mode: plain
+                      package-mode: archive
+                      php-version: "8.2"
+                    - carbon-version: "3"
+                      compatibility-mode: larastan
+                      package-mode: source
+                      php-version: "8.2"
+        steps:
+            - name: Checkout Apocrypha
+              uses: actions/checkout@v7
+
+            - name: Checkout Yumemi
+              uses: actions/checkout@v7
+              with:
+                  path: tmp/yumemi
+                  repository: jbboehr/yumemi.php
+
+            - name: Install PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  coverage: none
+                  extensions: gmp
+                  php-version: ${{ matrix.php-version }}
+                  tools: composer:v2
+
+            - name: Get Composer cache directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Composer packages
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key:
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-carbon-${{ matrix.carbon-version }}-${{
+                      matrix.compatibility-mode }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-carbon-${{ matrix.carbon-version }}-
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-carbon-
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
+                      ${{ runner.os }}-php-composer-
+
+            - name: Test integration
+              env:
+                  YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
+              run:
+                  tests/Consumer/run ${{ matrix.package-mode }} carbon ${{ matrix.carbon-version }} ${{
+                  matrix.compatibility-mode }}
+
     getid3:
         name: getID3 ${{ matrix.getid3-version }} / PHP ${{ matrix.php-version }}
         runs-on: ubuntu-latest
@@ -406,6 +483,16 @@ jobs:
                       integration-label: Illuminate Process
                     - integration: illuminate-queue
                       integration-label: Illuminate Queue
+                    - integration: illuminate-queue
+                      integration-label: Illuminate Queue
+                      illuminate-version: "11.52.0"
+                      compatibility-mode: plain
+                      php-version: "8.2"
+                    - integration: illuminate-queue
+                      integration-label: Illuminate Queue
+                      illuminate-version: "11.53.0"
+                      compatibility-mode: plain
+                      php-version: "8.2"
                     - integration: illuminate-support
                       integration-label: Illuminate Support
         steps:

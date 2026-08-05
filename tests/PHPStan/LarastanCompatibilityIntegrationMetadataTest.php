@@ -49,23 +49,30 @@ use PHPUnit\Framework\TestCase;
 
 final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
 {
-    /** @return iterable<string, array{non-empty-string, int}> */
+    /** @return iterable<string, array{non-empty-string, int, non-empty-string}> */
     public static function integrationMajors(): iterable
     {
         foreach (array_keys(LarastanCompatibilityIntegrationMetadata::all()) as $integration) {
             foreach ([11, 12, 13] as $major) {
-                yield sprintf('%s %d', $integration, $major) => [$integration, $major];
+                yield sprintf('%s %d', $integration, $major) => [$integration, $major, $major . '.0.0'];
             }
         }
+
+        yield 'illuminate/queue 11.53.0' => ['illuminate/queue', 11, '11.53.0'];
+        yield 'illuminate/queue v11.53.0' => ['illuminate/queue', 11, 'v11.53.0'];
+        yield 'illuminate/queue 11.x-dev' => ['illuminate/queue', 11, '11.x-dev'];
     }
 
     #[DataProvider('integrationMajors')]
-    public function testMetadataExactlyMirrorsSelectedStubAnnotations(string $integration, int $major): void
-    {
+    public function testMetadataExactlyMirrorsSelectedStubAnnotations(
+        string $integration,
+        int $major,
+        string $version,
+    ): void {
         self::assertSame(
-            $this->stubBoundaries($integration, $major),
-            $this->metadataBoundaries($integration, $major),
-            sprintf('Larastan metadata drifted from %s stubs for Laravel %d.', $integration, $major),
+            $this->stubBoundaries($integration, $major, $version),
+            $this->metadataBoundaries($integration, $major, $version),
+            sprintf('Larastan metadata drifted from %s stubs for Laravel %s.', $integration, $version),
         );
     }
 
@@ -106,12 +113,12 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
      *     returns: list<array<string, string>>
      * }
      */
-    private function stubBoundaries(string $integration, int $major): array
+    private function stubBoundaries(string $integration, int $major, string $version): array
     {
         $boundaries = ['arguments' => [], 'properties' => [], 'returns' => []];
         $parser = (new ParserFactory())->createForNewestSupportedVersion();
 
-        foreach ($this->stubFiles($integration, $major) as $file) {
+        foreach ($this->stubFiles($integration, $major, $version) as $file) {
             $nodes = $parser->parse((string) file_get_contents($file));
             self::assertNotNull($nodes);
 
@@ -188,18 +195,18 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
      *     returns: list<array<string, string>>
      * }
      */
-    private function metadataBoundaries(string $integration, int $major): array
+    private function metadataBoundaries(string $integration, int $major, string $version): array
     {
         $metadata = LarastanCompatibilityIntegrationMetadata::all()[$integration];
         $boundaries = ['arguments' => [], 'properties' => [], 'returns' => []];
 
         foreach ($boundaries as $kind => $_) {
             foreach ($metadata[$kind] as $boundary) {
-                if (!LarastanCompatibilityIntegrationMetadata::supportsMajor($boundary, $major)) {
+                if (!LarastanCompatibilityIntegrationMetadata::supportsVersion($boundary, $major, $version)) {
                     continue;
                 }
 
-                unset($boundary['majors'], $boundary['strategy']);
+                unset($boundary['majors'], $boundary['minimumVersions'], $boundary['strategy']);
                 $boundary['type'] = $this->normalizeType($boundary['type']);
                 $boundaries[$kind][] = $boundary;
             }
@@ -209,7 +216,7 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
     }
 
     /** @return list<string> */
-    private function stubFiles(string $integration, int $major): array
+    private function stubFiles(string $integration, int $major, string $version): array
     {
         $base = __DIR__ . '/../../stubs/illuminate/';
 
@@ -221,7 +228,13 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
             'illuminate/process' => [$base . ($major === 13 ? 'process-13.stub' : 'process.stub')],
             'illuminate/queue' => [
                 $base . 'queue.stub',
-                $base . ($major === 11 ? 'queue-worker-11.stub' : 'queue-worker-12.stub'),
+                $base . (
+                    $major === 11
+                    && $version !== '11.x-dev'
+                    && version_compare(ltrim($version, 'v'), '11.53.0', '<')
+                        ? 'queue-worker-11.stub'
+                        : 'queue-worker-12.stub'
+                ),
             ],
             'illuminate/support' => [$base . 'support.stub'],
             default => throw new \LogicException(sprintf('Unknown Illuminate integration %s.', $integration)),

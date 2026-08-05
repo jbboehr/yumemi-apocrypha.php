@@ -95,6 +95,8 @@
         "docs:serve": "make docs-serve",
         "infection": "infection --no-progress",
         "infection:ci": "infection --no-progress --min-msi=90 --min-covered-msi=90",
+        "test:consumer:carbon": "make test-consumer-carbon",
+        "test:consumer:carbon:archive": "make test-consumer-carbon-archive",
         "test:consumer:getid3": "make test-consumer-getid3",
         "test:consumer:getid3:archive": "make test-consumer-getid3-archive",
         "test:consumer:guzzle": "make test-consumer-guzzle",

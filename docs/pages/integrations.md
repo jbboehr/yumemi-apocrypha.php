@@ -9,14 +9,15 @@ CI resolves the latest compatible release of each verified major and any package
 unknown future major, or a release below a stated minimum, is rejected until its signatures and semantics have been
 reviewed.
 
-| Package family      | Verified versions                   | Verification snapshots                     | Checked    |
-| ------------------- | ----------------------------------- | ------------------------------------------ | ---------- |
-| Guzzle              | 7, 8                                | `7.15.2`, `8.0.1`                          | 2026-08-04 |
-| getID3              | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`          | 2026-08-04 |
-| Illuminate packages | 11, 12, 13                          | `v11.51.0`, `v12.64.0`, `v13.23.0`         | 2026-08-03 |
-| Laravel framework   | 11, 12, 13                          | `11.x-dev@c0f062f`, `v12.64.0`, `v13.24.0` | 2026-08-04 |
-| phpgeo              | 4, 5, 6                             | `4.2.1`, `5.0.0`, `6.0.2`                  | 2026-08-04 |
-| Symfony Stopwatch   | 6, 7, 8                             | `v6.4.24`, `v7.4.8`, `v8.1.0`              | 2026-08-04 |
+| Package family      | Verified versions                   | Verification snapshots                                  | Checked    |
+| ------------------- | ----------------------------------- | ------------------------------------------------------- | ---------- |
+| Carbon              | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.1` | 2026-08-05 |
+| Guzzle              | 7, 8                                | `7.15.2`, `8.0.1`                                       | 2026-08-04 |
+| getID3              | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                       | 2026-08-04 |
+| Illuminate packages | 11, 12, 13                          | `v11.51.0`, `v12.64.0`, `v13.23.0`                      | 2026-08-03 |
+| Laravel framework   | 11, 12, 13                          | `11.x-dev@c0f062f`, `v12.64.0`, `v13.24.0`              | 2026-08-04 |
+| phpgeo              | 4, 5, 6                             | `4.2.1`, `5.0.0`, `6.0.2`                               | 2026-08-04 |
+| Symfony Stopwatch   | 6, 7, 8                             | `v6.4.24`, `v7.4.8`, `v8.1.0`                           | 2026-08-04 |
 
 Laravel applications may install these APIs through `laravel/framework` instead of separate `illuminate/*` component
 packages. Continue to select the precise component integration names, such as `illuminate/cache`; Composer's exact
@@ -29,6 +30,52 @@ framework declarations and enforces the selected integration's units through PHP
 switch is automatic and applies to the complete integration: Apocrypha never loads a partial Illuminate stub over
 Larastan. An installed Larastan major other than 3 is rejected while an Illuminate integration is selected, rather than
 risk stale or conflicting analysis.
+
+## Carbon
+
+Enable `nesbot/carbon` to brand fixed-duration calculations and waits. A branded native value remains an ordinary PHP
+integer or float at runtime; Apocrypha describes Carbon's existing boundaries to PHPStan and does not change how Carbon
+calculates dates.
+
+| API concern                                           | Unit                          |
+| ----------------------------------------------------- | ----------------------------- |
+| Microsecond differences and adjustments               | `microsecond`                 |
+| Millisecond differences and adjustments               | `millisecond`                 |
+| Second, minute, and hour differences/adjustments      | `second`, `minute`, or `hour` |
+| `secondsSinceMidnight()` and `secondsUntilEndOfDay()` | `second`                      |
+| Carbon 3 `sleep()` methods                            | `second`                      |
+
+<!-- yumemi-example: carbon-invalid -->
+
+```php
+<?php
+
+use Carbon\CarbonImmutable;
+
+/** @param unit_float<'minute'> $elapsed */
+function recordElapsedMinutes(float $elapsed): void {}
+
+$started = CarbonImmutable::parse('2026-08-05 09:00:00');
+$finished = CarbonImmutable::parse('2026-08-05 09:00:30');
+
+recordElapsedMinutes($started->diffInSeconds($finished)); //! PHPStan rejects seconds at this minutes boundary.
+```
+
+Here `//!` marks the expected PHPStan diagnostic exercised by the documentation test; it is not Yumemi syntax.
+
+Carbon 2.62.1 through 2.x uses integer-returning `diffInReal*()` methods, float-returning `floatDiffInReal*()` methods,
+and integer `addReal*()`/`subReal*()` adjustments. Carbon 3 uses float-returning `diffIn*()` methods and accepts either
+integer or float branded values for fixed-time adjustments. Carbon 3.0 and 3.1 expose the compatibility aliases
+`addReal*()`, `subReal*()`, and `diffInReal*()`; Carbon 3.2 and later use `addUTC*()`, `subUTC*()`, and `diffInUTC*()`.
+Apocrypha selects the matching complete profile from the installed release.
+
+The Carbon 2 integration starts at 2.62.1, the first release in the supported signature line that runs on Apocrypha's
+PHP 8.2 baseline. Earlier Carbon 2 releases may advertise PHP 8 compatibility but fail against PHP 8.2's `DateTime`
+behavior. Carbon 3 support starts at 3.0.0.
+
+Calendar-relative days, weeks, months, and years remain unbranded. Their elapsed length depends on the starting date,
+timezone transitions, and calendar rules, so they are not fixed multiplicative durations. Timestamps and timezone
+offsets also remain outside this integration.
 
 ## Guzzle
 
@@ -229,8 +276,9 @@ Enable `illuminate/queue` to brand delayed dispatches, job release delays, and p
 | Worker memory limit                                | `1048576 * byte` |
 
 The memory limit is measured in binary megabytes by Laravel's worker implementation, so Apocrypha uses the exact scale
-`1048576 * byte`. Attempt counts, maximum jobs, and other dimensionless controls remain ordinary integers. Laravel 12
-added `stopWhenEmptyFor`; major-specific worker stubs preserve the Laravel 11 constructor and property surface.
+`1048576 * byte`. Attempt counts, maximum jobs, and other dimensionless controls remain ordinary integers. Laravel 11.53
+added `stopWhenEmptyFor` to the 11.x line, and Laravel 12 and 13 also provide it. Apocrypha selects a complete worker
+profile at that release boundary so earlier Laravel 11 projects retain their original constructor and property surface.
 
 ## phpgeo
 
@@ -307,8 +355,8 @@ Yumemi's native brands do not represent coordinate origins.
 
 ## Limitations
 
-- Most stubs cover signatures shared by all verified majors. A major-specific stub is selected where a supported
-  signature differs, as with Illuminate Process on Laravel 13.
+- Most stubs cover signatures shared by all verified majors. A release-specific stub is selected where a supported
+  signature differs, as with Carbon's three profiles and Illuminate Process on Laravel 13.
 - Native branded arguments are not converted. Dimensionally compatible but differently scaled units remain invalid.
 - Dynamic or unsupported unit expressions lose Yumemi's precise brand according to the core extension's normal rules.
 - Larastan-mode argument and property violations use the PHPStan diagnostic identifier `apocrypha.unit`. An unpacked
