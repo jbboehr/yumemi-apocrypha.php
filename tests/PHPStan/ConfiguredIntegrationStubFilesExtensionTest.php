@@ -38,11 +38,14 @@ declare(strict_types=1);
 
 namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
 
+use Composer\InstalledVersions;
 use jbboehr\Yumemi\Apocrypha\Exception\ExceptionInterface;
 use jbboehr\Yumemi\Apocrypha\Exception\InvalidConfigurationException;
 use jbboehr\Yumemi\Apocrypha\Exception\LogicException;
 use jbboehr\Yumemi\Apocrypha\PHPStan\ConfiguredIntegrationStubFilesExtension;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\PreserveGlobalState;
+use PHPUnit\Framework\Attributes\RunInSeparateProcess;
 use PHPUnit\Framework\TestCase;
 
 final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
@@ -59,6 +62,99 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         );
 
         self::assertSame([], $extension->getFiles());
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function concreteReplacementVersions(): iterable
+    {
+        yield 'stable release' => ['12.4.0'];
+        yield 'major development branch' => ['11.x-dev'];
+    }
+
+    #[DataProvider('concreteReplacementVersions')]
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testDefaultVersionResolverUsesAConcreteReplacementVersion(string $version): void
+    {
+        $this->reloadInstalledPackageMetadata([
+            'replaced' => [$version],
+        ]);
+        $extension = new ConfiguredIntegrationStubFilesExtension(['illuminate/cache'], false, true);
+
+        self::assertSame([
+            realpath(__DIR__ . '/../../stubs/illuminate/cache.stub'),
+        ], $extension->getFiles());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testDefaultVersionResolverPrefersADirectVersionOverReplacementMetadata(): void
+    {
+        $this->reloadInstalledPackageMetadata([
+            'pretty_version' => 'v12.4.0',
+            'version' => '12.4.0.0',
+            'replaced' => ['13.1.0'],
+        ], 'illuminate/process');
+        $extension = new ConfiguredIntegrationStubFilesExtension(['illuminate/process'], false, true);
+
+        self::assertSame([
+            realpath(__DIR__ . '/../../stubs/illuminate/process.stub'),
+        ], $extension->getFiles());
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testDefaultVersionResolverStillRejectsAnUnsupportedConcreteReplacementVersion(): void
+    {
+        $this->reloadInstalledPackageMetadata([
+            'replaced' => ['14.1.0'],
+        ]);
+        $extension = new ConfiguredIntegrationStubFilesExtension(['illuminate/cache'], false, true);
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Yumemi Apocrypha integration "illuminate/cache" supports major versions 11, 12, 13; '
+                . 'installed version is 14.1.0.',
+        );
+
+        $extension->getFiles();
+    }
+
+    /**
+     * @return iterable<string, array{array<string, mixed>}>
+     */
+    public static function invalidReplacementMetadata(): iterable
+    {
+        yield 'replacement range' => [[
+            'replaced' => ['^12.0'],
+        ]];
+        yield 'compound replacement constraint' => [[
+            'replaced' => ['12.4.0 || 13.1.0'],
+        ]];
+        yield 'multiple replacement versions' => [[
+            'replaced' => ['12.4.0', '13.1.0'],
+        ]];
+        yield 'provided version' => [[
+            'provided' => ['12.4.0'],
+        ]];
+    }
+
+    /** @param array{pretty_version?: string, version?: string, replaced?: list<string>, provided?: list<string>} $metadata */
+    #[DataProvider('invalidReplacementMetadata')]
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testDefaultVersionResolverRejectsUncertainReplacementMetadata(array $metadata): void
+    {
+        $this->reloadInstalledPackageMetadata($metadata);
+        $extension = new ConfiguredIntegrationStubFilesExtension(['illuminate/cache'], false, true);
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Unable to determine the installed major version of Yumemi Apocrypha integration "illuminate/cache" '
+                . 'from "unknown".',
+        );
+
+        $extension->getFiles();
     }
 
     public function testExplicitIntegrationsAreSortedAndDeduplicated(): void
@@ -454,5 +550,43 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
                 'files' => [__DIR__ . '/../../extension.neon'],
             ],
         ];
+    }
+
+    /** @param array{pretty_version?: string, version?: string, replaced?: list<string>, provided?: list<string>} $metadata */
+    private function reloadInstalledPackageMetadata(array $metadata, string $package = 'illuminate/cache'): void
+    {
+        InstalledVersions::reload([
+            'root' => [
+                'name' => 'consumer/project',
+                'pretty_version' => '1.0.0',
+                'version' => '1.0.0.0',
+                'reference' => null,
+                'type' => 'project',
+                'install_path' => __DIR__,
+                'aliases' => [],
+                'dev' => true,
+            ],
+            'versions' => [
+                'consumer/project' => [
+                    'pretty_version' => '1.0.0',
+                    'version' => '1.0.0.0',
+                    'reference' => null,
+                    'type' => 'project',
+                    'install_path' => __DIR__,
+                    'aliases' => [],
+                    'dev_requirement' => false,
+                ],
+                'jbboehr/yumemi-apocrypha' => [
+                    'pretty_version' => 'dev-consumer',
+                    'version' => 'dev-consumer',
+                    'reference' => null,
+                    'type' => 'phpstan-extension',
+                    'install_path' => __DIR__ . '/../..',
+                    'aliases' => [],
+                    'dev_requirement' => true,
+                ],
+                $package => ['dev_requirement' => false] + $metadata,
+            ],
+        ]);
     }
 }

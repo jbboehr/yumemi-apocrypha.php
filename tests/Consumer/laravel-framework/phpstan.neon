@@ -1,0 +1,14 @@
+parameters:
+    level: max
+    paths:
+        - cases
+    tmpDir: tmp/phpstan
+    yumemiApocrypha:
+        integrations:
+            - illuminate/cache
+            - illuminate/cookie
+            - illuminate/filesystem
+            - illuminate/http
+            - illuminate/process
+            - illuminate/queue
+            - illuminate/support

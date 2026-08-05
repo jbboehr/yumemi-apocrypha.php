@@ -107,6 +107,8 @@
         "test:consumer:illuminate-process": "make test-consumer-illuminate-process",
         "test:consumer:illuminate-queue": "make test-consumer-illuminate-queue",
         "test:consumer:illuminate-support": "make test-consumer-illuminate-support",
+        "test:consumer:laravel-framework": "make test-consumer-laravel-framework",
+        "test:consumer:laravel-framework:archive": "make test-consumer-laravel-framework-archive",
         "test:consumer:phpgeo": "make test-consumer-phpgeo",
         "test:consumer:phpgeo:archive": "make test-consumer-phpgeo-archive",
         "test:consumer:symfony-stopwatch": "make test-consumer-symfony-stopwatch",

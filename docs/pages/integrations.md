@@ -9,13 +9,19 @@ CI resolves the latest compatible release of each verified major and any package
 unknown future major, or a release below a stated minimum, is rejected until its signatures and semantics have been
 reviewed.
 
-| Package family      | Verified versions                   | Verification snapshots             | Checked    |
-| ------------------- | ----------------------------------- | ---------------------------------- | ---------- |
-| Guzzle              | 7, 8                                | `7.15.2`, `8.0.1`                  | 2026-08-04 |
-| getID3              | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`  | 2026-08-04 |
-| Illuminate packages | 11, 12, 13                          | `v11.51.0`, `v12.64.0`, `v13.23.0` | 2026-08-03 |
-| phpgeo              | 4, 5, 6                             | `4.2.1`, `5.0.0`, `6.0.2`          | 2026-08-04 |
-| Symfony Stopwatch   | 6, 7, 8                             | `v6.4.24`, `v7.4.8`, `v8.1.0`      | 2026-08-04 |
+| Package family      | Verified versions                   | Verification snapshots                     | Checked    |
+| ------------------- | ----------------------------------- | ------------------------------------------ | ---------- |
+| Guzzle              | 7, 8                                | `7.15.2`, `8.0.1`                          | 2026-08-04 |
+| getID3              | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`          | 2026-08-04 |
+| Illuminate packages | 11, 12, 13                          | `v11.51.0`, `v12.64.0`, `v13.23.0`         | 2026-08-03 |
+| Laravel framework   | 11, 12, 13                          | `11.x-dev@c0f062f`, `v12.64.0`, `v13.24.0` | 2026-08-04 |
+| phpgeo              | 4, 5, 6                             | `4.2.1`, `5.0.0`, `6.0.2`                  | 2026-08-04 |
+| Symfony Stopwatch   | 6, 7, 8                             | `v6.4.24`, `v7.4.8`, `v8.1.0`              | 2026-08-04 |
+
+Laravel applications may install these APIs through `laravel/framework` instead of separate `illuminate/*` component
+packages. Continue to select the precise component integration names, such as `illuminate/cache`; Composer's exact
+replacement version supplies the verified major for explicit selection and autodetection. Broad or ambiguous replacement
+constraints are not treated as verified versions.
 
 ## Guzzle
 

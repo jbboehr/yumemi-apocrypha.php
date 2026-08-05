@@ -19,8 +19,12 @@ The package is under active development and has no tagged release. It currently 
 | `illuminate/process`    | 11, 12, 13                          |
 | `illuminate/queue`      | 11, 12, 13                          |
 | `illuminate/support`    | 11, 12, 13                          |
+| `laravel/framework`     | 11, 12, 13                          |
 | `mjaschen/phpgeo`       | 4, 5, 6                             |
 | `symfony/stopwatch`     | 6, 7, 8                             |
+
+`laravel/framework` supplies the listed Illuminate packages through Composer replacements. Configuration continues to
+use the precise `illuminate/*` integration names; applications do not need to install those components separately.
 
 ```shell
 composer require --dev jbboehr/yumemi:dev-master jbboehr/yumemi-apocrypha:dev-master \

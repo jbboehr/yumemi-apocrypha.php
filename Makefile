@@ -5,7 +5,8 @@
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-filesystem test-consumer-illuminate-process \
 	test-consumer-illuminate-queue \
-	test-consumer-illuminate-support test-consumer-phpgeo test-consumer-phpgeo-archive \
+	test-consumer-illuminate-support test-consumer-laravel-framework \
+	test-consumer-laravel-framework-archive test-consumer-phpgeo test-consumer-phpgeo-archive \
 	test-consumer-symfony-stopwatch test-consumer-symfony-stopwatch-archive \
 	test-consumer-manual
 
@@ -22,6 +23,7 @@ ILLUMINATE_HTTP_MAJOR ?= 12
 ILLUMINATE_PROCESS_MAJOR ?= 12
 ILLUMINATE_QUEUE_MAJOR ?= 12
 ILLUMINATE_SUPPORT_MAJOR ?= 12
+LARAVEL_FRAMEWORK_MAJOR ?= 12
 PHPGEO_MAJOR ?= 6
 SYMFONY_STOPWATCH_MAJOR ?= 7
 
@@ -85,6 +87,12 @@ test-consumer-illuminate-queue:
 
 test-consumer-illuminate-support:
 	tests/Consumer/run source illuminate-support $(ILLUMINATE_SUPPORT_MAJOR)
+
+test-consumer-laravel-framework:
+	tests/Consumer/run source laravel-framework $(LARAVEL_FRAMEWORK_MAJOR)
+
+test-consumer-laravel-framework-archive:
+	tests/Consumer/run archive laravel-framework $(LARAVEL_FRAMEWORK_MAJOR)
 
 test-consumer-phpgeo:
 	tests/Consumer/run source phpgeo $(PHPGEO_MAJOR)

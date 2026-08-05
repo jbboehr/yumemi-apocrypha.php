@@ -6,7 +6,8 @@ claims to support and semantically accurate about the represented units.
 
 ## Current Scope
 
-- Explicit integration selection and optional Composer-package autodetection are implemented.
+- Explicit integration selection and optional Composer-package autodetection are implemented for directly installed
+  packages and exact Composer replacements such as the Illuminate components supplied by `laravel/framework`.
 - Explicit selections and strict autodetection reject installed package versions that have not been verified, including
   releases below a package-specific minimum.
 - `james-heinrich/getid3` covers a bounded open result shape for byte counts, durations, bitrates, sample rates, and
@@ -22,7 +23,7 @@ claims to support and semantically accurate about the represented units.
   signature differs. getID3 uses both mechanisms for its global 1.x and namespaced 2.x APIs; Illuminate Process and
   Guzzle use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
-  and a representative Composer archive.
+  a representative Composer archive, and Laravel 11 through 13 replacement metadata for every Illuminate integration.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
   stubs and their selection policy.
 
@@ -39,11 +40,6 @@ suite. Integration scope remains curated: add APIs only when their physical unit
   PHPStan. Route examples that depend on third-party packages through the appropriate isolated consumer so they retain
   real upstream verification, and use standalone `//!` expectations consistently. The suite should fail when a new
   public example has no declared verification path.
-- Support Illuminate integrations when an application installs `laravel/framework` rather than individual component
-  packages. Composer records the replaced `illuminate/*` packages without a direct `pretty_version` or `version`; the
-  current resolver sees those names as installed but cannot determine their major. Resolve replace-only metadata without
-  weakening version checks, then add full-framework consumers for Laravel 11, 12, and 13 covering explicit selection and
-  autodetection before presenting `laravel/framework` as a supported installation path.
 
 ## Future Candidates
 

@@ -15,6 +15,9 @@ The consumer fixture installs the latest compatible release of each selected maj
 every annotated class, method, parameter, and property before PHPStan runs. Add reflection assertions whenever a stub
 gains coverage; a missing or renamed upstream declaration must fail before semantic assertions run.
 
+The Laravel framework fixture separately verifies every Illuminate integration when Composer represents its component
+package as an exact replacement rather than a directly installed package.
+
 Run one major locally with:
 
 ```shell
@@ -22,6 +25,7 @@ GETID3_VERSION=2 make test-consumer-getid3
 GUZZLE_MAJOR=8 make test-consumer-guzzle
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
+LARAVEL_FRAMEWORK_MAJOR=12 make test-consumer-laravel-framework
 PHPGEO_MAJOR=6 make test-consumer-phpgeo
 SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 ```

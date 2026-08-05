@@ -34,12 +34,14 @@ parameters:
             - illuminate/http
 ```
 
-An explicitly selected package must be installed and within its verified major-version matrix. Otherwise PHPStan stops
-with a configuration error rather than applying a missing or stale declaration.
+An explicitly selected package must be installed, either directly or as an exact Composer replacement, and within its
+verified major-version matrix. Otherwise PHPStan stops with a configuration error rather than applying a missing or
+stale declaration. A Laravel application that installs `laravel/framework` may select the corresponding `illuminate/*`
+integrations without installing those component packages separately.
 
 ## Autodetect Integrations
 
-Autodetection activates every installed package known to Apocrypha:
+Autodetection activates every directly installed or exactly replaced package known to Apocrypha:
 
 ```neon
 parameters:

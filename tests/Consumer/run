@@ -80,7 +80,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|phpgeo|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
     exit 2
 fi
 
@@ -283,6 +283,51 @@ run_simple_illuminate_integration() {
         run_phpstan_case "$project_dir" phpstan.neon "valid-$PACKAGE_MAJOR.php"
         run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$PACKAGE_MAJOR.php"
     fi
+    run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+}
+
+run_laravel_framework() {
+    local project_dir=$WORK_DIR/laravel-framework
+    local expected_diagnostics=(
+        "Store::put() expects unit_int<'second'>, unit_int<'minute'> given"
+        "Factory::make() expects unit_int<'minute'>, unit_int<'second'> given"
+        "acceptFrameworkMeters expects unit_int<'meter'>, unit_int<'octet'> given"
+        "timeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given"
+        "Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, unit_int<'minute'> given"
+        "Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given"
+        "WorkerOptions constructor expects unit_int<'1048576 * octet'>, unit_int<'1000000 * octet'> given"
+    )
+
+    if [[ ! $PACKAGE_MAJOR =~ ^(11|12|13)$ ]]; then
+        printf 'Laravel framework consumer tests require framework major 11, 12, or 13.\n' >&2
+        exit 2
+    fi
+
+    if [[ $PACKAGE_MAJOR == 13 ]]; then
+        expected_diagnostics+=(
+            "PendingProcess::timeout() expects Carbon\\CarbonInterval|unit_int<'second'>, unit_int<'minute'> given"
+        )
+    else
+        expected_diagnostics+=(
+            "PendingProcess::timeout() expects unit_int<'second'>, unit_int<'minute'> given"
+        )
+    fi
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/laravel-framework/." "$project_dir/"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev \
+        "laravel/framework:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php" "$PACKAGE_MAJOR"
+    run_phpstan_case "$project_dir" phpstan.neon valid.php
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
 }
@@ -492,6 +537,9 @@ case $FIXTURE_SUITE in
     illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-support)
         run_simple_illuminate_integration
         ;;
+    laravel-framework)
+        run_laravel_framework
+        ;;
     phpgeo)
         run_phpgeo
         ;;
@@ -502,7 +550,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|phpgeo|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
         exit 2
         ;;
 esac

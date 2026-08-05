@@ -254,7 +254,26 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             $metadata = $projectPackageResolver($package);
             $version = $metadata['pretty_version'] ?? $metadata['version'] ?? null;
 
-            return is_string($version) ? $version : null;
+            if (is_string($version)) {
+                return $version;
+            }
+
+            $replaced = $metadata['replaced'] ?? null;
+            if (!is_array($replaced) || count($replaced) !== 1) {
+                return null;
+            }
+
+            $replacementVersion = reset($replaced);
+            if (
+                preg_match(
+                    '/^v?[1-9][0-9]*(?:(?:\.[0-9]+)+(?:[-+][0-9A-Za-z.-]+)?|\.x-dev)$/',
+                    $replacementVersion,
+                ) !== 1
+            ) {
+                return null;
+            }
+
+            return $replacementVersion;
         };
     }
 
