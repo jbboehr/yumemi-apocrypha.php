@@ -92,16 +92,17 @@ stub. Stripe, AWS SDK generation, and state-dependent PDF coordinate APIs are no
 
 ### Core Capability Effects
 
-Future Yumemi types improve these integrations in different ways:
+Yumemi's implemented and planned types affect these integrations in different ways:
 
-- **Branded integer ranges** have the broadest immediate value: nonnegative byte counts, sample rates, delays,
-  durations, and image dimensions; percentages from zero through one hundred; and exact sentinel unions where upstream
-  uses a special negative value. PHPStan's existing integer-range model makes this the preferred first core enhancement.
+- **Branded integer ranges and constants** are available through intersections such as `unit_int<'byte'>&int<0, max>`
+  and `3&unit_int<'meter'>`. Apocrypha preserves these refinements when an upstream signature publishes them; it does
+  not narrow a plain upstream `int` from implementation behavior or domain convention alone. Existing unbounded
+  `unit_int` boundaries accept compatible branded constants and ranges.
 - **Branded float ranges** are most valuable to phpgeo's latitude and longitude bounds, then fractional timeouts,
   durations, rates, and image parameters. They require more custom PHPStan machinery than integer ranges.
-- **Constant-valued unit types** primarily improve PHPWord and PHPPresentation conversion-ratio constants. They also
-  preserve useful literal information through ordinary Yumemi arithmetic, but no candidate integration should depend on
-  them merely to brand a nonconstant parameter or return.
+- **Constant-valued unit types** primarily improve PHPWord and PHPPresentation conversion-ratio constants. They preserve
+  useful literal information through ordinary Yumemi arithmetic, but no candidate integration should depend on them
+  merely to brand a nonconstant parameter or return.
 - **`unit_numeric_string<'...'>`** provides little immediate value to this candidate set. getID3 exposes its principal
   measurements as integers or floats, while PHPWord CSS values such as `10px` and formatted media durations such as
   `3:45` are not PHP numeric strings. Guzzle's string-valued `Content-Length` is accessible through a generic header API
@@ -111,6 +112,6 @@ Future Yumemi types improve these integrations in different ways:
   or a physical length under an assumed resolution; twips and EMUs are fixed document units; typographic point names
   must match the effective registry. Do not silently approximate these distinctions for the sake of broader coverage.
 
-With the bounded Guzzle, phpgeo, and getID3 integrations in place, implement branded integer ranges, then decide the
+With the bounded Guzzle, phpgeo, and getID3 integrations in place and branded integer precision available, decide the
 pixel and OOXML unit model before expanding into the document and image package group. Float ranges can follow when
 coordinate coverage supplies the concrete acceptance tests.

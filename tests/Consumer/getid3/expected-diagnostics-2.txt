@@ -1,5 +1,5 @@
 JamesHeinrich\GetID3\GetID3::openfile() expects unit_int<'octet'>|null, int given
-JamesHeinrich\GetID3\GetID3::analyze() expects unit_int<'octet'>|null, unit_int<'1000 * octet'> given
+JamesHeinrich\GetID3\GetID3::analyze() expects unit_int<'octet'>|null, 1&unit_int<'1000 * octet'> given
 acceptGetId3V2Duration expects unit_float<'second'>|unit_int<'second'>, unit_int<'octet'> given
 acceptGetId3V2Bytes expects unit_int<'octet'>, unit_float<'second'>|unit_int<'second'> given
 acceptGetId3V2Duration expects unit_float<'second'>|unit_int<'second'>, unit_float<'bit / second'>|unit_int<'bit / second'> given

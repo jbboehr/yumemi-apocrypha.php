@@ -1,12 +1,12 @@
 array{timeout: 10} given
-array{connect_timeout: unit_int<'1/1000 * second'>} given
+array{connect_timeout: 500&unit_int<'1/1000 * second'>} given
 array{read_timeout: 5.0} given
-array{delay: unit_int<'second'>} given
+array{delay: 1&unit_int<'second'>} given
 array{expect: 1048576} given
-array{expect: unit_int<'1000 * octet'>} given
+array{expect: 1&unit_int<'1000 * octet'>} given
 array{progress: Closure(int, int, int, int): void} given
 Closure(int): 100 given
-Closure(int): int given
+Closure(int): 1 given
 TransferStats constructor expects unit_float<'second'>|null, float given
 TransferStats constructor expects unit_float<'second'>|null, unit_float<'1/1000 * second'> given
 recordGuzzleMilliseconds expects unit_float<'1/1000 * second'>, unit_float<'second'> given

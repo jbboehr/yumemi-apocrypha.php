@@ -41,10 +41,23 @@ use Illuminate\Http\Testing\File;
 use Illuminate\Http\Testing\FileFactory;
 
 use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
 
 /** @param unit_int<'byte'> $bytes */
 function acceptHttpBytes(int $bytes): void
 {
+}
+
+/** @param int<100, 500> $delay */
+function exerciseBoundedIlluminateHttpRetry(PendingRequest $request, int $delay): void
+{
+    $milliseconds = unit($delay, 'millisecond');
+    assertType("unit_int<'1/1000 * second'>&int<100, 500>", $milliseconds);
+
+    $doubled = $milliseconds * 2;
+    assertType("unit_int<'1/1000 * second'>&int<200, 1000>", $doubled);
+
+    $request->retry(3, $doubled);
 }
 
 function exerciseIlluminateHttpStubs(PendingRequest $request, FileFactory $files): void

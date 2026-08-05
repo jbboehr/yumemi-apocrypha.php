@@ -89,12 +89,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jbboehr/yumemi.php.git",
-                "reference": "117e5fbab4c338d1d09b92c5c2c06735dad1cd64"
+                "reference": "41d95c707401e411c20ba553dc7a57acbffb068d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/117e5fbab4c338d1d09b92c5c2c06735dad1cd64",
-                "reference": "117e5fbab4c338d1d09b92c5c2c06735dad1cd64",
+                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/41d95c707401e411c20ba553dc7a57acbffb068d",
+                "reference": "41d95c707401e411c20ba553dc7a57acbffb068d",
                 "shasum": ""
             },
             "require": {
@@ -108,18 +108,17 @@
                 "ext-dom": "*",
                 "friendsofphp/php-cs-fixer": "^3",
                 "infection/infection": "^0.32.6",
-                "jbboehr/phpbench-perfidious": "dev-develop",
+                "jbboehr/phpbench-perfidious": "dev-master",
                 "mrsuh/php-bison-skeleton": "^1.2",
                 "phpbench/phpbench": "^1.7",
-                "phpstan/phpstan": "^2.1",
-                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan": "^2.2.5",
+                "phpstan/phpstan-phpunit": "^2.0.13",
                 "phpstan/phpstan-strict-rules": "^2.0",
                 "phpunit/phpunit": "^11.5"
             },
             "suggest": {
-                "illuminate/cache": "Enables optional unit-aware cache, lock, and rate-limiter stubs through yumemi-tags.neon (Laravel 11-13).",
-                "illuminate/http": "Enables optional unit-aware HTTP client and fake-upload stubs through yumemi-tags.neon (Laravel 11-13).",
-                "phpstan/phpstan": "Enables the bundled Yumemi unit types extension (extension.neon; develop against PHPStan 2.x)."
+                "jbboehr/yumemi-apocrypha": "Provides curated unit-aware PHPStan integrations for supported third-party packages.",
+                "phpstan/phpstan": "Enables the bundled Yumemi unit types extension (extension.neon; requires PHPStan 2.2.5 or later)."
             },
             "default-branch": true,
             "type": "library",
@@ -157,7 +156,7 @@
                 "issues": "https://github.com/jbboehr/yumemi.php/issues",
                 "source": "https://github.com/jbboehr/yumemi.php"
             },
-            "time": "2026-08-02T21:24:19+00:00"
+            "time": "2026-08-05T02:35:13+00:00"
         },
         {
             "name": "phpstan/phpstan",

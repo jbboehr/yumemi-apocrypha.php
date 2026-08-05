@@ -1,4 +1,4 @@
 Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, int given
-Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given
-Sleep::usleep() expects unit_float<'1/1000000 * second'>|unit_int<'1/1000000 * second'>, unit_int<'second'> given
-Timebox::call() expects unit_int<'1/1000000 * second'>, unit_int<'1/1000 * second'> given
+Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given
+Sleep::usleep() expects unit_float<'1/1000000 * second'>|unit_int<'1/1000000 * second'>, 2&unit_int<'second'> given
+Timebox::call() expects unit_int<'1/1000000 * second'>, 250&unit_int<'1/1000 * second'> given

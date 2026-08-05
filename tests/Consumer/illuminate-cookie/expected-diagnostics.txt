@@ -1,3 +1,3 @@
 Factory::make() expects unit_int<'minute'>, int given
-Factory::make() expects unit_int<'minute'>, unit_int<'second'> given
-CookieJar::make() expects unit_int<'minute'>, unit_int<'hour'> given
+Factory::make() expects unit_int<'minute'>, 30&unit_int<'second'> given
+CookieJar::make() expects unit_int<'minute'>, 1&unit_int<'hour'> given

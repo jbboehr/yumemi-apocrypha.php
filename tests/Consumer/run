@@ -161,16 +161,16 @@ run_illuminate_cache() {
     local readme_case=$project_dir/cases/readme-invalid.php
     local expected_diagnostics=(
         "expects unit_int<'second'>, int given"
-        "expects unit_int<'second'>, unit_int<'meter'> given"
+        "expects unit_int<'second'>, 30&unit_int<'meter'> given"
         "Illuminate\\Contracts\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, int given"
-        "Illuminate\\Contracts\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, unit_int<'minute'> given"
+        "Illuminate\\Contracts\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, 2&unit_int<'minute'> given"
         "Illuminate\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, int given"
-        "Illuminate\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, unit_int<'minute'> given"
+        "Illuminate\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, 2&unit_int<'minute'> given"
         "Repository::setDefaultCacheTime() expects unit_int<'second'>|null, int given"
         "RateLimiter::hit() expects DateInterval|DateTimeInterface|unit_int<'second'>, int given"
-        "RateLimiter::hit() expects DateInterval|DateTimeInterface|unit_int<'second'>, unit_int<'minute'> given"
-        "expects unit_int<'1/1000 * second'>, unit_int<'second'> given"
-        "expects unit_int<'minute'>, unit_int<'second'> given"
+        "RateLimiter::hit() expects DateInterval|DateTimeInterface|unit_int<'second'>, 2&unit_int<'minute'> given"
+        "expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
+        "expects unit_int<'minute'>, 1&unit_int<'second'> given"
     )
 
     if [[ ! $PACKAGE_MAJOR =~ ^(11|12|13)$ ]]; then
@@ -200,11 +200,11 @@ run_illuminate_cache() {
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "RateLimiter::hit() expects DateInterval|DateTimeInterface|unit_int<'second'>, unit_int<'minute'> given"
+        "RateLimiter::hit() expects DateInterval|DateTimeInterface|unit_int<'second'>, 2&unit_int<'minute'> given"
     run_phpstan_case "$project_dir" phpstan.neon getting-started-invalid.php \
-        "Store::put() expects unit_int<'second'>, unit_int<'minute'> given"
+        "Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given"
     run_phpstan_case "$project_dir" phpstan.neon readme-invalid.php \
-        "Store::put() expects unit_int<'second'>, unit_int<'minute'> given"
+        "Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given"
 }
 
 run_illuminate_http() {
@@ -212,19 +212,19 @@ run_illuminate_http() {
     local documentation_case=$project_dir/cases/documentation-invalid.php
     local expected_diagnostics=(
         "::timeout() expects unit_float<'second'>|unit_int<'second'>, int given"
-        "::timeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given"
-        "::timeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'meter'> given"
-        "::connectTimeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'minute'> given"
+        "::timeout() expects unit_float<'second'>|unit_int<'second'>, 30&unit_int<'1/1000 * second'> given"
+        "::timeout() expects unit_float<'second'>|unit_int<'second'>, 30&unit_int<'meter'> given"
+        "::connectTimeout() expects unit_float<'second'>|unit_int<'second'>, 30&unit_int<'minute'> given"
         "::retry() expects (Closure(int, mixed): int)|unit_int<'1/1000 * second'>, 250 given"
-        "::retry() expects (Closure(int, mixed): int)|unit_int<'1/1000 * second'>, unit_int<'second'> given"
+        "::retry() expects (Closure(int, mixed): int)|unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
         "::retry() expects array<int, unit_int<'1/1000 * second'>>|int, array<int, int> given"
-        "::retry() expects array<int, unit_int<'1/1000 * second'>>|int, array<int, unit_int<'second'>> given"
+        "::retry() expects array<int, unit_int<'1/1000 * second'>>|int, array<int, 1&unit_int<'second'>> given"
         "::retry() expects (Closure(int, mixed): int)|unit_int<'1/1000 * second'>, Closure(int, mixed): 250 given"
         "FileFactory::create() expects string|unit_int<'1024 * octet'>, int given"
-        "FileFactory::create() expects string|unit_int<'1024 * octet'>, unit_int<'1000 * octet'> given"
-        "FileFactory::create() expects string|unit_int<'1024 * octet'>, unit_int<'second'> given"
+        "FileFactory::create() expects string|unit_int<'1024 * octet'>, 2&unit_int<'1000 * octet'> given"
+        "FileFactory::create() expects string|unit_int<'1024 * octet'>, 2&unit_int<'second'> given"
         "File::create() expects string|unit_int<'1024 * octet'>, int given"
-        "File::size() expects unit_int<'1024 * octet'>, unit_int<'1000 * octet'> given"
+        "File::size() expects unit_int<'1024 * octet'>, 2&unit_int<'1000 * octet'> given"
         "acceptHttpSeconds expects unit_int<'second'>, unit_int<'octet'> given"
     )
 
@@ -251,7 +251,7 @@ run_illuminate_http() {
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "::timeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given"
+        "::timeout() expects unit_float<'second'>|unit_int<'second'>, 250&unit_int<'1/1000 * second'> given"
 }
 
 run_simple_illuminate_integration() {
@@ -290,13 +290,13 @@ run_simple_illuminate_integration() {
 run_laravel_framework() {
     local project_dir=$WORK_DIR/laravel-framework
     local expected_diagnostics=(
-        "Store::put() expects unit_int<'second'>, unit_int<'minute'> given"
-        "Factory::make() expects unit_int<'minute'>, unit_int<'second'> given"
+        "Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given"
+        "Factory::make() expects unit_int<'minute'>, 30&unit_int<'second'> given"
         "acceptFrameworkMeters expects unit_int<'meter'>, unit_int<'octet'> given"
-        "timeout() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given"
-        "Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, unit_int<'minute'> given"
-        "Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, unit_int<'1/1000 * second'> given"
-        "WorkerOptions constructor expects unit_int<'1048576 * octet'>, unit_int<'1000000 * octet'> given"
+        "timeout() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
+        "Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
+        "Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
+        "WorkerOptions constructor expects unit_int<'1048576 * octet'>, 128&unit_int<'1000000 * octet'> given"
     )
 
     if [[ ! $PACKAGE_MAJOR =~ ^(11|12|13)$ ]]; then
@@ -306,11 +306,11 @@ run_laravel_framework() {
 
     if [[ $PACKAGE_MAJOR == 13 ]]; then
         expected_diagnostics+=(
-            "PendingProcess::timeout() expects Carbon\\CarbonInterval|unit_int<'second'>, unit_int<'minute'> given"
+            "PendingProcess::timeout() expects Carbon\\CarbonInterval|unit_int<'second'>, 1&unit_int<'minute'> given"
         )
     else
         expected_diagnostics+=(
-            "PendingProcess::timeout() expects unit_int<'second'>, unit_int<'minute'> given"
+            "PendingProcess::timeout() expects unit_int<'second'>, 1&unit_int<'minute'> given"
         )
     fi
 
@@ -397,7 +397,7 @@ run_guzzle() {
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "array{timeout: unit_int<'1/1000 * second'>} given"
+        "array{timeout: 250&unit_int<'1/1000 * second'>} given"
 }
 
 run_phpgeo() {

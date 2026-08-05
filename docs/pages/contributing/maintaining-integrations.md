@@ -15,6 +15,20 @@ The consumer fixture installs the latest compatible release of each selected maj
 every annotated class, method, parameter, and property before PHPStan runs. Add reflection assertions whenever a stub
 gains coverage; a missing or renamed upstream declaration must fail before semantic assertions run.
 
+Preserve the upstream type structure exactly and change only the unit-bearing scalar. In particular, retain integer
+ranges and literal types when upstream publishes them, but do not infer a narrower type merely because the
+implementation normally produces or accepts values in that range:
+
+| Upstream type      | Unit-bearing replacement            |
+| ------------------ | ----------------------------------- |
+| `int`              | `unit_int<'second'>`                |
+| `int<0, max>`      | `unit_int<'byte'>&int<0, max>`      |
+| `non-negative-int` | `unit_int<'byte'>&non-negative-int` |
+| `3`                | `3&unit_int<'meter'>`               |
+
+Apply the same replacement within arrays, callbacks, unions, and nullable types. Preserve every ordinary fallback,
+sentinel, and non-unit alternative so erasing the Yumemi brand reproduces the upstream PHPDoc.
+
 The Laravel framework fixture separately verifies every Illuminate integration when Composer represents its component
 package as an exact replacement rather than a directly installed package.
 
