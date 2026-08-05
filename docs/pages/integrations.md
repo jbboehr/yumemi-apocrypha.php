@@ -5,15 +5,17 @@ a record of verified behavior, not a promise to support every future or historic
 
 ## Version Policy
 
-CI resolves the latest compatible release of each verified major instead of pinning the snapshots below. An unknown
-future major is rejected until its signatures and semantics have been reviewed.
+CI resolves the latest compatible release of each verified major and any package-specific minimum shown below. An
+unknown future major, or a release below a stated minimum, is rejected until its signatures and semantics have been
+reviewed.
 
-| Package family      | Verified majors | Latest verification snapshots      | Checked    |
-| ------------------- | --------------- | ---------------------------------- | ---------- |
-| Guzzle              | 7, 8            | `7.15.2`, `8.0.1`                  | 2026-08-04 |
-| Illuminate packages | 11, 12, 13      | `v11.51.0`, `v12.64.0`, `v13.23.0` | 2026-08-03 |
-| phpgeo              | 4, 5, 6         | `4.2.1`, `5.0.0`, `6.0.2`          | 2026-08-04 |
-| Symfony Stopwatch   | 6, 7, 8         | `v6.4.24`, `v7.4.8`, `v8.1.0`      | 2026-08-04 |
+| Package family      | Verified versions                   | Verification snapshots             | Checked    |
+| ------------------- | ----------------------------------- | ---------------------------------- | ---------- |
+| Guzzle              | 7, 8                                | `7.15.2`, `8.0.1`                  | 2026-08-04 |
+| getID3              | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`  | 2026-08-04 |
+| Illuminate packages | 11, 12, 13                          | `v11.51.0`, `v12.64.0`, `v13.23.0` | 2026-08-03 |
+| phpgeo              | 4, 5, 6                             | `4.2.1`, `5.0.0`, `6.0.2`          | 2026-08-04 |
+| Symfony Stopwatch   | 6, 7, 8                             | `v6.4.24`, `v7.4.8`, `v8.1.0`      | 2026-08-04 |
 
 ## Guzzle
 
@@ -53,6 +55,54 @@ retain those brands. Major-specific stubs preserve the different retry-delay cal
 
 Handler-stat arrays and generic header access remain unbranded because their units depend on a runtime or literal key.
 Pool-only option callbacks, cookie ages, and internal handler configuration are outside this bounded integration.
+
+## getID3
+
+Enable `james-heinrich/getid3` to brand the stable measurements in the open array returned by `getID3::analyze()` and
+the optional file-size override accepted by `analyze()` and `openfile()`.
+
+| Result or argument                 | Unit           |
+| ---------------------------------- | -------------- |
+| File size and audio/video offsets  | `byte`         |
+| Playback duration                  | `second`       |
+| Overall, audio, and video bitrates | `bit / second` |
+| Audio sample and video frame rates | `hertz`        |
+
+<!-- yumemi-example: getid3-invalid -->
+
+```php
+<?php
+
+use JamesHeinrich\GetID3\GetID3;
+
+/** @param unit_int<'second'>|unit_float<'second'> $duration */
+function recordMediaDuration(int|float $duration): void {}
+
+$metadata = (new GetID3())->analyze('/srv/media/interview.wav');
+
+if (isset($metadata['playtime_seconds'])) {
+    recordMediaDuration($metadata['playtime_seconds']);
+}
+
+if (isset($metadata['bitrate'])) {
+    recordMediaDuration($metadata['bitrate']); //! PHPStan rejects a bitrate at this duration boundary.
+}
+```
+
+Here `//!` marks the expected PHPStan diagnostic exercised by the documentation test; it is not Yumemi syntax.
+
+getID3 2.x uses the namespaced `JamesHeinrich\GetID3\GetID3` class shown above. Applications on getID3 1.x use the
+global `getID3` class; Apocrypha selects the corresponding stub from the installed package version.
+
+The result remains open because getID3 adds format-specific metadata dynamically. Its branded keys are optional so
+callers must check that analysis produced them; guarded, unlisted keys remain available as `mixed`. The audio bitrate
+also retains getID3's special `'free'` value. Pixel dimensions remain unbranded until Yumemi has an explicit pixel
+model.
+
+The 1.x integration starts at 1.9.22, the first verified release in that signature line that runs cleanly on Apocrypha's
+PHP 8.2 baseline. The namespaced 2.x integration starts at the current `2.0.0-beta6` prerelease. Yumemi currently treats
+`bit / second` and `hertz` as definitionally equivalent because `bit` is dimensionless, so it cannot yet detect a
+bitrate passed to a sample-rate or frame-rate boundary.
 
 ## Illuminate Cache
 

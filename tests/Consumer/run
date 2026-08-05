@@ -40,6 +40,8 @@ if [[ $PACKAGE_MODE == archive ]]; then
         docs/pages/images/yumemi-banner.png
         extension.neon
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
+        stubs/getid3/getid3-1.stub
+        stubs/getid3/getid3-2.stub
         stubs/guzzle/guzzle-7.stub
         stubs/guzzle/guzzle-8.stub
         stubs/guzzle/guzzle.stub
@@ -78,7 +80,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|phpgeo|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|phpgeo|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
     exit 2
 fi
 
@@ -385,6 +387,72 @@ run_phpgeo() {
         "calculateDestination() expects unit_float<'arc_degree'>, unit_float<'radian'> given"
 }
 
+run_getid3() {
+    local project_dir=$WORK_DIR/getid3
+    local documentation_case=$project_dir/cases/documentation-invalid.php
+    local invalid_case
+    local package_constraint
+    local valid_case
+    local expected_diagnostics_file
+    local expected_diagnostics=()
+
+    case $PACKAGE_MAJOR in
+        1)
+            package_constraint='^1.9.22'
+            valid_case=valid.php
+            invalid_case=invalid.php
+            expected_diagnostics_file=expected-diagnostics.txt
+            ;;
+        1.9.22)
+            package_constraint=$PACKAGE_MAJOR
+            valid_case=valid.php
+            invalid_case=invalid.php
+            expected_diagnostics_file=expected-diagnostics.txt
+            ;;
+        2)
+            package_constraint='^2.0.0-beta6'
+            valid_case=valid-2.php
+            invalid_case=invalid-2.php
+            expected_diagnostics_file=expected-diagnostics-2.txt
+            ;;
+        2.0.0-beta6)
+            package_constraint=$PACKAGE_MAJOR
+            valid_case=valid-2.php
+            invalid_case=invalid-2.php
+            expected_diagnostics_file=expected-diagnostics-2.txt
+            ;;
+        *)
+            printf 'getID3 consumer tests require version 1, 1.9.22, 2, or 2.0.0-beta6.\n' >&2
+            exit 2
+            ;;
+    esac
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/getid3/." "$project_dir/"
+    mapfile -t expected_diagnostics < "$project_dir/$expected_diagnostics_file"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev \
+        "james-heinrich/getid3:$package_constraint" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php"
+    run_phpstan_case "$project_dir" phpstan.neon "$valid_case"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon "$valid_case"
+    run_phpstan_case "$project_dir" phpstan.neon "$invalid_case" "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon "$invalid_case" "${expected_diagnostics[@]}"
+
+    if [[ $PACKAGE_MAJOR == 2 || $PACKAGE_MAJOR == 2.0.0-beta6 ]]; then
+        php "$PROJECT_ROOT/tests/Documentation/extract-markdown-example.php" \
+            "$PROJECT_ROOT/docs/pages/integrations.md" getid3-invalid > "$documentation_case"
+        run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
+            "recordMediaDuration expects unit_float<'second'>|unit_int<'second'>, unit_float<'bit / second'>|unit_int<'bit / second'> given"
+    fi
+}
+
 run_manual() {
     local project_dir=$WORK_DIR/manual
 
@@ -409,6 +477,9 @@ run_manual() {
 }
 
 case $FIXTURE_SUITE in
+    getid3)
+        run_getid3
+        ;;
     guzzle)
         run_guzzle
         ;;
@@ -431,7 +502,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|phpgeo|symfony-stopwatch|manual] [package-major]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|phpgeo|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
         exit 2
         ;;
 esac

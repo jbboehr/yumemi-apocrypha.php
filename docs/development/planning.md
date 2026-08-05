@@ -7,7 +7,10 @@ claims to support and semantically accurate about the represented units.
 ## Current Scope
 
 - Explicit integration selection and optional Composer-package autodetection are implemented.
-- Explicit selections and strict autodetection reject installed package majors that have not been verified.
+- Explicit selections and strict autodetection reject installed package versions that have not been verified, including
+  releases below a package-specific minimum.
+- `james-heinrich/getid3` covers a bounded open result shape for byte counts, durations, bitrates, sample rates, and
+  frame rates from getID3 1.9.22 and later 1.x releases and 2.0.0-beta6 and later 2.x releases.
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
@@ -15,8 +18,9 @@ claims to support and semantically accurate about the represented units.
 - `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
   phpgeo 4 through 6 while leaving coordinate origins unbranded.
 - `symfony/stopwatch` covers event and period durations and memory results across Symfony Stopwatch 6 through 8.
-- The loader can select major-specific stub files when a supported upstream signature differs; Illuminate Process uses
-  this for Laravel 13's `CarbonInterval|int` timeout boundary, and Guzzle uses it for retry callback signatures.
+- The loader can enforce a minimum release within a major and select major-specific stub files when a supported upstream
+  signature differs. getID3 uses both mechanisms for its global 1.x and namespaced 2.x APIs; Illuminate Process and
+  Guzzle use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   and a representative Composer archive.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
@@ -27,6 +31,19 @@ claims to support and semantically accurate about the represented units.
 The supported-version table is descriptive rather than a promise to support every future or historical framework major.
 New majors should normally be added after their reflected signatures and PHPStan behavior pass the complete consumer
 suite. Integration scope remains curated: add APIs only when their physical unit is stable, useful, and unambiguous.
+
+## Maintenance Backlog
+
+- Bring Apocrypha's documentation-example coverage up to Yumemi's whole-corpus model. Inventory every PHP fence in
+  `README.md` and `docs/pages/**`, execute dependency-free examples, and analyze every unit-relevant example with
+  PHPStan. Route examples that depend on third-party packages through the appropriate isolated consumer so they retain
+  real upstream verification, and use standalone `//!` expectations consistently. The suite should fail when a new
+  public example has no declared verification path.
+- Support Illuminate integrations when an application installs `laravel/framework` rather than individual component
+  packages. Composer records the replaced `illuminate/*` packages without a direct `pretty_version` or `version`; the
+  current resolver sees those names as installed but cannot determine their major. Resolve replace-only metadata without
+  weakening version checks, then add full-framework consumers for Laravel 11, 12, and 13 covering explicit selection and
+  autodetection before presenting `laravel/framework` as a supported installation path.
 
 ## Future Candidates
 
@@ -55,13 +72,7 @@ boundaries, and maintenance stability. A package that uses several independent d
 one that repeats the same duration unit throughout, but a small stable API may still dominate a theoretically rich API
 whose useful data is dynamic or context-dependent.
 
-### Candidate Order
-
-The leading remaining candidate that can provide value without first extending Yumemi's type system is:
-
-1. `james-heinrich/getid3`: file sizes, durations, bitrates, sample rates, frame rates, and media dimensions provide
-   high measurement density, but its large format-dependent result arrays require a deliberately bounded and
-   maintainable shape rather than an attempted transcription of all metadata.
+### Candidates Requiring Core Work
 
 The following packages remain valuable after a small amount of core semantic or type-system work:
 
@@ -104,6 +115,6 @@ Future Yumemi types improve these integrations in different ways:
   or a physical length under an assumed resolution; twips and EMUs are fixed document units; typographic point names
   must match the effective registry. Do not silently approximate these distinctions for the sake of broader coverage.
 
-With the bounded Guzzle and phpgeo integrations in place, implement branded integer ranges, then decide the pixel and
-OOXML unit model before expanding into the document and image package group. Float ranges can follow when coordinate
-coverage supplies the concrete acceptance tests.
+With the bounded Guzzle, phpgeo, and getID3 integrations in place, implement branded integer ranges, then decide the
+pixel and OOXML unit model before expanding into the document and image package group. Float ranges can follow when
+coordinate coverage supplies the concrete acceptance tests.

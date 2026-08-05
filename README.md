@@ -6,9 +6,21 @@
 
 Curated PHPStan unit annotations for third-party PHP packages, built on [Yumemi](https://github.com/jbboehr/yumemi.php).
 
-The package is under active development and has no tagged release. It currently covers selected unit-bearing APIs in
-Guzzle 7 and 8; Illuminate Cache, Cookie, Filesystem, HTTP, Process, Queue, and Support across Laravel 11, 12, and 13;
-phpgeo 4, 5, and 6; and Symfony Stopwatch across majors 6, 7, and 8.
+The package is under active development and has no tagged release. It currently covers selected unit-bearing APIs in:
+
+| Composer package        | Supported versions                  |
+| ----------------------- | ----------------------------------- |
+| `james-heinrich/getid3` | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x |
+| `guzzlehttp/guzzle`     | 7, 8                                |
+| `illuminate/cache`      | 11, 12, 13                          |
+| `illuminate/cookie`     | 11, 12, 13                          |
+| `illuminate/filesystem` | 11, 12, 13                          |
+| `illuminate/http`       | 11, 12, 13                          |
+| `illuminate/process`    | 11, 12, 13                          |
+| `illuminate/queue`      | 11, 12, 13                          |
+| `illuminate/support`    | 11, 12, 13                          |
+| `mjaschen/phpgeo`       | 4, 5, 6                             |
+| `symfony/stopwatch`     | 6, 7, 8                             |
 
 ```shell
 composer require --dev jbboehr/yumemi:dev-master jbboehr/yumemi-apocrypha:dev-master \

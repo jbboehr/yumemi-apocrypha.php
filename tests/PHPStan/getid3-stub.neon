@@ -1,0 +1,4 @@
+parameters:
+    stubFiles:
+        - ../../stubs/getid3/getid3-1.stub
+        - ../../stubs/getid3/getid3-2.stub

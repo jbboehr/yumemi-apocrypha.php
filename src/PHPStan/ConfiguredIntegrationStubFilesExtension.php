@@ -57,6 +57,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * @var array<string, array{
      *     majors: non-empty-list<int>,
+     *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>
      * }>
@@ -122,6 +123,17 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/support.stub'],
         ],
+        'james-heinrich/getid3' => [
+            'majors' => [1, 2],
+            'minimumVersions' => [
+                1 => '1.9.22',
+                2 => '2.0.0-beta6',
+            ],
+            'files' => [__DIR__ . '/../../stubs/getid3/getid3-1.stub'],
+            'filesByMajor' => [
+                2 => [__DIR__ . '/../../stubs/getid3/getid3-2.stub'],
+            ],
+        ],
         'mjaschen/phpgeo' => [
             'majors' => [4, 5, 6],
             'files' => [__DIR__ . '/../../stubs/phpgeo/phpgeo.stub'],
@@ -155,6 +167,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * @var array<string, array{
      *     majors: non-empty-list<int>,
+     *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>
      * }>
@@ -184,6 +197,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      * @param list<string> $integrations
      * @param array<string, array{
      *     majors: non-empty-list<int>,
+     *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>
      * }>|null $supportedIntegrations
@@ -346,7 +360,16 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
 
         $major = (int) $matches[1];
 
-        return in_array($major, $this->supportedIntegrations[$integration]['majors'], true) ? $major : null;
+        if (!in_array($major, $this->supportedIntegrations[$integration]['majors'], true)) {
+            return null;
+        }
+
+        $minimumVersion = $this->supportedIntegrations[$integration]['minimumVersions'][$major] ?? null;
+        if ($minimumVersion !== null && version_compare(ltrim($version, 'v'), $minimumVersion, '<')) {
+            return null;
+        }
+
+        return $major;
     }
 
     /**
@@ -365,10 +388,19 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             ));
         }
 
+        $configuration = $this->supportedIntegrations[$integration];
+        $supportedVersions = array_map(
+            static fn (int $major): string => isset($configuration['minimumVersions'][$major])
+                ? sprintf('%d (>= %s)', $major, $configuration['minimumVersions'][$major])
+                : (string) $major,
+            $configuration['majors'],
+        );
+
         throw new InvalidConfigurationException(sprintf(
-            'Yumemi Apocrypha integration "%s" supports major versions %s; installed version is %s.',
+            'Yumemi Apocrypha integration "%s" supports %s %s; installed version is %s.',
             $integration,
-            implode(', ', $this->supportedIntegrations[$integration]['majors']),
+            isset($configuration['minimumVersions']) ? 'versions' : 'major versions',
+            implode(', ', $supportedVersions),
             $version,
         ));
     }

@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @phpstan-type YumemiGetId3Info array{
+ *     filesize?: unit_int<'byte'>,
+ *     avdataoffset?: unit_int<'byte'>,
+ *     avdataend?: unit_int<'byte'>,
+ *     bitrate?: unit_int<'bit / second'>|unit_float<'bit / second'>,
+ *     playtime_seconds?: unit_int<'second'>|unit_float<'second'>,
+ *     audio?: array{
+ *         bitrate?: 'free'|unit_int<'bit / second'>|unit_float<'bit / second'>,
+ *         sample_rate?: unit_int<'hertz'>|unit_float<'hertz'>,
+ *         ...
+ *     },
+ *     video?: array{
+ *         bitrate?: unit_int<'bit / second'>|unit_float<'bit / second'>,
+ *         frame_rate?: unit_int<'hertz'>|unit_float<'hertz'>,
+ *         ...
+ *     },
+ *     ...
+ * }
+ */
+class getID3
+{
+    /**
+     * @param string $filename
+     * @param int|null $filesize
+     * @param resource|null $fp
+     *
+     * @phpstan-param unit_int<'byte'>|null $filesize
+     * @yumemi-param unit_int<'byte'>|null $filesize
+     *
+     * @return bool
+     */
+    public function openfile($filename, $filesize = null, $fp = null)
+    {
+    }
+
+    /**
+     * @param string $filename
+     * @param int|null $filesize
+     * @param string $original_filename
+     * @param resource|null $fp
+     *
+     * @phpstan-param unit_int<'byte'>|null $filesize
+     * @yumemi-param unit_int<'byte'>|null $filesize
+     *
+     * @return array
+     *
+     * @phpstan-return YumemiGetId3Info
+     * @yumemi-return YumemiGetId3Info
+     */
+    public function analyze($filename, $filesize = null, $original_filename = '', $fp = null)
+    {
+    }
+}

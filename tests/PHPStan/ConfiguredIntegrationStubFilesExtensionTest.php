@@ -283,6 +283,88 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         $extension->getFiles();
     }
 
+    public function testPackageSpecificMinimumVersionIsAccepted(): void
+    {
+        $supported = $this->supported();
+        $supported['vendor/one'] = [
+            'majors' => [11, 12, 13],
+            'minimumVersions' => [11 => '11.4.2'],
+            'files' => [__DIR__ . '/../../apocrypha.neon'],
+        ];
+        $extension = $this->extension(
+            integrations: ['vendor/one'],
+            supported: $supported,
+            installed: static fn (): bool => true,
+            version: static fn (): string => 'v11.4.2',
+        );
+
+        self::assertSame([realpath(__DIR__ . '/../../apocrypha.neon')], $extension->getFiles());
+    }
+
+    public function testExplicitVersionBelowPackageSpecificMinimumIsRejected(): void
+    {
+        $supported = $this->supported();
+        $supported['vendor/one'] = [
+            'majors' => [11, 12, 13],
+            'minimumVersions' => [11 => '11.4.2'],
+            'files' => [__DIR__ . '/../../apocrypha.neon'],
+        ];
+        $extension = $this->extension(
+            integrations: ['vendor/one'],
+            supported: $supported,
+            installed: static fn (): bool => true,
+            version: static fn (): string => '11.4.1',
+        );
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Yumemi Apocrypha integration "vendor/one" supports versions 11 (>= 11.4.2), 12, 13; '
+                . 'installed version is 11.4.1.',
+        );
+
+        $extension->getFiles();
+    }
+
+    public function testStrictAutodetectionRejectsVersionBelowPackageSpecificMinimum(): void
+    {
+        $supported = $this->supported();
+        $supported['vendor/one'] = [
+            'majors' => [11, 12, 13],
+            'minimumVersions' => [11 => '11.4.2'],
+            'files' => [__DIR__ . '/../../apocrypha.neon'],
+        ];
+        $extension = $this->extension(
+            autoDetect: true,
+            supported: $supported,
+            installed: static fn (string $package): bool => $package === 'vendor/one',
+            version: static fn (): string => '11.4.1',
+        );
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage('supports versions 11 (>= 11.4.2), 12, 13; installed version is 11.4.1.');
+
+        $extension->getFiles();
+    }
+
+    public function testNonStrictAutodetectionSkipsVersionBelowPackageSpecificMinimum(): void
+    {
+        $supported = $this->supported();
+        $supported['vendor/one'] = [
+            'majors' => [11, 12, 13],
+            'minimumVersions' => [11 => '11.4.2'],
+            'files' => [__DIR__ . '/../../apocrypha.neon'],
+        ];
+        $extension = $this->extension(
+            autoDetect: true,
+            strictAutoDetect: false,
+            supported: $supported,
+            installed: static fn (string $package): bool => $package === 'vendor/one',
+            version: static fn (): string => '11.4.1',
+        );
+
+        self::assertSame([], $extension->getFiles());
+    }
+
     public function testMissingStubFileIsAnInternalLogicError(): void
     {
         $supported = $this->supported();
@@ -327,6 +409,7 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
      * @param list<string> $integrations
      * @param array<string, array{
      *     majors: non-empty-list<int>,
+     *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>
      * }>|null $supported
@@ -354,6 +437,7 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
     /**
      * @return array<string, array{
      *     majors: non-empty-list<int>,
+     *     minimumVersions?: array<int, non-empty-string>,
      *     files: non-empty-list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>
      * }>

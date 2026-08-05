@@ -1,0 +1,7 @@
+getID3::openfile() expects unit_int<'octet'>|null, int given
+getID3::analyze() expects unit_int<'octet'>|null, unit_int<'1000 * octet'> given
+acceptGetId3Duration expects unit_float<'second'>|unit_int<'second'>, unit_int<'octet'> given
+acceptGetId3Bytes expects unit_int<'octet'>, unit_float<'second'>|unit_int<'second'> given
+acceptGetId3Duration expects unit_float<'second'>|unit_int<'second'>, unit_float<'bit / second'>|unit_int<'bit / second'> given
+acceptGetId3Duration expects unit_float<'second'>|unit_int<'second'>, unit_float<'hertz'>|unit_int<'hertz'> given
+acceptGetId3Bytes expects unit_int<'octet'>, unit_float<'hertz'>|unit_int<'hertz'> given

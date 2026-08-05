@@ -1,5 +1,6 @@
 .DEFAULT: all
-.PHONY: all coverage-branch docs docs-check docs-serve test-consumer-guzzle test-consumer-guzzle-archive \
+.PHONY: all coverage-branch docs docs-check docs-serve test-consumer-getid3 test-consumer-getid3-archive \
+	test-consumer-guzzle test-consumer-guzzle-archive \
 	test-consumer-illuminate-cache \
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-filesystem test-consumer-illuminate-process \
@@ -13,6 +14,7 @@ BRANCH_COVERAGE_SOURCE ?= src
 BRANCH_COVERAGE_TESTS ?=
 BRANCH_COVERAGE_XDEBUG_ERROR := Xdebug is not loaded; enter nix develop .\#xdebug.
 ILLUMINATE_CACHE_MAJOR ?= 12
+GETID3_VERSION ?= 2
 GUZZLE_MAJOR ?= 8
 ILLUMINATE_COOKIE_MAJOR ?= 12
 ILLUMINATE_FILESYSTEM_MAJOR ?= 12
@@ -44,6 +46,12 @@ docs-check: docs
 
 docs-serve:
 	mdbook serve docs --hostname 127.0.0.1
+
+test-consumer-getid3:
+	tests/Consumer/run source getid3 $(GETID3_VERSION)
+
+test-consumer-getid3-archive:
+	tests/Consumer/run archive getid3 $(GETID3_VERSION)
 
 test-consumer-guzzle:
 	tests/Consumer/run source guzzle $(GUZZLE_MAJOR)

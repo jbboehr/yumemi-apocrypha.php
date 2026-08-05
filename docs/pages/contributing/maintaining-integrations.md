@@ -18,6 +18,7 @@ gains coverage; a missing or renamed upstream declaration must fail before seman
 Run one major locally with:
 
 ```shell
+GETID3_VERSION=2 make test-consumer-getid3
 GUZZLE_MAJOR=8 make test-consumer-guzzle
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
@@ -39,8 +40,8 @@ points, legal notices, and stubs are present while tests and development tooling
 
 ## Add An Integration
 
-1. Add the package and finite verified-major list to `SUPPORTED_INTEGRATIONS`; select major-specific files when the
-   verified signatures differ.
+1. Add the package and finite verified-major list to `SUPPORTED_INTEGRATIONS`; record a package-specific minimum when
+   only part of a major is compatible, and select major-specific files when verified signatures differ.
 2. Add its stub beneath `stubs/<vendor>/` with ordinary fallback PHPDoc and structurally matching `@yumemi-*` tags.
 3. Add parser tests for promoted parameter, return, property, callback, collection, and union forms used by the stub.
 4. Add an isolated Composer consumer with upstream reflection, accepted calls, rejected calls, and autodetection. Use
