@@ -23,6 +23,13 @@ packages. Continue to select the precise component integration names, such as `i
 replacement version supplies the verified major for explicit selection and autodetection. Broad or ambiguous replacement
 constraints are not treated as verified versions.
 
+Larastan 3 (currently verified at `v3.10.0`) is tested with every Illuminate integration and with the complete Laravel
+framework across the same Laravel 11 through 13 matrix. When Larastan is present, Apocrypha keeps Larastan's richer
+framework declarations and enforces the selected integration's units through PHPStan rules and type extensions. The
+switch is automatic and applies to the complete integration: Apocrypha never loads a partial Illuminate stub over
+Larastan. An installed Larastan major other than 3 is rejected while an Illuminate integration is selected, rather than
+risk stale or conflicting analysis.
+
 ## Guzzle
 
 Enable `guzzlehttp/guzzle` to brand selected request options, retry delays, progress byte counts, and transfer times.
@@ -304,6 +311,9 @@ Yumemi's native brands do not represent coordinate origins.
   signature differs, as with Illuminate Process on Laravel 13.
 - Native branded arguments are not converted. Dimensionally compatible but differently scaled units remain invalid.
 - Dynamic or unsupported unit expressions lose Yumemi's precise brand according to the core extension's normal rules.
+- Larastan-mode argument and property violations use the PHPStan diagnostic identifier `apocrypha.unit`. An unpacked
+  argument is checked when PHPStan can resolve it to a finite constant array; Apocrypha does not guess positions after
+  an unknown unpack.
 - Enabling Apocrypha enables Yumemi's parser-based optional-tag promotion, with the associated PHPStan upgrade and
   extension-conflict risk.
 

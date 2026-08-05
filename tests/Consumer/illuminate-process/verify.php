@@ -38,8 +38,9 @@ declare(strict_types=1);
 
 require __DIR__ . '/vendor/autoload.php';
 
-$version = Composer\InstalledVersions::getVersion('illuminate/process');
-if ($version === null || preg_match('/^([1-9][0-9]*)\./', $version, $matches) !== 1) {
+$version = Composer\InstalledVersions::getVersion('illuminate/process')
+    ?? Composer\InstalledVersions::getPrettyVersion('laravel/framework');
+if ($version === null || preg_match('/^v?([1-9][0-9]*)\./', $version, $matches) !== 1) {
     throw new RuntimeException(sprintf('Unable to determine Illuminate Process version from %s.', $version ?? 'null'));
 }
 

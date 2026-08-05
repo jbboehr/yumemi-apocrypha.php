@@ -16,6 +16,9 @@ claims to support and semantically accurate about the represented units.
   transfer times across Guzzle 7 and 8.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
   `illuminate/process`, and `illuminate/queue` cover stable unit-bearing APIs across Laravel 11 through 13.
+- Every Illuminate integration coexists automatically with Larastan 3. Standalone analysis uses the package stubs;
+  Larastan analysis keeps Larastan's declarations and reproduces Apocrypha's unit boundaries through a metadata-driven
+  rule and type-extension adapter, with parity enforced against the canonical stubs.
 - `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
   phpgeo 4 through 6 while leaving coordinate origins unbranded.
 - `symfony/stopwatch` covers event and period durations and memory results across Symfony Stopwatch 6 through 8.
@@ -24,6 +27,7 @@ claims to support and semantically accurate about the represented units.
   Guzzle use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   a representative Composer archive, and Laravel 11 through 13 replacement metadata for every Illuminate integration.
+  Every Illuminate subpackage and the combined framework fixture run both with and without Larastan.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
   stubs and their selection policy.
 
@@ -32,6 +36,8 @@ claims to support and semantically accurate about the represented units.
 The supported-version table is descriptive rather than a promise to support every future or historical framework major.
 New majors should normally be added after their reflected signatures and PHPStan behavior pass the complete consumer
 suite. Integration scope remains curated: add APIs only when their physical unit is stable, useful, and unambiguous.
+Larastan compatibility is selected for an entire Illuminate integration rather than as a partial stub overlay, and an
+unverified Larastan major is rejected until its combined behavior passes the same matrix.
 
 ## Maintenance Backlog
 

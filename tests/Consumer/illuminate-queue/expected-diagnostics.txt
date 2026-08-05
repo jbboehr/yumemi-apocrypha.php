@@ -1,5 +1,6 @@
 Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, int given
 Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'hour'> given
 Job::release() expects unit_int<'second'>, 500&unit_int<'1/1000 * second'> given
 Parameter $backoff of class Illuminate\Queue\WorkerOptions constructor expects array<unit_int<'second'>>|unit_int<'second'>, array<int, int> given
 Parameter $memory of class Illuminate\Queue\WorkerOptions constructor expects unit_int<'1048576 * octet'>, 128&unit_int<'1000000 * octet'> given

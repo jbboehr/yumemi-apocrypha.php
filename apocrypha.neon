@@ -12,7 +12,7 @@ parametersSchema:
     ])
 
 services:
-    -
+    configuredIntegrationStubFilesExtension:
         class: jbboehr\Yumemi\Apocrypha\PHPStan\ConfiguredIntegrationStubFilesExtension
         arguments:
             integrations: %yumemiApocrypha.integrations%
@@ -20,3 +20,82 @@ services:
             strictAutoDetect: %yumemiApocrypha.strictAutoDetect%
         tags:
             - phpstan.stubFilesExtension
+    larastanCompatibilityUnitBoundaryExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitBoundaryExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+        tags:
+            - phpstan.rules.rule
+            - phpstan.broker.expressionTypeResolverExtension
+    larastanCompatibilityCacheRepositoryReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/cache
+            class: Illuminate\Cache\Repository
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    larastanCompatibilityCacheRateLimiterReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/cache
+            class: Illuminate\Cache\RateLimiter
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    larastanCompatibilityFilesystemContractReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/filesystem
+            class: Illuminate\Contracts\Filesystem\Filesystem
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    larastanCompatibilityFilesystemReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/filesystem
+            class: Illuminate\Filesystem\Filesystem
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    larastanCompatibilityFilesystemAdapterReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/filesystem
+            class: Illuminate\Filesystem\FilesystemAdapter
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    larastanCompatibilityLockableFileReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/filesystem
+            class: Illuminate\Filesystem\LockableFile
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    larastanCompatibilityHttpFileReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/http
+            class: Illuminate\Http\Testing\File
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    larastanCompatibilityBenchmarkReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/support
+            class: Illuminate\Support\Benchmark
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension

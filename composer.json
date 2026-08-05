@@ -58,6 +58,7 @@
         "phpstan/phpstan": "^2.2.5"
     },
     "suggest": {
+        "larastan/larastan": "Adds Laravel-specific analysis while Apocrypha preserves selected Illuminate unit boundaries.",
         "phpstan/extension-installer": "Automatically registers Yumemi and Yumemi Apocrypha with PHPStan."
     },
     "autoload": {

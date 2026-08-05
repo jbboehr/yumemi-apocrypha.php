@@ -501,6 +501,132 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([realpath(__DIR__ . '/../../extension.neon')], $extension->getFiles());
     }
 
+    public function testLarastanThreeSelectsTheAdapterInsteadOfIlluminateStubs(): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/cache'],
+            false,
+            true,
+            [
+                'illuminate/cache' => [
+                    'majors' => [11, 12, 13],
+                    'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
+                ],
+            ],
+            static fn (string $package): bool => in_array(
+                $package,
+                ['illuminate/cache', 'larastan/larastan'],
+                true,
+            ),
+            static fn (string $package): string => $package === 'larastan/larastan' ? 'v3.10.0' : '12.4.0',
+        );
+
+        self::assertSame([], $extension->getFiles());
+        self::assertSame(12, $extension->getSelectedMajor('illuminate/cache'));
+        self::assertTrue($extension->usesLarastanAdapter('illuminate/cache'));
+    }
+
+    public function testIlluminateStubsRemainSelectedWithoutLarastan(): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/cache'],
+            false,
+            true,
+            [
+                'illuminate/cache' => [
+                    'majors' => [11, 12, 13],
+                    'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
+                ],
+            ],
+            static fn (string $package): bool => $package === 'illuminate/cache',
+            static fn (): string => '12.4.0',
+        );
+
+        self::assertSame([
+            realpath(__DIR__ . '/../../stubs/illuminate/cache.stub'),
+        ], $extension->getFiles());
+        self::assertFalse($extension->usesLarastanAdapter('illuminate/cache'));
+    }
+
+    public function testLarastanOnlyReplacesSelectedIlluminateStubs(): void
+    {
+        $supported = $this->supported() + [
+            'illuminate/cache' => [
+                'majors' => [11, 12, 13],
+                'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
+            ],
+        ];
+        $extension = $this->extension(
+            integrations: ['illuminate/cache', 'vendor/one'],
+            supported: $supported,
+            installed: static fn (): bool => true,
+            version: static fn (string $package): string => $package === 'larastan/larastan'
+                ? '3.10.0'
+                : '12.4.0',
+        );
+
+        self::assertSame([realpath(__DIR__ . '/../../apocrypha.neon')], $extension->getFiles());
+        self::assertTrue($extension->usesLarastanAdapter('illuminate/cache'));
+        self::assertFalse($extension->usesLarastanAdapter('vendor/one'));
+    }
+
+    public function testUnsupportedLarastanDoesNotAffectNonIlluminateIntegrations(): void
+    {
+        $extension = $this->extension(
+            integrations: ['vendor/one'],
+            installed: static fn (): bool => true,
+            version: static fn (string $package): string => $package === 'larastan/larastan'
+                ? '4.0.0'
+                : '12.4.0',
+        );
+
+        self::assertSame([realpath(__DIR__ . '/../../apocrypha.neon')], $extension->getFiles());
+    }
+
+    /** @return iterable<string, array{?string, string}> */
+    public static function unsupportedLarastanVersions(): iterable
+    {
+        yield 'unknown version' => [
+            null,
+            'Unable to determine the installed Larastan major version from "unknown"',
+        ];
+        yield 'future major' => [
+            '4.0.0',
+            'Yumemi Apocrypha supports Larastan major version 3 with Illuminate integrations; installed version is 4.0.0.',
+        ];
+    }
+
+    #[DataProvider('unsupportedLarastanVersions')]
+    public function testSelectedIlluminateIntegrationRejectsUnsupportedLarastanVersion(
+        ?string $larastanVersion,
+        string $message,
+    ): void {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/cache'],
+            false,
+            true,
+            [
+                'illuminate/cache' => [
+                    'majors' => [11, 12, 13],
+                    'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
+                ],
+            ],
+            static fn (string $package): bool => in_array(
+                $package,
+                ['illuminate/cache', 'larastan/larastan'],
+                true,
+            ),
+            static fn (string $package): ?string => $package === 'larastan/larastan'
+                ? $larastanVersion
+                : '12.4.0',
+        );
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage($message);
+
+        $extension->getFiles();
+    }
+
     /**
      * @param list<string> $integrations
      * @param array<string, array{

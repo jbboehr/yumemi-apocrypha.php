@@ -36,33 +36,14 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Queue\Job;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\WorkerOptions;
+use Illuminate\Support\Benchmark;
 
-use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
 
-final class DelayedReportJob
-{
-    use InteractsWithQueue;
-}
-
-function misconfigureBackgroundJob(Queue $queue, Job $job): void
-{
-    $queue->later(30, 'App\\Jobs\\RefreshReport');
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $queue->later(...[unit(1, 'hour'), 'App\\Jobs\\RefreshReport']);
-    $job->release(unit(500, 'millisecond'));
-    (new DelayedReportJob())->release(unit(1, 'minute'));
-
-    $options = new WorkerOptions(
-        backoff: [1, 5],
-        memory: unit(128, '1000000 * byte'),
-        timeout: unit(1, 'minute'),
-        sleep: 3,
-    );
-
-    $options->timeout = unit(1, 'minute');
-    ++$options->timeout;
-}
+$larastanMeasurements = Benchmark::measure([
+    'first' => static function (): void {
+    },
+    'second' => static function (): void {
+    },
+]);
+assertType("array<'first'|'second', unit_float<'1/1000 * second'>>", $larastanMeasurements);

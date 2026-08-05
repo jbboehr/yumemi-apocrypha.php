@@ -223,17 +223,31 @@ jobs:
               run: tests/Consumer/run ${{ matrix.package-mode }} guzzle ${{ matrix.guzzle-version }}
 
     illuminate-cache:
-        name: Illuminate Cache ${{ matrix.illuminate-version }} / PHP ${{ matrix.php-version }}
+        name:
+            Illuminate Cache ${{ matrix.illuminate-version }} / ${{ matrix.compatibility-mode }} / PHP ${{
+            matrix.php-version }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
+                illuminate-version:
+                    - "11"
+                    - "12"
+                    - "13"
+                compatibility-mode:
+                    - plain
+                    - larastan
                 include:
                     - illuminate-version: "11"
                       package-mode: source
                       php-version: "8.2"
                     - illuminate-version: "12"
+                      compatibility-mode: plain
                       package-mode: archive
+                      php-version: "8.2"
+                    - illuminate-version: "12"
+                      compatibility-mode: larastan
+                      package-mode: source
                       php-version: "8.2"
                     - illuminate-version: "13"
                       package-mode: source
@@ -264,7 +278,9 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-cache-${{ matrix.illuminate-version }}
+                  key:
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-cache-${{ matrix.illuminate-version
+                      }}-${{ matrix.compatibility-mode }}
                   restore-keys: |
                       ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-cache-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
@@ -273,26 +289,42 @@ jobs:
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
-              run: tests/Consumer/run ${{ matrix.package-mode }} illuminate-cache ${{ matrix.illuminate-version }}
+              run:
+                  tests/Consumer/run ${{ matrix.package-mode }} illuminate-cache ${{ matrix.illuminate-version }} ${{
+                  matrix.compatibility-mode }}
 
             - name: Test manual registration
-              if: matrix.illuminate-version == '12'
+              if: matrix.illuminate-version == '12' && matrix.compatibility-mode == 'plain'
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
               run: tests/Consumer/run source manual 12
 
     illuminate-http:
-        name: Illuminate HTTP ${{ matrix.illuminate-version }} / PHP ${{ matrix.php-version }}
+        name:
+            Illuminate HTTP ${{ matrix.illuminate-version }} / ${{ matrix.compatibility-mode }} / PHP ${{
+            matrix.php-version }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
+                illuminate-version:
+                    - "11"
+                    - "12"
+                    - "13"
+                compatibility-mode:
+                    - plain
+                    - larastan
                 include:
                     - illuminate-version: "11"
                       package-mode: source
                       php-version: "8.2"
                     - illuminate-version: "12"
+                      compatibility-mode: plain
                       package-mode: archive
+                      php-version: "8.2"
+                    - illuminate-version: "12"
+                      compatibility-mode: larastan
+                      package-mode: source
                       php-version: "8.2"
                     - illuminate-version: "13"
                       package-mode: source
@@ -323,7 +355,9 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-http-${{ matrix.illuminate-version }}
+                  key:
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-http-${{ matrix.illuminate-version
+                      }}-${{ matrix.compatibility-mode }}
                   restore-keys: |
                       ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-http-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
@@ -332,75 +366,48 @@ jobs:
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
-              run: tests/Consumer/run ${{ matrix.package-mode }} illuminate-http ${{ matrix.illuminate-version }}
+              run:
+                  tests/Consumer/run ${{ matrix.package-mode }} illuminate-http ${{ matrix.illuminate-version }} ${{
+                  matrix.compatibility-mode }}
 
     additional-illuminate-integrations:
-        name: ${{ matrix.integration-label }} ${{ matrix.illuminate-version }} / PHP ${{ matrix.php-version }}
+        name:
+            ${{ matrix.integration-label }} ${{ matrix.illuminate-version }} / ${{ matrix.compatibility-mode }} / PHP
+            ${{ matrix.php-version }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
+                integration:
+                    - illuminate-cookie
+                    - illuminate-filesystem
+                    - illuminate-process
+                    - illuminate-queue
+                    - illuminate-support
+                illuminate-version:
+                    - "11"
+                    - "12"
+                    - "13"
+                compatibility-mode:
+                    - plain
+                    - larastan
                 include:
+                    - illuminate-version: "11"
+                      php-version: "8.2"
+                    - illuminate-version: "12"
+                      php-version: "8.2"
+                    - illuminate-version: "13"
+                      php-version: "8.3"
                     - integration: illuminate-cookie
                       integration-label: Illuminate Cookie
-                      illuminate-version: "11"
-                      php-version: "8.2"
-                    - integration: illuminate-cookie
-                      integration-label: Illuminate Cookie
-                      illuminate-version: "12"
-                      php-version: "8.2"
-                    - integration: illuminate-cookie
-                      integration-label: Illuminate Cookie
-                      illuminate-version: "13"
-                      php-version: "8.3"
                     - integration: illuminate-filesystem
                       integration-label: Illuminate Filesystem
-                      illuminate-version: "11"
-                      php-version: "8.2"
-                    - integration: illuminate-filesystem
-                      integration-label: Illuminate Filesystem
-                      illuminate-version: "12"
-                      php-version: "8.2"
-                    - integration: illuminate-filesystem
-                      integration-label: Illuminate Filesystem
-                      illuminate-version: "13"
-                      php-version: "8.3"
                     - integration: illuminate-process
                       integration-label: Illuminate Process
-                      illuminate-version: "11"
-                      php-version: "8.2"
-                    - integration: illuminate-process
-                      integration-label: Illuminate Process
-                      illuminate-version: "12"
-                      php-version: "8.2"
-                    - integration: illuminate-process
-                      integration-label: Illuminate Process
-                      illuminate-version: "13"
-                      php-version: "8.3"
                     - integration: illuminate-queue
                       integration-label: Illuminate Queue
-                      illuminate-version: "11"
-                      php-version: "8.2"
-                    - integration: illuminate-queue
-                      integration-label: Illuminate Queue
-                      illuminate-version: "12"
-                      php-version: "8.2"
-                    - integration: illuminate-queue
-                      integration-label: Illuminate Queue
-                      illuminate-version: "13"
-                      php-version: "8.3"
                     - integration: illuminate-support
                       integration-label: Illuminate Support
-                      illuminate-version: "11"
-                      php-version: "8.2"
-                    - integration: illuminate-support
-                      integration-label: Illuminate Support
-                      illuminate-version: "12"
-                      php-version: "8.2"
-                    - integration: illuminate-support
-                      integration-label: Illuminate Support
-                      illuminate-version: "13"
-                      php-version: "8.3"
         steps:
             - name: Checkout Apocrypha
               uses: actions/checkout@v7
@@ -427,7 +434,9 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-${{ matrix.integration }}-${{ matrix.illuminate-version }}
+                  key:
+                      ${{ runner.os }}-${{ matrix.integration }}-${{ matrix.illuminate-version }}-${{
+                      matrix.compatibility-mode }}
                   restore-keys: |
                       ${{ runner.os }}-${{ matrix.integration }}-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
@@ -436,20 +445,36 @@ jobs:
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
-              run: tests/Consumer/run source ${{ matrix.integration }} ${{ matrix.illuminate-version }}
+              run:
+                  tests/Consumer/run source ${{ matrix.integration }} ${{ matrix.illuminate-version }} ${{
+                  matrix.compatibility-mode }}
 
     laravel-framework:
-        name: Laravel Framework ${{ matrix.laravel-version }} / PHP ${{ matrix.php-version }}
+        name:
+            Laravel Framework ${{ matrix.laravel-version }} / ${{ matrix.compatibility-mode }} / PHP ${{
+            matrix.php-version }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
+                laravel-version:
+                    - "11"
+                    - "12"
+                    - "13"
+                compatibility-mode:
+                    - plain
+                    - larastan
                 include:
                     - laravel-version: "11"
                       package-mode: source
                       php-version: "8.2"
                     - laravel-version: "12"
+                      compatibility-mode: plain
                       package-mode: archive
+                      php-version: "8.2"
+                    - laravel-version: "12"
+                      compatibility-mode: larastan
+                      package-mode: source
                       php-version: "8.2"
                     - laravel-version: "13"
                       package-mode: source
@@ -480,7 +505,9 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-laravel-framework-${{ matrix.laravel-version }}
+                  key:
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-laravel-framework-${{ matrix.laravel-version }}-${{
+                      matrix.compatibility-mode }}
                   restore-keys: |
                       ${{ runner.os }}-php-${{ matrix.php-version }}-laravel-framework-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
@@ -489,7 +516,9 @@ jobs:
             - name: Test integrations through Laravel framework
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
-              run: tests/Consumer/run ${{ matrix.package-mode }} laravel-framework ${{ matrix.laravel-version }}
+              run:
+                  tests/Consumer/run ${{ matrix.package-mode }} laravel-framework ${{ matrix.laravel-version }} ${{
+                  matrix.compatibility-mode }}
 
     phpgeo:
         name: phpgeo ${{ matrix.phpgeo-version }} / PHP ${{ matrix.php-version }}

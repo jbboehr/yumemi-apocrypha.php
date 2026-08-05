@@ -39,5 +39,7 @@ declare(strict_types=1);
 use Illuminate\Queue\WorkerOptions;
 
 use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
 
-new WorkerOptions(stopWhenEmptyFor: unit(30, 'second'));
+$options = new WorkerOptions(stopWhenEmptyFor: unit(30, 'second'));
+assertType("unit_int<'second'>", $options->stopWhenEmptyFor);

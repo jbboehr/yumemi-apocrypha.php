@@ -30,7 +30,9 @@ Apply the same replacement within arrays, callbacks, unions, and nullable types.
 sentinel, and non-unit alternative so erasing the Yumemi brand reproduces the upstream PHPDoc.
 
 The Laravel framework fixture separately verifies every Illuminate integration when Composer represents its component
-package as an exact replacement rather than a directly installed package.
+package as an exact replacement rather than a directly installed package. Each Illuminate fixture also runs with
+Larastan 3. In that mode Larastan owns the upstream declarations, while Apocrypha reproduces only its unit semantics
+through rules and type extensions.
 
 Run one major locally with:
 
@@ -44,6 +46,9 @@ PHPGEO_MAJOR=6 make test-consumer-phpgeo
 SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 ```
 
+Set `ILLUMINATE_COMPATIBILITY_MODE=larastan` on any Illuminate or Laravel framework command to exercise the adapter
+instead of the standalone stubs.
+
 Laravel 13 requires PHP 8.3 or later, and Symfony Stopwatch 8 requires PHP 8.4.1 or later. Guzzle 7 and 8 both run on
 the repository's PHP 8.2 baseline. The CI matrix selects a compatible PHP version automatically.
 
@@ -52,6 +57,12 @@ the repository's PHP 8.2 baseline. The CI matrix selects a compatible PHP versio
 Each fixture contains accepted calls and deliberately invalid plain, differently scaled, and dimensionally incompatible
 values. Expected diagnostics should identify the exact branded boundary. Test explicit selection and autodetection
 against the same cases.
+
+Illuminate stubs are the canonical standalone representation. Keep the Larastan metadata catalog in exact parity with
+their `@yumemi-param`, `@yumemi-return`, and `@yumemi-var` tags, including every major restriction. The parity test is a
+guardrail, not a substitute for real consumer coverage: verify positional and named calls, finite unpacking, property
+reads and writes, return precision, and both direct-package and `laravel/framework` installs. Unknown unpack positions
+must not produce a speculative `apocrypha.unit` diagnostic.
 
 At least one supported matrix entry uses a Composer archive. Archive tests must verify that runtime source, NEON entry
 points, legal notices, and stubs are present while tests and development tooling are excluded.
@@ -62,15 +73,24 @@ points, legal notices, and stubs are present while tests and development tooling
    only part of a major is compatible, and select major-specific files when verified signatures differ.
 2. Add its stub beneath `stubs/<vendor>/` with ordinary fallback PHPDoc and structurally matching `@yumemi-*` tags.
 3. Add parser tests for promoted parameter, return, property, callback, collection, and union forms used by the stub.
-4. Add an isolated Composer consumer with upstream reflection, accepted calls, rejected calls, and autodetection. Use
+4. For an Illuminate integration, mirror every promoted tag in `LarastanCompatibilityIntegrationMetadata`, register
+   every class with a return boundary in `apocrypha.neon`, and exercise the consumer in both standalone and Larastan
+   modes.
+5. Add an isolated Composer consumer with upstream reflection, accepted calls, rejected calls, and autodetection. Use
    the generic consumer path unless the integration needs documentation extraction or another package-specific step.
-5. Add every verified major to CI with a PHP version supported by that upstream release.
-6. Document exact units, alternatives, limitations, and verification snapshots.
+6. Add every verified major to CI with a PHP version supported by that upstream release. If the integration adds runtime
+   source, add that source to the Composer archive test's required-path whitelist.
+7. Document exact units, alternatives, limitations, and verification snapshots.
 
 ## Compatibility Decisions
 
 The matrix records what is currently verified; it does not promise automatic support for all future majors. Add a new
 major only after the complete fixture passes. Removing a previously released major or materially changing an annotation
 requires an explicit compatibility decision and, after the first tag, a changelog entry.
+
+For Larastan, coexistence is an integration-wide choice rather than a declaration overlay. Loading even an apparently
+nonoverlapping stub can collide with a class Larastan adds in a later minor release. When a selected Illuminate
+integration and supported Larastan are both installed, disable all Apocrypha stubs for that integration and use the
+metadata adapter. Reject an unknown Larastan major until the complete matrix has been verified.
 
 [Documentation index](../) · [Repository README](https://github.com/jbboehr/yumemi-apocrypha.php)

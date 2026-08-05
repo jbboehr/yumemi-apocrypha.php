@@ -1,0 +1,288 @@
+<?php
+
+/**
+ * +--------------------------------------------------------------------------------------------------------------+
+ * |        *                 .                         *                  .                         *            |
+ * |   .              *                      .                    *                      .                        |
+ * |             .                 .                  *                         .                 *               |
+ * -      *                    .             *                    .                         .                     -
+ *
+ *                          Yumemi Apocrypha『夢見外典』〜ＹＵＭＥＭＩ　ＡＰＯＣＲＹＰＨＡ〜
+ *
+ * -                                          .----------------.                                                  -
+ * |                                      .--'        __        '--.                                              |
+ * |                                  .--'          .'  '.          '--.                                          |
+ * |                             .---'            .'      '.            '---.                                     |
+ * +--------------------------------------------------------------------------------------------------------------+
+ *
+ * Copyright (c) anno Domini nostri Jesu Christi MMXXVI, John Boehr & contributors
+ *
+ * SPDX-License-Identifier: AGPL-3.0-only WITH romic-exception
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License version 3,
+ * as published by the Free Software Foundation, together with the Romic
+ * Exception (an additional permission under section 7 of that license).
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * and the Romic Exception along with this program.  If not, see
+ * <http://www.gnu.org/licenses/> and the LICENSE_EXCEPTION file.
+ */
+
+declare(strict_types=1);
+
+namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
+
+use jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityIntegrationMetadata;
+use PhpParser\Node;
+use PhpParser\Node\Expr\Variable;
+use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\Namespace_;
+use PhpParser\ParserFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\TestCase;
+
+final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
+{
+    /** @return iterable<string, array{non-empty-string, int}> */
+    public static function integrationMajors(): iterable
+    {
+        foreach (array_keys(LarastanCompatibilityIntegrationMetadata::all()) as $integration) {
+            foreach ([11, 12, 13] as $major) {
+                yield sprintf('%s %d', $integration, $major) => [$integration, $major];
+            }
+        }
+    }
+
+    #[DataProvider('integrationMajors')]
+    public function testMetadataExactlyMirrorsSelectedStubAnnotations(string $integration, int $major): void
+    {
+        self::assertSame(
+            $this->stubBoundaries($integration, $major),
+            $this->metadataBoundaries($integration, $major),
+            sprintf('Larastan metadata drifted from %s stubs for Laravel %d.', $integration, $major),
+        );
+    }
+
+    public function testEveryReturnBoundaryClassHasANeonRegistration(): void
+    {
+        $expected = [];
+        foreach (LarastanCompatibilityIntegrationMetadata::all() as $metadata) {
+            foreach ($metadata['returns'] as $boundary) {
+                $expected[] = $boundary['class'];
+            }
+        }
+        $expected = array_values(array_unique($expected));
+        sort($expected);
+
+        $neon = (string) file_get_contents(__DIR__ . '/../../apocrypha.neon');
+        self::assertSame(
+            count($expected),
+            preg_match_all('/^ {12}class: (Illuminate\\\\[^\r\n]+)$/m', $neon, $matches),
+        );
+        $actual = array_values(array_unique($matches[1]));
+        sort($actual);
+
+        self::assertSame($expected, $actual);
+        self::assertSame(
+            count($expected),
+            substr_count($neon, '- phpstan.broker.dynamicMethodReturnTypeExtension'),
+        );
+        self::assertSame(
+            count($expected),
+            substr_count($neon, '- phpstan.broker.dynamicStaticMethodReturnTypeExtension'),
+        );
+    }
+
+    /**
+     * @return array{
+     *     arguments: list<array<string, int|string>>,
+     *     properties: list<array<string, string>>,
+     *     returns: list<array<string, string>>
+     * }
+     */
+    private function stubBoundaries(string $integration, int $major): array
+    {
+        $boundaries = ['arguments' => [], 'properties' => [], 'returns' => []];
+        $parser = (new ParserFactory())->createForNewestSupportedVersion();
+
+        foreach ($this->stubFiles($integration, $major) as $file) {
+            $nodes = $parser->parse((string) file_get_contents($file));
+            self::assertNotNull($nodes);
+
+            foreach ($nodes as $node) {
+                if (!$node instanceof Namespace_) {
+                    continue;
+                }
+
+                $namespace = $node->name?->toString() ?? '';
+                foreach ($node->stmts as $statement) {
+                    if (!$statement instanceof ClassLike || $statement->name === null) {
+                        continue;
+                    }
+
+                    $class = ltrim($namespace . '\\' . $statement->name->toString(), '\\');
+                    foreach ($statement->getMethods() as $method) {
+                        $methodName = $method->name->toString();
+                        $kind = $methodName === '__construct'
+                            ? 'constructor'
+                            : ($method->isStatic() ? 'static' : 'method');
+                        $positions = [];
+                        foreach ($method->params as $position => $parameter) {
+                            self::assertInstanceOf(Variable::class, $parameter->var);
+                            self::assertIsString($parameter->var->name);
+                            $positions[$parameter->var->name] = $position;
+                        }
+
+                        foreach ($this->tags($method, 'yumemi-param') as $tag) {
+                            self::assertSame(1, preg_match('/^(.+)\s+\$([A-Za-z_][A-Za-z0-9_]*)$/', $tag, $matches));
+                            $name = $matches[2];
+                            self::assertArrayHasKey($name, $positions);
+                            $boundaries['arguments'][] = [
+                                'class' => $class,
+                                'kind' => $kind,
+                                'method' => $methodName,
+                                'position' => $positions[$name],
+                                'name' => $name,
+                                'type' => $this->normalizeType($matches[1]),
+                            ];
+                        }
+
+                        foreach ($this->tags($method, 'yumemi-return') as $tag) {
+                            $boundaries['returns'][] = [
+                                'class' => $class,
+                                'kind' => $kind,
+                                'method' => $methodName,
+                                'type' => $this->normalizeType($tag),
+                            ];
+                        }
+                    }
+
+                    foreach ($statement->getProperties() as $property) {
+                        foreach ($this->tags($property, 'yumemi-var') as $tag) {
+                            foreach ($property->props as $item) {
+                                $boundaries['properties'][] = [
+                                    'class' => $class,
+                                    'property' => $item->name->toString(),
+                                    'type' => $this->normalizeType($tag),
+                                ];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $this->sortBoundaries($boundaries);
+    }
+
+    /**
+     * @return array{
+     *     arguments: list<array<string, int|string>>,
+     *     properties: list<array<string, string>>,
+     *     returns: list<array<string, string>>
+     * }
+     */
+    private function metadataBoundaries(string $integration, int $major): array
+    {
+        $metadata = LarastanCompatibilityIntegrationMetadata::all()[$integration];
+        $boundaries = ['arguments' => [], 'properties' => [], 'returns' => []];
+
+        foreach ($boundaries as $kind => $_) {
+            foreach ($metadata[$kind] as $boundary) {
+                if (!LarastanCompatibilityIntegrationMetadata::supportsMajor($boundary, $major)) {
+                    continue;
+                }
+
+                unset($boundary['majors'], $boundary['strategy']);
+                $boundary['type'] = $this->normalizeType($boundary['type']);
+                $boundaries[$kind][] = $boundary;
+            }
+        }
+
+        return $this->sortBoundaries($boundaries);
+    }
+
+    /** @return list<string> */
+    private function stubFiles(string $integration, int $major): array
+    {
+        $base = __DIR__ . '/../../stubs/illuminate/';
+
+        return match ($integration) {
+            'illuminate/cache' => [$base . 'cache.stub'],
+            'illuminate/cookie' => [$base . 'cookie.stub'],
+            'illuminate/filesystem' => [$base . 'filesystem.stub'],
+            'illuminate/http' => [$base . 'http.stub'],
+            'illuminate/process' => [$base . ($major === 13 ? 'process-13.stub' : 'process.stub')],
+            'illuminate/queue' => [
+                $base . 'queue.stub',
+                $base . ($major === 11 ? 'queue-worker-11.stub' : 'queue-worker-12.stub'),
+            ],
+            'illuminate/support' => [$base . 'support.stub'],
+            default => throw new \LogicException(sprintf('Unknown Illuminate integration %s.', $integration)),
+        };
+    }
+
+    /** @return list<string> */
+    private function tags(Node $node, string $tag): array
+    {
+        $docComment = $node->getDocComment();
+        if ($docComment === null) {
+            return [];
+        }
+
+        preg_match_all(
+            sprintf('/@%s\s+(.+?)(?=\n\s*\*\s*@|\n\s*\*\/)/s', preg_quote($tag, '/')),
+            $docComment->getText(),
+            $matches,
+        );
+
+        return array_map($this->normalizeType(...), $matches[1]);
+    }
+
+    private function normalizeType(string $type): string
+    {
+        $type = preg_replace('/\n\s*\*\s?/', ' ', trim($type));
+        self::assertNotNull($type);
+        $type = preg_replace('/\s+/', ' ', $type);
+        self::assertNotNull($type);
+
+        return trim($type);
+    }
+
+    /**
+     * @template TArguments of array<string, int|string>
+     * @template TProperties of array<string, string>
+     * @template TReturns of array<string, string>
+     *
+     * @param array{
+     *     arguments: list<TArguments>,
+     *     properties: list<TProperties>,
+     *     returns: list<TReturns>
+     * } $boundaries
+     *
+     * @return array{
+     *     arguments: list<TArguments>,
+     *     properties: list<TProperties>,
+     *     returns: list<TReturns>
+     * }
+     */
+    private function sortBoundaries(array $boundaries): array
+    {
+        foreach ($boundaries as &$items) {
+            usort(
+                $items,
+                static fn (array $left, array $right): int => json_encode($left, JSON_THROW_ON_ERROR)
+                    <=> json_encode($right, JSON_THROW_ON_ERROR),
+            );
+        }
+        unset($items);
+
+        return $boundaries;
+    }
+}

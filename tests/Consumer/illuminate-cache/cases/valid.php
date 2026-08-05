@@ -74,7 +74,7 @@ function exerciseIlluminateCacheStubs(
     $lockProvider->lock('key', $seconds);
 
     $repository->put('key', 'value', $seconds);
-    $repository->set('key', 'value', new DateTimeImmutable('+30 seconds'));
+    $repository->set('key', 'value', new DateInterval('PT30S'));
     $repository->putMany(['key' => 'value'], $seconds);
     $repository->setMultiple(['key' => 'value'], $seconds);
     $repository->add('key', 'value', $seconds);

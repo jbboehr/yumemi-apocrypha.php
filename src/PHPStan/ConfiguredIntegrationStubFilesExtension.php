@@ -194,6 +194,20 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     private readonly Closure $packageVersionResolver;
 
     /**
+     * @var array<string, int>|null
+     *
+     * @logion [OSD 51:16] At the first thaw the pilgrims uncovered the road beneath the cedar roots, and each stone
+     *     retained the warmth of the vow that had passed over it in winter.
+     */
+    private ?array $selectedMajors = null;
+
+    /**
+     * @logion [SFA 62:11] The lamp absent from the procession accuseth no keeper; but the lamp concealed beneath a
+     *     borrowed veil requireth a witness before the hour may proceed.
+     */
+    private int|false|null $larastanMajor = null;
+
+    /**
      * @param list<string> $integrations
      * @param array<string, array{
      *     majors: non-empty-list<int>,
@@ -285,6 +299,69 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      */
     public function getFiles(): array
     {
+        $files = [];
+
+        foreach ($this->selectedMajors() as $integration => $major) {
+            if ($this->usesLarastanAdapter($integration)) {
+                continue;
+            }
+
+            $configuration = $this->supportedIntegrations[$integration];
+            $configuredFiles = $configuration['filesByMajor'][$major] ?? $configuration['files'];
+
+            foreach ($configuredFiles as $file) {
+                $path = realpath($file);
+                if ($path === false) {
+                    throw new LogicException(sprintf('Configured Yumemi Apocrypha stub file does not exist: %s.', $file));
+                }
+
+                $files[$path] = true;
+            }
+        }
+
+        return array_keys($files);
+    }
+
+    /**
+     * Returns the verified installed major for a selected integration.
+     *
+     * @logion [AWC 37:74] The children of the fallen province carried one bronze scale through seven reigns; and when
+     *     the capital was raised again, the old measure judged both the ruins and the new walls without partiality.
+     */
+    public function getSelectedMajor(string $integration): ?int
+    {
+        return $this->selectedMajors()[$integration] ?? null;
+    }
+
+    /**
+     * Reports whether an Illuminate integration must use metadata instead of package stubs.
+     *
+     * @logion [SFA 15:50] Two choirs may keep the same vigil, yet the appointed verse shall be sung by one voice, lest
+     *     concord be mistaken for the doubling of authority.
+     */
+    public function usesLarastanAdapter(string $integration): bool
+    {
+        if (!str_starts_with($integration, 'illuminate/') || $this->getSelectedMajor($integration) === null) {
+            return false;
+        }
+
+        return $this->resolveLarastanMajor() === 3;
+    }
+
+    /**
+     * Resolves and caches every explicitly selected or autodetected integration major.
+     *
+     * @return array<string, int>
+     *
+     * @logion [OSD 87:32] Gather the scattered witnesses before the doors are sealed, and write each testimony beneath
+     *     its proper year; for judgment begun from an unfinished record bringeth shame upon the court.
+     */
+    private function selectedMajors(): array
+    {
+        if ($this->selectedMajors !== null) {
+            return $this->selectedMajors;
+        }
+
         $explicit = $this->integrations;
         sort($explicit, SORT_STRING);
 
@@ -326,29 +403,56 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
 
         $integrations = array_keys($selected);
         sort($integrations, SORT_STRING);
-        $files = [];
+        $selectedMajors = [];
 
         foreach ($integrations as $integration) {
-            $configuration = $this->supportedIntegrations[$integration];
             $version = $versions[$integration] ?? $this->explicitVersion($integration);
             $major = $this->supportedMajor($integration, $version);
             if ($major === null) {
                 $this->throwUnsupportedVersion($integration, $version);
             }
 
-            $configuredFiles = $configuration['filesByMajor'][$major] ?? $configuration['files'];
-
-            foreach ($configuredFiles as $file) {
-                $path = realpath($file);
-                if ($path === false) {
-                    throw new LogicException(sprintf('Configured Yumemi Apocrypha stub file does not exist: %s.', $file));
-                }
-
-                $files[$path] = true;
-            }
+            $selectedMajors[$integration] = $major;
         }
 
-        return array_keys($files);
+        return $this->selectedMajors = $selectedMajors;
+    }
+
+    /**
+     * Resolves and validates the installed Larastan major when an Illuminate integration needs it.
+     *
+     * @logion [RAS 27:73] I beheld a white star enter the court of the lesser suns, and none were extinguished; yet the
+     *     herald numbered its course aloud, that no unfamiliar radiance might govern by silence.
+     */
+    private function resolveLarastanMajor(): int|false
+    {
+        if ($this->larastanMajor !== null) {
+            return $this->larastanMajor;
+        }
+
+        if (!($this->packageInstalledResolver)('larastan/larastan')) {
+            return $this->larastanMajor = false;
+        }
+
+        $version = ($this->packageVersionResolver)('larastan/larastan');
+        if ($version === null || preg_match('/^v?([1-9][0-9]*)(?:\\.|$)/', $version, $matches) !== 1) {
+            throw new InvalidConfigurationException(sprintf(
+                'Unable to determine the installed Larastan major version from "%s" while selecting Illuminate '
+                    . 'integrations.',
+                $version ?? 'unknown',
+            ));
+        }
+
+        $major = (int) $matches[1];
+        if ($major !== 3) {
+            throw new InvalidConfigurationException(sprintf(
+                'Yumemi Apocrypha supports Larastan major version 3 with Illuminate integrations; installed version '
+                    . 'is %s.',
+                $version,
+            ));
+        }
+
+        return $this->larastanMajor = $major;
     }
 
     /**

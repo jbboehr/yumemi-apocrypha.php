@@ -9,7 +9,13 @@ readonly PROJECT_ROOT
 readonly PACKAGE_MODE=${1:-source}
 readonly FIXTURE_SUITE=${2:-illuminate-cache}
 readonly PACKAGE_MAJOR=${3:-12}
+readonly COMPATIBILITY_MODE=${4:-plain}
 readonly YUMEMI_PACKAGE_DIR=${YUMEMI_PACKAGE_DIR:-$PROJECT_ROOT/..}
+
+if [[ $COMPATIBILITY_MODE != plain && $COMPATIBILITY_MODE != larastan ]]; then
+    printf 'Compatibility mode must be plain or larastan; received %s.\n' "$COMPATIBILITY_MODE" >&2
+    exit 2
+fi
 
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/yumemi-apocrypha-consumer.XXXXXXXX")
 readonly WORK_DIR
@@ -40,6 +46,9 @@ if [[ $PACKAGE_MODE == archive ]]; then
         docs/pages/images/yumemi-banner.png
         extension.neon
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
+        src/PHPStan/LarastanCompatibilityIntegrationMetadata.php
+        src/PHPStan/LarastanCompatibilityUnitBoundaryExtension.php
+        src/PHPStan/LarastanCompatibilityUnitReturnTypeExtension.php
         stubs/getid3/getid3-1.stub
         stubs/getid3/getid3-2.stub
         stubs/guzzle/guzzle-7.stub
@@ -80,7 +89,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-stopwatch|manual] [package-version] [plain|larastan]\n' "$0" >&2
     exit 2
 fi
 
@@ -119,6 +128,28 @@ echo json_encode([
 fi
 readonly yumemi_repository_json
 
+enable_larastan() {
+    local project_dir=$1
+    local testbench_major
+
+    if [[ $COMPATIBILITY_MODE == larastan ]]; then
+        case $PACKAGE_MAJOR in
+            11) testbench_major=9 ;;
+            12) testbench_major=10 ;;
+            13) testbench_major=11 ;;
+            *)
+                printf 'Larastan consumer tests require Laravel major 11, 12, or 13.\n' >&2
+                exit 2
+                ;;
+        esac
+
+        composer --working-dir="$project_dir" require --dev \
+            "larastan/larastan:^3.0" \
+            "orchestra/testbench:^$testbench_major.0" \
+            --no-update --no-interaction
+    fi
+}
+
 run_phpstan_case() {
     local project_dir=$1
     local configuration=$2
@@ -154,6 +185,25 @@ run_phpstan_case() {
     done
 }
 
+run_phpstan_without_apocrypha_diagnostic() {
+    local project_dir=$1
+    local configuration=$2
+    local case_file=$3
+    local output
+    local phpstan=(vendor/bin/phpstan analyse --no-progress --error-format=json --configuration="$configuration")
+
+    output=$(
+        cd -- "$project_dir"
+        "${phpstan[@]}" "cases/$case_file" 2>&1 || true
+    )
+
+    if [[ $output == *'apocrypha.unit'* ]]; then
+        printf '%s emitted a speculative unit diagnostic for an unknown unpack with %s:\n%s\n' \
+            "$FIXTURE_SUITE" "$configuration" "$output" >&2
+        exit 1
+    fi
+}
+
 run_illuminate_cache() {
     local project_dir=$WORK_DIR/illuminate-cache
     local documentation_case=$project_dir/cases/documentation-invalid.php
@@ -186,6 +236,7 @@ run_illuminate_cache() {
         composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
     fi
     composer --working-dir="$project_dir" require --dev "illuminate/cache:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    enable_larastan "$project_dir"
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
@@ -241,6 +292,7 @@ run_illuminate_http() {
         composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
     fi
     composer --working-dir="$project_dir" require --dev "illuminate/http:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    enable_larastan "$project_dir"
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
@@ -269,19 +321,46 @@ run_simple_illuminate_integration() {
     cp -R -- "$FIXTURES_DIR/$FIXTURE_SUITE/." "$project_dir/"
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
+    if [[ $FIXTURE_SUITE == illuminate-queue ]]; then
+        if [[ $COMPATIBILITY_MODE == larastan ]]; then
+            expected_diagnostics+=(
+                "Illuminate\\Queue\\InteractsWithQueue::release() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
+                "Illuminate\\Queue\\WorkerOptions::\$timeout expects unit_int<'second'>, 1&unit_int<'minute'> given"
+                "Illuminate\\Queue\\WorkerOptions::\$timeout expects unit_int<'second'>, int given"
+            )
+        else
+            expected_diagnostics+=(
+                "DelayedReportJob::release() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
+                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (unit_int<'second'>) does not accept 1&unit_int<'minute'>"
+                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (unit_int<'second'>) does not accept int"
+            )
+        fi
+    fi
+
     composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
     if [[ -n $yumemi_repository_json ]]; then
         composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
     fi
     composer --working-dir="$project_dir" require --dev "$package:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    enable_larastan "$project_dir"
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    if [[ $COMPATIBILITY_MODE == larastan && -f $project_dir/cases/valid-larastan.php ]]; then
+        run_phpstan_case "$project_dir" phpstan.neon valid-larastan.php
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-larastan.php
+    fi
     if [[ -f $project_dir/cases/valid-$PACKAGE_MAJOR.php ]]; then
         run_phpstan_case "$project_dir" phpstan.neon "valid-$PACKAGE_MAJOR.php"
         run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$PACKAGE_MAJOR.php"
+    fi
+    if [[ $FIXTURE_SUITE == illuminate-queue && $COMPATIBILITY_MODE == larastan ]]; then
+        run_phpstan_without_apocrypha_diagnostic "$project_dir" phpstan.neon unknown-unpack.php
+        run_phpstan_without_apocrypha_diagnostic "$project_dir" phpstan-autodetect.neon unknown-unpack.php
+        run_phpstan_without_apocrypha_diagnostic "$project_dir" phpstan.neon property-case.php
+        run_phpstan_without_apocrypha_diagnostic "$project_dir" phpstan-autodetect.neon property-case.php
     fi
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
@@ -323,6 +402,7 @@ run_laravel_framework() {
     fi
     composer --working-dir="$project_dir" require --dev \
         "laravel/framework:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    enable_larastan "$project_dir"
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php" "$PACKAGE_MAJOR"

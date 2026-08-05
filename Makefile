@@ -15,6 +15,7 @@ BRANCH_COVERAGE_SOURCE ?= src
 BRANCH_COVERAGE_TESTS ?=
 BRANCH_COVERAGE_XDEBUG_ERROR := Xdebug is not loaded; enter nix develop .\#xdebug.
 ILLUMINATE_CACHE_MAJOR ?= 12
+ILLUMINATE_COMPATIBILITY_MODE ?= plain
 GETID3_VERSION ?= 2
 GUZZLE_MAJOR ?= 8
 ILLUMINATE_COOKIE_MAJOR ?= 12
@@ -62,37 +63,37 @@ test-consumer-guzzle-archive:
 	tests/Consumer/run archive guzzle $(GUZZLE_MAJOR)
 
 test-consumer-illuminate-cache:
-	tests/Consumer/run source illuminate-cache $(ILLUMINATE_CACHE_MAJOR)
+	tests/Consumer/run source illuminate-cache $(ILLUMINATE_CACHE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-cache-archive:
-	tests/Consumer/run archive illuminate-cache $(ILLUMINATE_CACHE_MAJOR)
+	tests/Consumer/run archive illuminate-cache $(ILLUMINATE_CACHE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-cookie:
-	tests/Consumer/run source illuminate-cookie $(ILLUMINATE_COOKIE_MAJOR)
+	tests/Consumer/run source illuminate-cookie $(ILLUMINATE_COOKIE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-filesystem:
-	tests/Consumer/run source illuminate-filesystem $(ILLUMINATE_FILESYSTEM_MAJOR)
+	tests/Consumer/run source illuminate-filesystem $(ILLUMINATE_FILESYSTEM_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-http:
-	tests/Consumer/run source illuminate-http $(ILLUMINATE_HTTP_MAJOR)
+	tests/Consumer/run source illuminate-http $(ILLUMINATE_HTTP_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-http-archive:
-	tests/Consumer/run archive illuminate-http $(ILLUMINATE_HTTP_MAJOR)
+	tests/Consumer/run archive illuminate-http $(ILLUMINATE_HTTP_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-process:
-	tests/Consumer/run source illuminate-process $(ILLUMINATE_PROCESS_MAJOR)
+	tests/Consumer/run source illuminate-process $(ILLUMINATE_PROCESS_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-queue:
-	tests/Consumer/run source illuminate-queue $(ILLUMINATE_QUEUE_MAJOR)
+	tests/Consumer/run source illuminate-queue $(ILLUMINATE_QUEUE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-support:
-	tests/Consumer/run source illuminate-support $(ILLUMINATE_SUPPORT_MAJOR)
+	tests/Consumer/run source illuminate-support $(ILLUMINATE_SUPPORT_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-laravel-framework:
-	tests/Consumer/run source laravel-framework $(LARAVEL_FRAMEWORK_MAJOR)
+	tests/Consumer/run source laravel-framework $(LARAVEL_FRAMEWORK_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-laravel-framework-archive:
-	tests/Consumer/run archive laravel-framework $(LARAVEL_FRAMEWORK_MAJOR)
+	tests/Consumer/run archive laravel-framework $(LARAVEL_FRAMEWORK_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-phpgeo:
 	tests/Consumer/run source phpgeo $(PHPGEO_MAJOR)
