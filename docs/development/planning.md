@@ -72,7 +72,7 @@ current type model:
 2. The required unit must exist in the effective Yumemi registry, or the integration must have a deliberate and
    documented registry strategy.
 3. The unit must not depend on a sibling argument, object state, runtime metadata, or an arbitrary user-provided string
-   unless Yumemi already supports that dependency.
+   unless Yumemi or a bounded integration extension can represent that dependency soundly.
 4. A timestamp, coordinate origin, or other point must not be mislabeled as an ordinary duration or displacement.
 5. The stub must preserve every valid upstream alternative and must not replace a broad options array with a sealed,
    incomplete shape.
@@ -82,6 +82,56 @@ After those gates pass, prefer ecosystem reach, collision potential between adja
 boundaries, and maintenance stability. A package that uses several independent dimensions normally has more value than
 one that repeats the same duration unit throughout, but a small stable API may still dominate a theoretically rich API
 whose useful data is dynamic or context-dependent.
+
+### Survey Follow-ups
+
+Do not reject a measurement library merely because it represents quantities with objects. Its object API may already
+prevent one quantity class from being passed as another, but native scalar values can still cross constructors,
+factories, accessors, conversion helpers, and serialization boundaries. Reconsider such a package when the concrete
+receiver class or fixed method name determines the scalar unit. Continue to deprioritize libraries that expose only one
+native unit, even when that unit appears frequently.
+
+The object-backed candidates divide into four practical groups:
+
+- `nmarfurt/measurements` is the strongest renewed candidate. Magic factories such as `Length::meters()`,
+  `Length::feet()`, `Temperature::celsius()`, `Temperature::fahrenheit()`, `Duration::seconds()`, and
+  `Duration::hours()` give fixed, adjacent-unit scalar inputs. Its existing `@method` declarations may permit a bounded
+  stub without general object-state propagation. Constructors, `value()`, and scalar arithmetic remain dependent on the
+  selected `Unit` object and must not receive fixed annotations.
+- `php-unit-conversion/php-unit-conversion` has meaningful ecosystem reach and concrete classes such as `Meter`, `Foot`,
+  `Celsius`, `Fahrenheit`, `Second`, and `MilliSecond`. The inherited `getValue()` unit is determined by the receiver
+  class and is suitable for a receiver-aware return extension. Constructor and `setValue()` inputs depend on the
+  `convertFromBaseUnit` flag, so complete coverage requires conditional argument validation rather than an unconditional
+  stub.
+- `pdobrovolny/quantity` fixes the unit through concrete container classes whose inherited constructor and public
+  `float $value` property form useful scalar boundaries. Evaluate only a common-unit subset: the package has a very
+  large surface and requires PHP 8.5, so it needs a dedicated consumer profile and enough adoption to justify that
+  matrix.
+- `diversified-design/mesuraphp` is a clean semantic experiment. For example, `Foot::fromMeterValue()` consumes meters,
+  `Foot::toMeterValue()` returns meters, while construction and `getValue()` use feet. Its pre-1.0 status and negligible
+  current adoption keep it below the three candidates above.
+
+Enum- or state-selected converters remain possible extension projects rather than ordinary stub work.
+`jamal/unit-converter` could use a dynamic return extension and argument rule around its direct source- and target-enum
+arguments. `kolaybi/unit-converter` would additionally need source and target units propagated through
+`PendingConversion` and `ConversionResult`. Their negligible current adoption does not justify building that machinery
+specifically for them. `andanteproject/measurement` carries values in `NumberInterface` objects rather than native
+scalars; `jobmetric/laravel-unit` derives units from runtime records; and `khaledalam/unit`, `hiqdev/php-units`, and
+`asika/better-units` predominantly select scalar meaning through runtime objects or strings. `gabrielelana/byte-units`
+has useful byte boundaries but little adjacent-unit collision potential.
+
+The science-focused survey also produced several non-measurement-library follow-ups:
+
+- `seamapi/seam` is the strongest new fixed-boundary lead. Its generated thermostat SDK exposes separately named Celsius
+  and Fahrenheit float fields and parameters; verify a deliberately bounded model and client subset across supported
+  releases.
+- `telnyx/telnyx-php` exposes seconds and milliseconds across generated models. Review a small stable subset before
+  accepting the maintenance cost of its generated, fast-moving surface.
+- `sobhanmohammadi/geometry` and `tecnickcom/tc-lib-pdf-graph` have fixed degree boundaries suitable for small source
+  reviews, but their reach and adjacent-unit collision potential are weaker.
+- GeoTools, Stadia Maps, Ricklab Location, and similar geographic packages generally select units through a sibling
+  argument or object state. OPC UA packages generally attach units through runtime metadata. Keep both groups
+  deprioritized until a reusable dependent-unit strategy exists.
 
 ### Candidates Requiring Core Work
 
