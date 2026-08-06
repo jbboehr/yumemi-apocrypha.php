@@ -1,0 +1,13 @@
+includes:
+    - ../../vendor/jbboehr/yumemi/extension.neon
+    - ../../apocrypha.neon
+
+parameters:
+    bootstrapFiles:
+        - fixtures/larastan-compatibility-upstream.php
+    scanFiles:
+        - fixtures/larastan-compatibility-upstream.php
+
+services:
+    configuredIntegrationStubFilesExtension!:
+        factory: jbboehr\Yumemi\Apocrypha\Tests\PHPStan\LarastanCompatibilityTestExtensionFactory::createSelection()

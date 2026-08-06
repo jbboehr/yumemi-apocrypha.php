@@ -64,6 +64,21 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([], $extension->getFiles());
     }
 
+    public function testEmptySupportedIntegrationRegistryIsReportedExplicitly(): void
+    {
+        $extension = $this->extension(
+            integrations: ['vendor/missing'],
+            supported: [],
+        );
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Unsupported Yumemi Apocrypha integration "vendor/missing"; supported integrations: none.',
+        );
+
+        $extension->getFiles();
+    }
+
     /** @return iterable<string, array{string}> */
     public static function concreteReplacementVersions(): iterable
     {
@@ -116,6 +131,41 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([
             realpath(__DIR__ . '/../../stubs/illuminate/process.stub'),
         ], $extension->getFiles());
+        self::assertSame('v12.4.0', $extension->getSelectedVersion('illuminate/process'));
+    }
+
+    public function testIntegrationAndLarastanSelectionsAreCached(): void
+    {
+        $installedPackages = [];
+        $versionedPackages = [];
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/cache'],
+            false,
+            true,
+            [
+                'illuminate/cache' => [
+                    'majors' => [11, 12, 13],
+                    'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
+                ],
+            ],
+            static function (string $package) use (&$installedPackages): bool {
+                $installedPackages[] = $package;
+
+                return true;
+            },
+            static function (string $package) use (&$versionedPackages): string {
+                $versionedPackages[] = $package;
+
+                return $package === 'larastan/larastan' ? '3.10.0' : '12.4.0';
+            },
+        );
+
+        self::assertSame([], $extension->getFiles());
+        self::assertSame(12, $extension->getSelectedMajor('illuminate/cache'));
+        self::assertSame('12.4.0', $extension->getSelectedVersion('illuminate/cache'));
+        self::assertTrue($extension->usesLarastanAdapter('illuminate/cache'));
+        self::assertSame(['illuminate/cache', 'larastan/larastan'], $installedPackages);
+        self::assertSame(['illuminate/cache', 'larastan/larastan'], $versionedPackages);
     }
 
     #[RunInSeparateProcess]

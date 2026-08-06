@@ -14,6 +14,8 @@
     <testsuites>
         <testsuite name="Branch Coverage">
             <directory>./tests</directory>
+            <exclude>./tests/PHPStan/LarastanCompatibilityExtensionsTypeInferenceTest.php</exclude>
+            <exclude>./tests/PHPStan/LarastanCompatibilityUnitBoundaryExtensionTest.php</exclude>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -14,3 +14,4 @@ parameters:
         - tools
     excludePaths:
         - tests/Consumer (?)
+        - tests/PHPStan/fixtures
