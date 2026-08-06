@@ -161,34 +161,40 @@ run_phpstan_case() {
     local configuration=$2
     local case_file=$3
     local output
+    local stderr_file
     shift 3
     local expected_diagnostics=("$@")
-    local phpstan=(vendor/bin/phpstan analyse --no-progress --error-format=raw --configuration="$configuration")
+    local phpstan=(vendor/bin/phpstan analyse --no-progress --configuration="$configuration")
 
     if [[ $case_file == valid*.php ]]; then
         (
             cd -- "$project_dir"
-            "${phpstan[@]}" "cases/$case_file"
+            "${phpstan[@]}" --error-format=raw "cases/$case_file"
         )
 
         return
     fi
 
+    stderr_file=$project_dir/.phpstan-stderr
+
     if output=$(
         cd -- "$project_dir"
-        "${phpstan[@]}" "cases/$case_file" 2>&1
+        "${phpstan[@]}" --error-format=json "cases/$case_file" 2>"$stderr_file"
     ); then
         printf '%s unexpectedly accepted invalid units with %s.\n' "$FIXTURE_SUITE" "$configuration" >&2
         exit 1
     fi
 
-    for diagnostic in "${expected_diagnostics[@]}"; do
-        if [[ $output != *"$diagnostic"* ]]; then
-            printf '%s missed diagnostic %s with %s:\n%s\n' \
-                "$FIXTURE_SUITE" "$diagnostic" "$configuration" "$output" >&2
-            exit 1
+    if ! printf '%s' "$output" | php "$PROJECT_ROOT/tests/Consumer/assert-phpstan-diagnostics.php" \
+        "${expected_diagnostics[@]}"; then
+        printf '%s diagnostic verification failed with %s.\n' "$FIXTURE_SUITE" "$configuration" >&2
+        if [[ -s $stderr_file ]]; then
+            printf 'PHPStan standard error:\n' >&2
+            cat -- "$stderr_file" >&2
         fi
-    done
+        printf 'PHPStan JSON output:\n%s\n' "$output" >&2
+        exit 1
+    fi
 }
 
 run_phpstan_without_apocrypha_diagnostic() {
@@ -473,6 +479,7 @@ run_simple_illuminate_integration() {
                 "Illuminate\\Queue\\InteractsWithQueue::release() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
                 "Illuminate\\Queue\\WorkerOptions::\$timeout expects unit_int<'second'>, 1&unit_int<'minute'> given"
                 "Illuminate\\Queue\\WorkerOptions::\$timeout expects unit_int<'second'>, int given"
+                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (int) does not accept mixed"
             )
         else
             expected_diagnostics+=(

@@ -53,6 +53,11 @@ unverified Larastan major is rejected until its combined behavior passes the sam
   PHPStan. Route examples that depend on third-party packages through the appropriate isolated consumer so they retain
   real upstream verification, and use standalone `//!` expectations consistently. The suite should fail when a new
   public example has no declared verification path.
+- Before the first public release, perform a corpus-wide semantic audit of every branded third-party boundary. Record
+  the upstream evidence and verified version profile for each parameter, return, property, and array-shape field;
+  confirm corresponding valid and invalid consumer coverage; and recheck the distinctions most likely to remain
+  internally consistent when mistaken: timestamps versus durations, exact byte scales, open versus sealed shapes,
+  preserved native alternatives and ranges, and release-specific signatures.
 
 ## Future Candidates
 

@@ -55,8 +55,10 @@ the repository's PHP 8.2 baseline. The CI matrix selects a compatible PHP versio
 ## Verify Package Behavior
 
 Each fixture contains accepted calls and deliberately invalid plain, differently scaled, and dimensionally incompatible
-values. Expected diagnostics should identify the exact branded boundary. Test explicit selection and autodetection
-against the same cases.
+values. Expected diagnostic fragments should identify the exact branded boundary. The consumer harness checks them in
+both directions: every expected fragment must occur, every emitted file diagnostic must match a declared fragment, and
+general PHPStan errors fail the fixture. One fragment may deliberately cover repeated equivalent diagnostics. Test
+explicit selection and autodetection against the same cases.
 
 Illuminate stubs are the canonical standalone representation. Keep the Larastan metadata catalog in exact parity with
 their `@yumemi-param`, `@yumemi-return`, and `@yumemi-var` tags, including every major restriction. The parity test is a
