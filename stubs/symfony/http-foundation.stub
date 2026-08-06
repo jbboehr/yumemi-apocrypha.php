@@ -1,0 +1,188 @@
+<?php
+
+namespace Symfony\Component\HttpFoundation;
+
+/**
+ * @phpstan-type YumemiHttpFoundationCacheOptions array{
+ *     max_age?: unit_int<'second'>,
+ *     s_maxage?: unit_int<'second'>,
+ *     stale_if_error?: unit_int<'second'>,
+ *     stale_while_revalidate?: unit_int<'second'>,
+ *     ...
+ * }
+ */
+class Response
+{
+    /**
+     * @phpstan-return unit_int<'second'>
+     * @yumemi-return unit_int<'second'>
+     */
+    public function getAge(): int
+    {
+    }
+
+    /**
+     * @phpstan-return unit_int<'second'>|null
+     * @yumemi-return unit_int<'second'>|null
+     */
+    public function getMaxAge(): ?int
+    {
+    }
+
+    /**
+     * @phpstan-param unit_int<'second'> $value
+     * @yumemi-param unit_int<'second'> $value
+     */
+    public function setMaxAge(int $value): static
+    {
+    }
+
+    /**
+     * @phpstan-param unit_int<'second'> $value
+     * @yumemi-param unit_int<'second'> $value
+     */
+    public function setStaleIfError(int $value): static
+    {
+    }
+
+    /**
+     * @phpstan-param unit_int<'second'> $value
+     * @yumemi-param unit_int<'second'> $value
+     */
+    public function setStaleWhileRevalidate(int $value): static
+    {
+    }
+
+    /**
+     * @phpstan-param unit_int<'second'> $value
+     * @yumemi-param unit_int<'second'> $value
+     */
+    public function setSharedMaxAge(int $value): static
+    {
+    }
+
+    /**
+     * @phpstan-return unit_int<'second'>|null
+     * @yumemi-return unit_int<'second'>|null
+     */
+    public function getTtl(): ?int
+    {
+    }
+
+    /**
+     * @phpstan-param unit_int<'second'> $seconds
+     * @yumemi-param unit_int<'second'> $seconds
+     */
+    public function setTtl(int $seconds): static
+    {
+    }
+
+    /**
+     * @phpstan-param unit_int<'second'> $seconds
+     * @yumemi-param unit_int<'second'> $seconds
+     */
+    public function setClientTtl(int $seconds): static
+    {
+    }
+
+    /**
+     * @phpstan-param YumemiHttpFoundationCacheOptions $options
+     * @yumemi-param YumemiHttpFoundationCacheOptions $options
+     */
+    public function setCache(array $options): static
+    {
+    }
+}
+
+class Cookie
+{
+    /**
+     * @phpstan-return unit_int<'second'>
+     * @yumemi-return unit_int<'second'>
+     */
+    public function getMaxAge(): int
+    {
+    }
+}
+
+namespace Symfony\Component\HttpFoundation\File;
+
+class UploadedFile extends File
+{
+    /**
+     * @phpstan-return unit_int<'byte'>|unit_float<'byte'>
+     * @yumemi-return unit_int<'byte'>|unit_float<'byte'>
+     */
+    public static function getMaxFilesize(): int|float
+    {
+    }
+}
+
+namespace Symfony\Component\HttpFoundation\Session;
+
+interface SessionInterface
+{
+    /**
+     * @phpstan-param unit_int<'second'>|null $lifetime
+     * @yumemi-param unit_int<'second'>|null $lifetime
+     */
+    public function invalidate(?int $lifetime = null): bool;
+
+    /**
+     * @phpstan-param unit_int<'second'>|null $lifetime
+     * @yumemi-param unit_int<'second'>|null $lifetime
+     */
+    public function migrate(bool $destroy = false, ?int $lifetime = null): bool;
+}
+
+class Session
+{
+    /**
+     * @phpstan-param unit_int<'second'>|null $lifetime
+     * @yumemi-param unit_int<'second'>|null $lifetime
+     */
+    public function invalidate(?int $lifetime = null): bool
+    {
+    }
+
+    /**
+     * @phpstan-param unit_int<'second'>|null $lifetime
+     * @yumemi-param unit_int<'second'>|null $lifetime
+     */
+    public function migrate(bool $destroy = false, ?int $lifetime = null): bool
+    {
+    }
+}
+
+namespace Symfony\Component\HttpFoundation\Session\Storage;
+
+interface SessionStorageInterface
+{
+    /**
+     * @phpstan-param unit_int<'second'>|null $lifetime
+     * @yumemi-param unit_int<'second'>|null $lifetime
+     */
+    public function regenerate(bool $destroy = false, ?int $lifetime = null): bool;
+}
+
+class NativeSessionStorage
+{
+    /**
+     * @phpstan-param unit_int<'second'>|null $lifetime
+     * @yumemi-param unit_int<'second'>|null $lifetime
+     */
+    public function regenerate(bool $destroy = false, ?int $lifetime = null): bool
+    {
+    }
+}
+
+class MetadataBag
+{
+    /**
+     * @phpstan-return unit_int<'second'>
+     * @yumemi-return unit_int<'second'>
+     */
+    public function getLifetime(): int
+    {
+    }
+}

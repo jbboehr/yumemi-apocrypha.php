@@ -1,0 +1,11 @@
+Response::setMaxAge() expects unit_int<'second'>
+Response::setSharedMaxAge() expects unit_int<'second'>
+Response::setStaleIfError() expects unit_int<'second'>
+Response::setStaleWhileRevalidate() expects unit_int<'second'>
+Response::setTtl() expects unit_int<'second'>
+Response::setClientTtl() expects unit_int<'second'>
+Response::setCache() expects array{
+recordHttpFoundationMeters expects unit_int<'meter'>, unit_int<'second'> given
+recordHttpFoundationUploadSeconds expects unit_float<'second'>|unit_int<'second'>, unit_float<'octet'>|unit_int<'octet'> given
+SessionInterface::migrate() expects unit_int<'second'>|null
+SessionStorageInterface::regenerate() expects unit_int<'second'>|null

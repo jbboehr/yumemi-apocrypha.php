@@ -1,0 +1,2 @@
+IpUtils::anonymize() expects unit_int<'octet'>&int<0, 4>
+IpUtils::anonymize() expects unit_int<'octet'>&int<0, 16>

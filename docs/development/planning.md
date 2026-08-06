@@ -24,6 +24,9 @@ claims to support and semantically accurate about the represented units.
   rule and type-extension adapter, with parity enforced against the canonical stubs.
 - `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
   phpgeo 4 through 6 while leaving coordinate origins unbranded.
+- `symfony/http-foundation` covers response cache durations, cookie max-age and session lifetimes, configured upload
+  byte limits, Symfony 7.3 and later SSE retry delays, and Symfony 8 IP anonymization byte counts. Absolute expiration
+  timestamps remain unbranded.
 - `symfony/stopwatch` covers event and period durations and memory results across Symfony Stopwatch 6 through 8.
 - The loader can enforce a minimum release within a major and select major- or minor-version-specific stub files when a
   supported upstream signature differs. Carbon uses three release profiles; Illuminate Queue distinguishes Laravel 11
@@ -134,14 +137,10 @@ The science-focused survey also produced several non-measurement-library follow-
   deprioritized until a reusable dependent-unit strategy exists.
 
 The [framework-focused survey profile](../../tools/stub-candidate-survey-frameworks.json) inspected 32 curated framework
-and component packages. Manual review reduced its broad scanner ranking to the following priorities:
+and component packages. `symfony/http-foundation`, its strongest result, graduated into the current integration set with
+separate base, 7.3+ SSE, and Symfony 8 IP-anonymization profiles. Manual review reduced the remaining broad scanner
+ranking to the following priorities:
 
-- `symfony/http-foundation` is the best overall framework candidate. `Response` cache lifetimes and TTLs use seconds,
-  while `EventStreamResponse` and `ServerEvent` retry values use milliseconds; uploaded-file and IP-anonymization APIs
-  also expose byte counts. The SSE classes were introduced in Symfony 7.3, so the strongest adjacent-time-unit coverage
-  begins at 7.3 and continues through 8.x. A broader 6.x through 8.x profile may still brand the stable seconds and byte
-  boundaries, with a version-gated SSE stub added for 7.3 and later. Cookie expiration integers are timestamps and must
-  remain unbranded.
 - `cakephp/cakephp` has the smallest high-signal surface. In CakePHP 5.4, `LockInterface::acquireBlocking()` places the
   second-valued lock TTL and acquisition timeout beside a millisecond-valued retry interval. Start support at 5.4.0 and
   cover the facade, interface, and engine without pulling unrelated CakePHP APIs into the first stub.

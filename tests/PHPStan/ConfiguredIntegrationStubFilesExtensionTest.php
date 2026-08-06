@@ -568,6 +568,69 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([realpath(__DIR__ . '/../../apocrypha.neon')], $extension->getFiles());
     }
 
+    /** @return iterable<string, array{string, list<string>}> */
+    public static function symfonyHttpFoundationProfiles(): iterable
+    {
+        yield 'Symfony 6.4 base profile' => [
+            '6.4.0',
+            ['http-foundation.stub'],
+        ];
+        yield 'Symfony 7 before SSE' => [
+            '7.2.9',
+            ['http-foundation.stub'],
+        ];
+        yield 'Symfony 7 with SSE' => [
+            '7.3.0',
+            ['http-foundation.stub', 'http-foundation-sse.stub'],
+        ];
+        yield 'Symfony 8 with SSE and IP byte counts' => [
+            '8.0.0',
+            ['http-foundation.stub', 'http-foundation-sse.stub', 'http-foundation-ip.stub'],
+        ];
+    }
+
+    /** @param list<string> $expectedFiles */
+    #[DataProvider('symfonyHttpFoundationProfiles')]
+    public function testSymfonyHttpFoundationSelectsItsVersionProfile(string $version, array $expectedFiles): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['symfony/http-foundation'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'symfony/http-foundation',
+            static fn (): string => $version,
+        );
+
+        self::assertSame(
+            array_map(
+                static fn (string $file): string => (string) realpath(__DIR__ . '/../../stubs/symfony/' . $file),
+                $expectedFiles,
+            ),
+            $extension->getFiles(),
+        );
+    }
+
+    public function testSymfonyHttpFoundationRejectsVersionsBeforeSixFour(): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['symfony/http-foundation'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'symfony/http-foundation',
+            static fn (): string => '6.3.12',
+        );
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Yumemi Apocrypha integration "symfony/http-foundation" supports versions 6 (>= 6.4.0), 7, 8; '
+                . 'installed version is 6.3.12.',
+        );
+
+        $extension->getFiles();
+    }
+
     public function testLarastanThreeSelectsTheAdapterInsteadOfIlluminateStubs(): void
     {
         $extension = new ConfiguredIntegrationStubFilesExtension(

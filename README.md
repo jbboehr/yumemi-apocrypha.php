@@ -8,21 +8,22 @@ Curated PHPStan unit annotations for third-party PHP packages, built on [Yumemi]
 
 The package is under active development and has no tagged release. It currently covers selected unit-bearing APIs in:
 
-| Composer package        | Supported versions                  |
-| ----------------------- | ----------------------------------- |
-| `nesbot/carbon`         | 2.62.1+ in 2.x; 3.x                 |
-| `james-heinrich/getid3` | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x |
-| `guzzlehttp/guzzle`     | 7, 8                                |
-| `illuminate/cache`      | 11, 12, 13                          |
-| `illuminate/cookie`     | 11, 12, 13                          |
-| `illuminate/filesystem` | 11, 12, 13                          |
-| `illuminate/http`       | 11, 12, 13                          |
-| `illuminate/process`    | 11, 12, 13                          |
-| `illuminate/queue`      | 11, 12, 13                          |
-| `illuminate/support`    | 11, 12, 13                          |
-| `laravel/framework`     | 11, 12, 13                          |
-| `mjaschen/phpgeo`       | 4, 5, 6                             |
-| `symfony/stopwatch`     | 6, 7, 8                             |
+| Composer package          | Supported versions                  |
+| ------------------------- | ----------------------------------- |
+| `nesbot/carbon`           | 2.62.1+ in 2.x; 3.x                 |
+| `james-heinrich/getid3`   | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x |
+| `guzzlehttp/guzzle`       | 7, 8                                |
+| `illuminate/cache`        | 11, 12, 13                          |
+| `illuminate/cookie`       | 11, 12, 13                          |
+| `illuminate/filesystem`   | 11, 12, 13                          |
+| `illuminate/http`         | 11, 12, 13                          |
+| `illuminate/process`      | 11, 12, 13                          |
+| `illuminate/queue`        | 11, 12, 13                          |
+| `illuminate/support`      | 11, 12, 13                          |
+| `laravel/framework`       | 11, 12, 13                          |
+| `mjaschen/phpgeo`         | 4, 5, 6                             |
+| `symfony/http-foundation` | 6.4+ in 6.x; 7.x; 8.x               |
+| `symfony/stopwatch`       | 6, 7, 8                             |
 
 `laravel/framework` supplies the listed Illuminate packages through Composer replacements. Configuration continues to
 use the precise `illuminate/*` integration names; applications do not need to install those components separately.

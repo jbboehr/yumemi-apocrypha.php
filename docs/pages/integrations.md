@@ -9,15 +9,16 @@ CI resolves the latest compatible release of each verified major and any package
 unknown future major, or a release below a stated minimum, is rejected until its signatures and semantics have been
 reviewed.
 
-| Package family      | Verified versions                   | Verification snapshots                                  | Checked    |
-| ------------------- | ----------------------------------- | ------------------------------------------------------- | ---------- |
-| Carbon              | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.1` | 2026-08-05 |
-| Guzzle              | 7, 8                                | `7.15.2`, `8.0.1`                                       | 2026-08-04 |
-| getID3              | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                       | 2026-08-04 |
-| Illuminate packages | 11, 12, 13                          | `v11.51.0`, `v12.64.0`, `v13.23.0`                      | 2026-08-03 |
-| Laravel framework   | 11, 12, 13                          | `11.x-dev@c0f062f`, `v12.64.0`, `v13.24.0`              | 2026-08-04 |
-| phpgeo              | 4, 5, 6                             | `4.2.1`, `5.0.0`, `6.0.2`                               | 2026-08-04 |
-| Symfony Stopwatch   | 6, 7, 8                             | `v6.4.24`, `v7.4.8`, `v8.1.0`                           | 2026-08-04 |
+| Package family         | Verified versions                   | Verification snapshots                                                 | Checked    |
+| ---------------------- | ----------------------------------- | ---------------------------------------------------------------------- | ---------- |
+| Carbon                 | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.1`                | 2026-08-05 |
+| Guzzle                 | 7, 8                                | `7.15.2`, `8.0.1`                                                      | 2026-08-04 |
+| getID3                 | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                      | 2026-08-04 |
+| Illuminate packages    | 11, 12, 13                          | `v11.51.0`, `v12.64.0`, `v13.23.0`                                     | 2026-08-03 |
+| Laravel framework      | 11, 12, 13                          | `11.x-dev@c0f062f`, `v12.64.0`, `v13.24.0`                             | 2026-08-04 |
+| phpgeo                 | 4, 5, 6                             | `4.2.1`, `5.0.0`, `6.0.2`                                              | 2026-08-04 |
+| Symfony HttpFoundation | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.2.9`, `v7.3.0`, `v7.4.15`, `v8.0.0`, `v8.1.2` | 2026-08-05 |
+| Symfony Stopwatch      | 6, 7, 8                             | `v6.4.24`, `v7.4.8`, `v8.1.0`                                          | 2026-08-04 |
 
 Laravel applications may install these APIs through `laravel/framework` instead of separate `illuminate/*` component
 packages. Continue to select the precise component integration names, such as `illuminate/cache`; Composer's exact
@@ -322,6 +323,46 @@ Latitude and longitude remain ordinary floats. They are angular coordinates with
 not interchangeable angle magnitudes. Dimensionless fractions, inverse flattening, iteration controls, and geometry
 counts also remain unbranded. Bearing brands express degrees but do not encode phpgeo's `0` through `360` range because
 branded float ranges are not yet available.
+
+## Symfony HttpFoundation
+
+Enable `symfony/http-foundation` to catch cache durations, session lifetimes, and SSE reconnect delays that use adjacent
+time units. Apocrypha describes the existing HttpFoundation calls to PHPStan; the values remain ordinary PHP integers at
+runtime and no cache value is converted automatically.
+
+| API concern                                 | Unit          | Availability |
+| ------------------------------------------- | ------------- | ------------ |
+| Response age, freshness, staleness, and TTL | `second`      | 6.4+         |
+| Cookie max-age and session cookie lifetime  | `second`      | 6.4+         |
+| Maximum configured upload size              | `byte`        | 6.4+         |
+| Server-sent event reconnect retry           | `millisecond` | 7.3+         |
+| IPv4 and IPv6 anonymization suffix lengths  | `byte`        | 8.x          |
+
+<!-- yumemi-example: symfony-http-foundation-invalid -->
+
+```php
+<?php
+
+use Symfony\Component\HttpFoundation\Response;
+
+use function jbboehr\Yumemi\unit;
+
+function cacheHttpFoundationReport(Response $response): void
+{
+    $response->setMaxAge(unit(30, 'second'));
+    $response->setMaxAge(unit(250, 'millisecond')); // PHPStan rejects milliseconds at this seconds boundary.
+}
+```
+
+The response integration also covers the open options array passed to `Response::setCache()`. Its duration keys are
+branded without sealing the array or restating unrelated upstream options. `Cookie::getMaxAge()` is a relative duration,
+but cookie expiration inputs, `Cookie::getExpiresTime()`, and URI-signing expirations remain unbranded Unix timestamps.
+
+Symfony 7.3 introduced `EventStreamResponse` and `ServerEvent`; their constructor, getter, and setter retry values use
+milliseconds. Symfony 8 made the IPv4 and IPv6 byte-count parameters of `IpUtils::anonymize()` formal API parameters.
+Those parameters preserve Symfony's `0` through `4` and `0` through `16` integer ranges in addition to their byte brand.
+Earlier Symfony releases expose only the IP string in reflection, so Apocrypha does not manufacture the later arguments
+there.
 
 ## Symfony Stopwatch
 

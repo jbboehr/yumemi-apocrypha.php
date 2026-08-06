@@ -1,0 +1,19 @@
+<?php
+
+namespace Symfony\Component\HttpFoundation;
+
+class IpUtils
+{
+    /**
+     * @param int<0, 4> $v4Bytes
+     * @param int<0, 16> $v6Bytes
+     *
+     * @phpstan-param int<0, 4>&unit_int<'byte'> $v4Bytes
+     * @phpstan-param int<0, 16>&unit_int<'byte'> $v6Bytes
+     * @yumemi-param int<0, 4>&unit_int<'byte'> $v4Bytes
+     * @yumemi-param int<0, 16>&unit_int<'byte'> $v6Bytes
+     */
+    public static function anonymize(string $ip, int $v4Bytes = 1, int $v6Bytes = 8): string
+    {
+    }
+}

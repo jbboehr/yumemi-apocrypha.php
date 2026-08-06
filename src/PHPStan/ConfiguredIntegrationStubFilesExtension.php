@@ -164,6 +164,28 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 ],
             ],
         ],
+        'symfony/http-foundation' => [
+            'majors' => [6, 7, 8],
+            'minimumVersions' => [
+                6 => '6.4.0',
+            ],
+            'files' => [__DIR__ . '/../../stubs/symfony/http-foundation.stub'],
+            'filesByMajor' => [
+                8 => [
+                    __DIR__ . '/../../stubs/symfony/http-foundation.stub',
+                    __DIR__ . '/../../stubs/symfony/http-foundation-sse.stub',
+                    __DIR__ . '/../../stubs/symfony/http-foundation-ip.stub',
+                ],
+            ],
+            'filesByMinimumVersion' => [
+                7 => [
+                    '7.3.0' => [
+                        __DIR__ . '/../../stubs/symfony/http-foundation.stub',
+                        __DIR__ . '/../../stubs/symfony/http-foundation-sse.stub',
+                    ],
+                ],
+            ],
+        ],
         'symfony/stopwatch' => [
             'majors' => [6, 7, 8],
             'files' => [__DIR__ . '/../../stubs/symfony/stopwatch.stub'],

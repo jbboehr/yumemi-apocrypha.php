@@ -122,6 +122,8 @@
         "test:consumer:laravel-framework:archive": "make test-consumer-laravel-framework-archive",
         "test:consumer:phpgeo": "make test-consumer-phpgeo",
         "test:consumer:phpgeo:archive": "make test-consumer-phpgeo-archive",
+        "test:consumer:symfony-http-foundation": "make test-consumer-symfony-http-foundation",
+        "test:consumer:symfony-http-foundation:archive": "make test-consumer-symfony-http-foundation-archive",
         "test:consumer:symfony-stopwatch": "make test-consumer-symfony-stopwatch",
         "test:consumer:symfony-stopwatch:archive": "make test-consumer-symfony-stopwatch-archive",
         "test:consumer:manual": "make test-consumer-manual"

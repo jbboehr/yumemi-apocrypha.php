@@ -27,6 +27,7 @@
             { id: "illuminate-process", title: "Illuminate Process" },
             { id: "illuminate-queue", title: "Illuminate Queue" },
             { id: "phpgeo", title: "phpgeo" },
+            { id: "symfony-httpfoundation", title: "Symfony HttpFoundation" },
             { id: "symfony-stopwatch", title: "Symfony Stopwatch" },
             { id: "limitations", title: "Limitations" },
         ],

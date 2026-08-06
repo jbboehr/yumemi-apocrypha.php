@@ -68,6 +68,9 @@ if [[ $PACKAGE_MODE == archive ]]; then
         stubs/illuminate/queue-worker-12.stub
         stubs/illuminate/support.stub
         stubs/phpgeo/phpgeo.stub
+        stubs/symfony/http-foundation-ip.stub
+        stubs/symfony/http-foundation-sse.stub
+        stubs/symfony/http-foundation.stub
         stubs/symfony/stopwatch.stub
     )
     for path in "${required_paths[@]}"; do
@@ -92,7 +95,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
         fi
     done
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-stopwatch|manual] [package-version] [plain|larastan]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan]\n' "$0" >&2
     exit 2
 fi
 
@@ -591,6 +594,89 @@ run_symfony_stopwatch() {
         "recordProfileDurationInSeconds expects unit_float<'second'>|unit_int<'second'>, unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'> given"
 }
 
+run_symfony_http_foundation() {
+    local project_dir=$WORK_DIR/symfony-http-foundation
+    local documentation_case=$project_dir/cases/documentation-invalid.php
+    local package_constraint
+    local has_sse=0
+    local has_ip_byte_counts=0
+    local expected_diagnostics=()
+    local expected_sse_diagnostics=()
+    local expected_ip_diagnostics=()
+
+    case $PACKAGE_MAJOR in
+        6.4.0)
+            package_constraint=6.4.0
+            ;;
+        6)
+            package_constraint='^6.4.0'
+            ;;
+        7.2.9)
+            package_constraint=7.2.9
+            ;;
+        7.3.0)
+            package_constraint=7.3.0
+            has_sse=1
+            ;;
+        7)
+            package_constraint='^7.0'
+            has_sse=1
+            ;;
+        8.0.0)
+            package_constraint=8.0.0
+            has_sse=1
+            has_ip_byte_counts=1
+            ;;
+        8)
+            package_constraint='^8.0'
+            has_sse=1
+            has_ip_byte_counts=1
+            ;;
+        *)
+            printf 'Symfony HttpFoundation consumer tests require version 6.4.0, 6, 7.2.9, 7.3.0, 7, 8.0.0, or 8.\n' >&2
+            exit 2
+            ;;
+    esac
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/symfony-http-foundation/." "$project_dir/"
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev \
+        "symfony/http-foundation:$package_constraint" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php"
+    php "$PROJECT_ROOT/tests/Documentation/extract-markdown-example.php" \
+        "$PROJECT_ROOT/docs/pages/integrations.md" symfony-http-foundation-invalid > "$documentation_case"
+    run_phpstan_case "$project_dir" phpstan.neon valid.php
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
+        "Response::setMaxAge() expects unit_int<'second'>, 250&unit_int<'1/1000 * second'> given"
+
+    if [[ $has_sse == 1 ]]; then
+        mapfile -t expected_sse_diagnostics < "$project_dir/expected-diagnostics-sse.txt"
+        run_phpstan_case "$project_dir" phpstan.neon valid-sse.php
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-sse.php
+        run_phpstan_case "$project_dir" phpstan.neon invalid-sse.php "${expected_sse_diagnostics[@]}"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-sse.php "${expected_sse_diagnostics[@]}"
+    fi
+
+    if [[ $has_ip_byte_counts == 1 ]]; then
+        mapfile -t expected_ip_diagnostics < "$project_dir/expected-diagnostics-ip.txt"
+        run_phpstan_case "$project_dir" phpstan.neon valid-ip.php
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-ip.php
+        run_phpstan_case "$project_dir" phpstan.neon invalid-ip.php "${expected_ip_diagnostics[@]}"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-ip.php "${expected_ip_diagnostics[@]}"
+    fi
+}
+
 run_guzzle() {
     local project_dir=$WORK_DIR/guzzle
     local documentation_case=$project_dir/cases/documentation-invalid.php
@@ -773,6 +859,9 @@ case $FIXTURE_SUITE in
     phpgeo)
         run_phpgeo
         ;;
+    symfony-http-foundation)
+        run_symfony_http_foundation
+        ;;
     symfony-stopwatch)
         run_symfony_stopwatch
         ;;
@@ -780,7 +869,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
         exit 2
         ;;
 esac

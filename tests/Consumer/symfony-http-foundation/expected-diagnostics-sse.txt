@@ -1,0 +1,4 @@
+EventStreamResponse constructor expects unit_int<'1/1000 * second'>|null
+EventStreamResponse::setRetry() expects unit_int<'1/1000 * second'>
+ServerEvent constructor expects unit_int<'1/1000 * second'>|null
+ServerEvent::setRetry() expects unit_int<'1/1000 * second'>|null

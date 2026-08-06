@@ -1,0 +1,5 @@
+parameters:
+    stubFiles:
+        - ../../stubs/symfony/http-foundation.stub
+        - ../../stubs/symfony/http-foundation-sse.stub
+        - ../../stubs/symfony/http-foundation-ip.stub
