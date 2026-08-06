@@ -113,6 +113,29 @@ final class ReportWriterTest extends TestCase
         }
     }
 
+    public function testReportOmitsTagYieldWhenTheProfileHasNoTags(): void
+    {
+        $directory = sys_get_temp_dir() . '/apocrypha-report-' . bin2hex(random_bytes(8));
+        self::assertTrue(mkdir($directory));
+        $path = $directory . '/report.md';
+
+        try {
+            (new ReportWriter())->write(
+                $path,
+                [$this->repository()],
+                [$this->finding()],
+                ['snapshot' => 'fixture', 'tagDiscoveries' => ['focused' => [], 'noisy' => []]],
+            );
+
+            self::assertStringNotContainsString('## Yield by tag', (string) file_get_contents($path));
+        } finally {
+            if (is_file($path)) {
+                unlink($path);
+            }
+            rmdir($directory);
+        }
+    }
+
     /** @return RepositoryRecord */
     private function repository(): array
     {

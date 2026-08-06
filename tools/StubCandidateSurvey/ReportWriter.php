@@ -223,13 +223,7 @@ final class ReportWriter
             $findingByRepository[$finding['repositoryKey']] = $finding;
         }
 
-        $lines[] = '';
-        $lines[] = '## Yield by tag';
-        $lines[] = '';
-        $lines[] = 'Repositories can appear under more than one tag, so rows are not additive.';
-        $lines[] = '';
-        $lines[] = '| Stratum | Tag | Discovered | Selected | Inspected | Collision candidates |';
-        $lines[] = '|---|---|---:|---:|---:|---:|';
+        $rows = [];
         foreach (['focused', 'noisy'] as $stratum) {
             $tags = $tagDiscoveries[$stratum] ?? null;
             if (!is_array($tags)) {
@@ -255,9 +249,22 @@ final class ReportWriter
                         }
                     }
                 }
-                $lines[] = sprintf('| %s | `%s` | %d | %d | %d | %d |', $stratum, $tag, $discovered, $selected, $inspected, $collisions);
+                $rows[] = sprintf('| %s | `%s` | %d | %d | %d | %d |', $stratum, $tag, $discovered, $selected, $inspected, $collisions);
             }
         }
+
+        if ([] === $rows) {
+            return;
+        }
+
+        $lines[] = '';
+        $lines[] = '## Yield by tag';
+        $lines[] = '';
+        $lines[] = 'Repositories can appear under more than one tag, so rows are not additive.';
+        $lines[] = '';
+        $lines[] = '| Stratum | Tag | Discovered | Selected | Inspected | Collision candidates |';
+        $lines[] = '|---|---|---:|---:|---:|---:|';
+        array_push($lines, ...$rows);
     }
 
     /** @param RepositoryRecord $repository */

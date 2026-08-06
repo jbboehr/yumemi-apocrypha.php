@@ -1,0 +1,67 @@
+{
+    "schemaVersion": 2,
+    "profile": "frameworks",
+    "hardRepositoryLimit": 250,
+    "popularPackageCount": 0,
+    "searchResultsPerTag": 1,
+    "backfillFromPopular": false,
+    "quotas": {
+        "curated": 250,
+        "focused": 0,
+        "noisy": 0,
+        "popular": 0
+    },
+    "ownerLimits": {
+        "general": 10,
+        "noisy": 4
+    },
+    "http": {
+        "concurrency": 4,
+        "retries": 3
+    },
+    "archiveLimits": {
+        "compressedBytes": 20971520,
+        "uncompressedBytes": 104857600,
+        "entries": 20000,
+        "textFileBytes": 2097152,
+        "totalDownloadBytes": 1073741824
+    },
+    "focusedTags": [],
+    "noisyTags": [],
+    "seeds": [
+        { "package": "yiisoft/yii2", "role": "framework" },
+        { "package": "cakephp/cakephp", "role": "framework" },
+        { "package": "codeigniter4/framework", "role": "framework" },
+        { "package": "spiral/framework", "role": "framework" },
+        { "package": "slim/slim", "role": "slim" },
+        { "package": "slim/psr7", "role": "slim-component" },
+        { "package": "slim/http", "role": "slim-component" },
+        { "package": "symfony/lock", "role": "symfony-component" },
+        { "package": "symfony/messenger", "role": "symfony-component" },
+        { "package": "symfony/http-client", "role": "symfony-component" },
+        { "package": "symfony/http-foundation", "role": "symfony-component" },
+        { "package": "symfony/console", "role": "symfony-component" },
+        { "package": "symfony/process", "role": "symfony-component" },
+        { "package": "symfony/cache", "role": "symfony-component" },
+        { "package": "symfony/rate-limiter", "role": "symfony-component" },
+        { "package": "nette/application", "role": "nette-component" },
+        { "package": "nette/http", "role": "nette-component" },
+        { "package": "nette/caching", "role": "nette-component" },
+        { "package": "nette/utils", "role": "nette-component" },
+        { "package": "laminas/laminas-mvc", "role": "laminas-component" },
+        { "package": "laminas/laminas-http", "role": "laminas-component" },
+        { "package": "laminas/laminas-cache", "role": "laminas-component" },
+        { "package": "laminas/laminas-session", "role": "laminas-component" },
+        { "package": "laminas/laminas-validator", "role": "laminas-component" },
+        { "package": "hyperf/framework", "role": "hyperf-component" },
+        { "package": "hyperf/process", "role": "hyperf-component" },
+        { "package": "hyperf/pool", "role": "hyperf-component" },
+        { "package": "hyperf/retry", "role": "hyperf-component" },
+        { "package": "hyperf/rate-limit", "role": "hyperf-component" },
+        { "package": "hyperf/token-bucket", "role": "hyperf-component" },
+        { "package": "hyperf/cache", "role": "hyperf-component" },
+        { "package": "hyperf/guzzle", "role": "hyperf-component" }
+    ],
+    "repositoryBlacklist": [],
+    "repositoryWhitelist": []
+}

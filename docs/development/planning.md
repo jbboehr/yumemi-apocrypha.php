@@ -133,6 +133,38 @@ The science-focused survey also produced several non-measurement-library follow-
   argument or object state. OPC UA packages generally attach units through runtime metadata. Keep both groups
   deprioritized until a reusable dependent-unit strategy exists.
 
+The [framework-focused survey profile](../../tools/stub-candidate-survey-frameworks.json) inspected 32 curated framework
+and component packages. Manual review reduced its broad scanner ranking to the following priorities:
+
+- `symfony/http-foundation` is the best overall framework candidate. `Response` cache lifetimes and TTLs use seconds,
+  while `EventStreamResponse` and `ServerEvent` retry values use milliseconds; uploaded-file and IP-anonymization APIs
+  also expose byte counts. The SSE classes were introduced in Symfony 7.3, so the strongest adjacent-time-unit coverage
+  begins at 7.3 and continues through 8.x. A broader 6.x through 8.x profile may still brand the stable seconds and byte
+  boundaries, with a version-gated SSE stub added for 7.3 and later. Cookie expiration integers are timestamps and must
+  remain unbranded.
+- `cakephp/cakephp` has the smallest high-signal surface. In CakePHP 5.4, `LockInterface::acquireBlocking()` places the
+  second-valued lock TTL and acquisition timeout beside a millisecond-valued retry interval. Start support at 5.4.0 and
+  cover the facade, interface, and engine without pulling unrelated CakePHP APIs into the first stub.
+- `symfony/messenger` combines millisecond retry delays, microsecond worker sleeps, and second worker time limits.
+  Direct retry-strategy and delay-stamp boundaries are straightforward. `Worker::run()` needs either a genuinely open
+  options shape or bounded extension logic so annotation does not seal the upstream options array.
+- `yiisoft/yii2` has a direct seconds-versus-milliseconds collision in `MemCacheServer`: `timeout` is milliseconds while
+  `retryInterval` is seconds. Its public untyped properties require careful stub verification, but the boundary is
+  stable and useful. File rotation sizes measured in kilobytes provide a secondary fixed-unit surface.
+- `codeigniter4/framework` exposes a microsecond session lock retry interval, second-valued throttling windows, degree
+  image rotation, and image quality on a 0 through 100 percentage scale. Pixel dimensions remain out of scope until
+  Yumemi has an explicit pixel model; do not let that block a smaller duration, angle, and percentage integration.
+- `nette/utils` has strong ecosystem reach, but its most interesting image methods mix pixel integers with percentage
+  strings and percentage opacity. Keep it behind the pixel semantic decision rather than branding only the easy opacity
+  parameter.
+- `slim/slim` produced no meaningful native unit boundary: its pixel match came from error-page CSS. `slim/psr7` has
+  legitimate byte-valued stream and upload sizes, but bytes are its only useful native unit. Keep Slim in the surveyed
+  set and deprioritize an integration unless another fixed unit appears.
+
+The remaining reviewed Symfony, Laminas, Nette, Spiral, and Hyperf packages predominantly expose one native unit, select
+units dynamically, wrap measurements in objects, or produced contextual scanner matches. Do not promote them from the
+automated ranking without a new fixed-boundary finding.
+
 ### Candidates Requiring Core Work
 
 The following packages remain valuable after a small amount of core semantic or type-system work:

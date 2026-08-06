@@ -92,4 +92,17 @@ final class ConfigTest extends TestCase
         self::assertCount(25, $config->repositoryWhitelist);
         self::assertSame([], array_values(array_diff($config->repositoryWhitelist, $config->repositoryBlacklist)));
     }
+
+    public function testFrameworkProfilePreservesTheCuratedRepositoryCap(): void
+    {
+        $config = Config::fromFile(__DIR__ . '/../../tools/stub-candidate-survey-frameworks.json');
+
+        self::assertSame('frameworks', $config->profile);
+        self::assertFalse($config->backfillFromPopular);
+        self::assertCount(32, $config->seeds);
+        self::assertSame(
+            ['curated' => 32, 'focused' => 0, 'noisy' => 0, 'popular' => 0],
+            $config->quotasForLimit(32),
+        );
+    }
 }
