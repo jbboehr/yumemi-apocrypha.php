@@ -89,14 +89,45 @@ PHP;
         self::assertSame(['second'], $finding['dimensions']['time']);
     }
 
-    /** @return array{locality: string, dimensions: array<string, list<string>>} */
-    private function scanArchive(string $source): array
+    public function testTestDeclarationsDoNotBecomePublicCandidates(): void
+    {
+        $source = <<<'PHP'
+<?php
+final class Cache
+{
+    /** @param int $ttl Number of seconds before expiration. */
+    public function put(int $ttl): void {}
+}
+PHP;
+        $testSource = <<<'PHP'
+<?php
+final class CacheTest
+{
+    /** Exercise seconds and milliseconds. */
+    public function testMixedUnits(): void {}
+}
+PHP;
+
+        $finding = $this->scanArchive($source, ['package/tests/CacheTest.php' => $testSource]);
+
+        self::assertSame('single-unit', $finding['locality']);
+        self::assertSame(['second'], $finding['dimensions']['time']);
+    }
+
+    /**
+     * @param array<string, string> $additionalFiles
+     * @return array{locality: string, dimensions: array<string, list<string>>}
+     */
+    private function scanArchive(string $source, array $additionalFiles = []): array
     {
         $path = tempnam(sys_get_temp_dir(), 'apocrypha-survey-');
         self::assertNotFalse($path);
         $archive = new ZipArchive();
         self::assertTrue($archive->open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE));
-        self::assertTrue($archive->addFromString('fixture/src/Fixture.php', $source));
+        self::assertTrue($archive->addFromString('package/src/Fixture.php', $source));
+        foreach ($additionalFiles as $name => $contents) {
+            self::assertTrue($archive->addFromString($name, $contents));
+        }
         self::assertTrue($archive->close());
 
         try {

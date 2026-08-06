@@ -103,6 +103,29 @@ final class SelectorTest extends TestCase
         self::assertLessThanOrEqual(5, count($noisyForOwner));
     }
 
+    public function testScienceProfileBlacklistsPriorRepositoriesExceptWhitelistedControls(): void
+    {
+        $config = Config::fromFile(__DIR__ . '/../../tools/stub-candidate-survey-science.json');
+        $blacklistedKey = array_values(array_diff($config->repositoryBlacklist, $config->repositoryWhitelist))[0];
+        $whitelistedKey = $config->repositoryWhitelist[0];
+        $packages = [
+            $this->package('prior/excluded', 'curated', null, 1, 'control', null, $blacklistedKey),
+            $this->package('prior/control', 'curated', null, 2, 'control', null, $whitelistedKey),
+        ];
+
+        $selected = (new Selector())->select($packages, $config, 2);
+
+        self::assertSame([$whitelistedKey], array_column($selected, 'key'));
+    }
+
+    public function testScienceProfileDoesNotBackfillFromPopularPackages(): void
+    {
+        $config = Config::fromFile(__DIR__ . '/../../tools/stub-candidate-survey-science.json');
+        $packages = [$this->package('popular/package', 'popular', null, 1)];
+
+        self::assertSame([], (new Selector())->select($packages, $config, 4));
+    }
+
     /** @return PackageRecord */
     private function package(
         string $name,
@@ -111,11 +134,12 @@ final class SelectorTest extends TestCase
         int $rank,
         ?string $role = null,
         ?string $owner = null,
+        ?string $repositoryKey = null,
     ): array {
         $vendor = explode('/', $name, 2)[0];
         $packageName = explode('/', $name, 2)[1];
         $owner ??= $vendor;
-        $repositoryKey = sprintf('github.com/%s/%s', $vendor, $packageName);
+        $repositoryKey ??= sprintf('github.com/%s/%s', $vendor, $packageName);
 
         /** @var PackageRecord */
         return [

@@ -53,12 +53,16 @@ final class Config
      * @param list<non-empty-string> $focusedTags
      * @param list<non-empty-string> $noisyTags
      * @param list<array{package: non-empty-string, role: non-empty-string}> $seeds
+     * @param list<non-empty-string> $repositoryBlacklist
+     * @param list<non-empty-string> $repositoryWhitelist
      */
     private function __construct(
         public readonly int $schemaVersion,
+        public readonly string $profile,
         public readonly int $hardRepositoryLimit,
         public readonly int $popularPackageCount,
         public readonly int $searchResultsPerTag,
+        public readonly bool $backfillFromPopular,
         public readonly array $quotas,
         public readonly array $ownerLimits,
         public readonly array $http,
@@ -66,6 +70,8 @@ final class Config
         public readonly array $focusedTags,
         public readonly array $noisyTags,
         public readonly array $seeds,
+        public readonly array $repositoryBlacklist,
+        public readonly array $repositoryWhitelist,
     ) {
     }
 
@@ -88,23 +94,29 @@ final class Config
 
         /** @var array{
          *     schemaVersion: int,
+         *     profile: non-empty-string,
          *     hardRepositoryLimit: int,
          *     popularPackageCount: int,
          *     searchResultsPerTag: int,
+         *     backfillFromPopular: bool,
          *     quotas: array{curated: int, focused: int, noisy: int, popular: int},
          *     ownerLimits: array{general: int, noisy: int},
          *     http: array{concurrency: int, retries: int},
          *     archiveLimits: array{compressedBytes: int, uncompressedBytes: int, entries: int, textFileBytes: int, totalDownloadBytes: int},
          *     focusedTags: list<non-empty-string>,
          *     noisyTags: list<non-empty-string>,
-         *     seeds: list<array{package: non-empty-string, role: non-empty-string}>
+         *     seeds: list<array{package: non-empty-string, role: non-empty-string}>,
+         *     repositoryBlacklist: list<non-empty-string>,
+         *     repositoryWhitelist: list<non-empty-string>
          * } $data
          */
         $config = new self(
             $data['schemaVersion'],
+            $data['profile'],
             $data['hardRepositoryLimit'],
             $data['popularPackageCount'],
             $data['searchResultsPerTag'],
+            $data['backfillFromPopular'],
             $data['quotas'],
             $data['ownerLimits'],
             $data['http'],
@@ -112,6 +124,8 @@ final class Config
             $data['focusedTags'],
             $data['noisyTags'],
             $data['seeds'],
+            $data['repositoryBlacklist'],
+            $data['repositoryWhitelist'],
         );
         $config->validate();
 
@@ -140,24 +154,26 @@ final class Config
             $remainders[$stratum] = $raw - $scaled[$stratum];
         }
 
-        $scaled['curated'] = max(1, $scaled['curated']);
-        if ($limit >= 2) {
+        if ($this->quotas['curated'] > 0) {
+            $scaled['curated'] = max(1, $scaled['curated']);
+        }
+        if ($limit >= 2 && $this->quotas['focused'] > 0) {
             $scaled['focused'] = max(1, $scaled['focused']);
         }
-        if ($limit >= 3) {
+        if ($limit >= 3 && $this->quotas['popular'] > 0) {
             $scaled['popular'] = max(1, $scaled['popular']);
         }
-        if ($limit >= 4) {
+        if ($limit >= 4 && $this->quotas['noisy'] > 0) {
             $scaled['noisy'] = max(1, $scaled['noisy']);
         }
 
         while (array_sum($scaled) > $limit) {
             foreach (['popular', 'focused', 'noisy', 'curated'] as $stratum) {
                 $minimum = match ($stratum) {
-                    'curated' => 1,
-                    'focused' => $limit >= 2 ? 1 : 0,
-                    'popular' => $limit >= 3 ? 1 : 0,
-                    'noisy' => $limit >= 4 ? 1 : 0,
+                    'curated' => $this->quotas['curated'] > 0 ? 1 : 0,
+                    'focused' => $limit >= 2 && $this->quotas['focused'] > 0 ? 1 : 0,
+                    'popular' => $limit >= 3 && $this->quotas['popular'] > 0 ? 1 : 0,
+                    'noisy' => $limit >= 4 && $this->quotas['noisy'] > 0 ? 1 : 0,
                 };
                 if ($scaled[$stratum] > $minimum) {
                     --$scaled[$stratum];
@@ -181,8 +197,11 @@ final class Config
 
     private function validate(): void
     {
-        if (1 !== $this->schemaVersion) {
+        if (2 !== $this->schemaVersion) {
             throw new RuntimeException(sprintf('Unsupported survey configuration schema: %d', $this->schemaVersion));
+        }
+        if (1 !== preg_match('/^[a-z][a-z0-9-]*$/', $this->profile)) {
+            throw new RuntimeException('Survey profile must use lowercase letters, digits, and hyphens.');
         }
         if (self::HARD_REPOSITORY_LIMIT !== $this->hardRepositoryLimit) {
             throw new RuntimeException(sprintf('The repository hard limit must remain %d.', self::HARD_REPOSITORY_LIMIT));
@@ -192,6 +211,12 @@ final class Config
         }
         if ([] !== array_intersect($this->focusedTags, $this->noisyTags)) {
             throw new RuntimeException('Focused and noisy tag lists must not overlap.');
+        }
+        if ([] !== array_diff($this->repositoryWhitelist, $this->repositoryBlacklist)) {
+            throw new RuntimeException('The repository whitelist must be a subset of the repository blacklist.');
+        }
+        if ($this->searchResultsPerTag < 1 || $this->searchResultsPerTag > 100) {
+            throw new RuntimeException('Tag search result count must be between 1 and 100.');
         }
         if ($this->http['concurrency'] < 1 || $this->http['concurrency'] > 10) {
             throw new RuntimeException('HTTP concurrency must be between 1 and 10.');

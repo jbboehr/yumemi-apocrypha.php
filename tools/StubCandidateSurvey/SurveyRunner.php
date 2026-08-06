@@ -123,10 +123,17 @@ final class SurveyRunner
             static fn (array $repository): int => $repository['archiveBytes'] ?? 0,
             $downloaded,
         ));
+        /** @var array<string, true> $baselineRepositories */
+        $baselineRepositories = array_fill_keys($config->repositoryBlacklist, true);
+        $selectedBaselineRepositories = count(array_filter(
+            $repositories,
+            static fn (array $repository): bool => isset($baselineRepositories[$repository['key']]),
+        ));
 
         $manifest = [
             'schemaVersion' => 1,
             'snapshot' => basename($workspace),
+            'profile' => $config->profile,
             'startedAt' => $startedAt,
             'collectedAt' => gmdate(DATE_ATOM),
             'status' => 'collected',
@@ -134,13 +141,19 @@ final class SurveyRunner
             'hardRepositoryLimit' => Config::HARD_REPOSITORY_LIMIT,
             'seedsOnly' => $seedsOnly,
             'offline' => $offline,
+            'backfillFromPopular' => $config->backfillFromPopular,
             'focusedTags' => $config->focusedTags,
             'noisyTags' => $config->noisyTags,
+            'tagDiscoveries' => $this->tagDiscoveryCounts($discoveries, $config),
+            'repositoryBlacklistCount' => count($config->repositoryBlacklist),
+            'repositoryWhitelistCount' => count($config->repositoryWhitelist),
             'counts' => [
                 'discoveries' => count($discoveries),
                 'eligiblePackages' => count($packages),
                 'excludedAbandonedPackages' => count($excludedPackages),
                 'selectedRepositories' => count($repositories),
+                'selectedBaselineRepositories' => $selectedBaselineRepositories,
+                'selectedNewRepositories' => count($repositories) - $selectedBaselineRepositories,
                 'downloadedRepositories' => count($downloaded),
                 'downloadedBytes' => $downloadedBytes,
             ],
@@ -148,6 +161,28 @@ final class SurveyRunner
         JsonStorage::write($workspace . '/manifest.json', $manifest);
 
         return $manifest;
+    }
+
+    /**
+     * @param list<DiscoveryRecord> $discoveries
+     * @return array{focused: array<string, int>, noisy: array<string, int>}
+     */
+    private function tagDiscoveryCounts(array $discoveries, Config $config): array
+    {
+        $counts = [
+            'focused' => array_fill_keys($config->focusedTags, 0),
+            'noisy' => array_fill_keys($config->noisyTags, 0),
+        ];
+        foreach ($discoveries as $discovery) {
+            foreach ($discovery['sources'] as $source) {
+                $tag = $source['tag'];
+                if (null !== $tag && isset($counts[$source['stratum']][$tag])) {
+                    ++$counts[$source['stratum']][$tag];
+                }
+            }
+        }
+
+        return $counts;
     }
 
     /** @return array<mixed> */

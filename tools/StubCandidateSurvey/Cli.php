@@ -58,7 +58,10 @@ final class Cli
                 return 0;
             }
 
-            $config = Config::fromFile($this->root . '/tools/stub-candidate-survey.json');
+            $config = Config::fromFile($this->configPath($options['profile']));
+            if ($config->profile !== $options['profile']) {
+                throw new RuntimeException(sprintf('Survey configuration declares profile %s, expected %s.', $config->profile, $options['profile']));
+            }
             $limit = $options['limit'];
             if ($limit < 1 || $limit > Config::HARD_REPOSITORY_LIMIT) {
                 throw new RuntimeException(sprintf('The repository limit must be between 1 and %d.', Config::HARD_REPOSITORY_LIMIT));
@@ -94,7 +97,7 @@ final class Cli
 
     /**
      * @param list<string> $arguments
-     * @return array{'collect'|'scan'|'report'|'run'|'help', array{workspace: string|null, limit: int, offline: bool, seedsOnly: bool}}
+     * @return array{'collect'|'scan'|'report'|'run'|'help', array{workspace: string|null, profile: string, limit: int, offline: bool, seedsOnly: bool}}
      */
     private function parse(array $arguments): array
     {
@@ -106,7 +109,7 @@ final class Cli
             throw new RuntimeException(sprintf('Unknown command: %s', $command));
         }
 
-        $options = ['workspace' => null, 'limit' => Config::HARD_REPOSITORY_LIMIT, 'offline' => false, 'seedsOnly' => false];
+        $options = ['workspace' => null, 'profile' => 'general', 'limit' => Config::HARD_REPOSITORY_LIMIT, 'offline' => false, 'seedsOnly' => false];
         foreach (array_slice($arguments, 1) as $argument) {
             if ('--offline' === $argument) {
                 $options['offline'] = true;
@@ -114,6 +117,12 @@ final class Cli
                 $options['seedsOnly'] = true;
             } elseif (str_starts_with($argument, '--workspace=')) {
                 $options['workspace'] = substr($argument, strlen('--workspace='));
+            } elseif (str_starts_with($argument, '--profile=')) {
+                $profile = substr($argument, strlen('--profile='));
+                if (1 !== preg_match('/^[a-z][a-z0-9-]*$/', $profile)) {
+                    throw new RuntimeException('The --profile option must use lowercase letters, digits, and hyphens.');
+                }
+                $options['profile'] = $profile;
             } elseif (str_starts_with($argument, '--limit=')) {
                 $value = substr($argument, strlen('--limit='));
                 if (!ctype_digit($value)) {
@@ -127,6 +136,17 @@ final class Cli
 
         /** @var 'collect'|'scan'|'report'|'run'|'help' $command */
         return [$command, $options];
+    }
+
+    private function configPath(string $profile): string
+    {
+        $suffix = 'general' === $profile ? '' : '-' . $profile;
+        $path = $this->root . '/tools/stub-candidate-survey' . $suffix . '.json';
+        if (!is_file($path)) {
+            throw new RuntimeException(sprintf('Unknown survey profile: %s', $profile));
+        }
+
+        return $path;
     }
 
     private function workspace(?string $requested, string $command, bool $offline): string
@@ -200,6 +220,7 @@ Commands:
 
 Options:
   --workspace=NAME  Use a named workspace beneath tmp/stub-candidate-survey
+  --profile=NAME    Select a survey profile (default: general)
   --limit=N         Reduce the repository cap (maximum: 250)
   --offline         Use only an existing workspace and cached responses
   --seeds-only      Restrict collection to curated seeds; useful for smoke tests

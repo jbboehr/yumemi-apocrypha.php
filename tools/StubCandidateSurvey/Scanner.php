@@ -109,6 +109,9 @@ final class Scanner
                 }
 
                 if (1 === preg_match('/\.(?:php|inc)$/i', $name)) {
+                    if ($this->isNonApiPhp($name)) {
+                        continue;
+                    }
                     $contents = $archive->getFromIndex($index);
                     if (false !== $contents) {
                         array_push($declarations, ...$this->scanPhp($contents));
@@ -267,5 +270,12 @@ final class Scanner
         $normalized = strtolower(str_replace('\\', '/', $name));
 
         return 1 === preg_match('~(?:^|/)(?:readme[^/]*\.md|docs?/.*\.md)$~', $normalized);
+    }
+
+    private function isNonApiPhp(string $name): bool
+    {
+        $normalized = '/' . strtolower(str_replace('\\', '/', $name));
+
+        return 1 === preg_match('~/(?:tests?|fixtures?|examples?|benchmarks?|demo)/~', $normalized);
     }
 }

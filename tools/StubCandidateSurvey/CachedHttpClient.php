@@ -68,8 +68,12 @@ final class CachedHttpClient
      * @param array<string, string> $urlsByKey
      * @return array<string, string>
      */
-    public function fetchMany(array $urlsByKey, string $cacheDirectory, bool $offline): array
-    {
+    public function fetchMany(
+        array $urlsByKey,
+        string $cacheDirectory,
+        bool $offline,
+        bool $ignoreNotFound = false,
+    ): array {
         JsonStorage::ensureDirectory($cacheDirectory);
         $results = [];
         $pending = [];
@@ -77,6 +81,9 @@ final class CachedHttpClient
         foreach ($urlsByKey as $key => $url) {
             $cached = $this->readCachedBody($cacheDirectory, $url);
             if ($offline) {
+                if ($ignoreNotFound && $this->isMissing($cacheDirectory, $url)) {
+                    continue;
+                }
                 if (null === $cached) {
                     throw new HttpException(sprintf('Offline cache miss: %s', $url));
                 }
@@ -87,7 +94,7 @@ final class CachedHttpClient
         }
 
         foreach (array_chunk($pending, max(1, $this->concurrency), true) as $chunk) {
-            $results += $this->fetchChunk($chunk, $cacheDirectory);
+            $results += $this->fetchChunk($chunk, $cacheDirectory, $ignoreNotFound);
         }
 
         return $results;
@@ -179,11 +186,12 @@ final class CachedHttpClient
      * @param array<string, string> $urlsByKey
      * @return array<string, string>
      */
-    private function fetchChunk(array $urlsByKey, string $cacheDirectory): array
+    private function fetchChunk(array $urlsByKey, string $cacheDirectory, bool $ignoreNotFound): array
     {
         $remaining = $urlsByKey;
         $results = [];
         $errors = [];
+        $missing = [];
 
         for ($attempt = 0; $attempt <= $this->retries && [] !== $remaining; ++$attempt) {
             $multi = curl_multi_init();
@@ -247,6 +255,11 @@ final class CachedHttpClient
                     $results[$key] = $body;
                     continue;
                 }
+                if ($ignoreNotFound && 404 === $status) {
+                    $this->markMissing($cacheDirectory, $url);
+                    $missing[$key] = true;
+                    continue;
+                }
 
                 $errors[$key] = sprintf('HTTP %d%s', $status, '' !== $error ? ': ' . $error : '');
                 if ($attempt < $this->retries && (0 === $status || 429 === $status || $status >= 500)) {
@@ -268,6 +281,9 @@ final class CachedHttpClient
 
         foreach ($urlsByKey as $key => $url) {
             if (!isset($results[$key])) {
+                if (isset($missing[$key])) {
+                    continue;
+                }
                 throw new HttpException(sprintf('Request failed (%s): %s', $errors[$key] ?? 'unknown error', $url));
             }
         }
@@ -356,6 +372,22 @@ final class CachedHttpClient
             'lastModified' => $headers['last-modified'] ?? null,
             'retrievedAt' => gmdate(DATE_ATOM),
         ]);
+        $missingPath = $this->cachePath($cacheDirectory, $url, '.missing');
+        if (is_file($missingPath)) {
+            unlink($missingPath);
+        }
+    }
+
+    private function markMissing(string $cacheDirectory, string $url): void
+    {
+        if (false === file_put_contents($this->cachePath($cacheDirectory, $url, '.missing'), '')) {
+            throw new HttpException(sprintf('Unable to cache missing response: %s', $url));
+        }
+    }
+
+    private function isMissing(string $cacheDirectory, string $url): bool
+    {
+        return is_file($this->cachePath($cacheDirectory, $url, '.missing'));
     }
 
     private function cachePath(string $cacheDirectory, string $url, string $suffix): string

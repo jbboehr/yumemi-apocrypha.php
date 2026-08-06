@@ -61,4 +61,26 @@ final class CachedHttpClientTest extends TestCase
             rmdir($directory);
         }
     }
+
+    public function testOfflineModeReplaysIgnoredMissingResponse(): void
+    {
+        $directory = sys_get_temp_dir() . '/apocrypha-http-' . bin2hex(random_bytes(8));
+        self::assertTrue(mkdir($directory));
+        $url = 'https://example.com/missing.json';
+        $path = $directory . '/' . hash('sha256', $url) . '.missing';
+        self::assertNotFalse(file_put_contents($path, ''));
+
+        try {
+            $responses = (new CachedHttpClient(4, 3, 'test'))->fetchMany(
+                ['fixture' => $url],
+                $directory,
+                true,
+                true,
+            );
+            self::assertSame([], $responses);
+        } finally {
+            unlink($path);
+            rmdir($directory);
+        }
+    }
 }

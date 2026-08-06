@@ -52,7 +52,11 @@ final class Selector
      */
     public function select(array $packages, Config $config, int $limit, array $excludedPackages = []): array
     {
-        $repositories = $this->groupRepositories($packages, $excludedPackages);
+        /** @var array<string, true> $repositoryBlacklist */
+        $repositoryBlacklist = array_fill_keys($config->repositoryBlacklist, true);
+        /** @var array<string, true> $repositoryWhitelist */
+        $repositoryWhitelist = array_fill_keys($config->repositoryWhitelist, true);
+        $repositories = $this->groupRepositories($packages, $excludedPackages, $repositoryBlacklist, $repositoryWhitelist);
         $quotas = $config->quotasForLimit($limit);
         $selected = [];
         $selectedKeys = [];
@@ -109,7 +113,7 @@ final class Selector
             'popular',
         );
 
-        if (count($selected) < $limit) {
+        if ($config->backfillFromPopular && count($selected) < $limit) {
             $this->take(
                 $popular,
                 $limit - count($selected),
@@ -144,14 +148,23 @@ final class Selector
     /**
      * @param list<PackageRecord> $packages
      * @param array<string, true> $excludedPackages
+     * @param array<string, true> $repositoryBlacklist
+     * @param array<string, true> $repositoryWhitelist
      * @return list<RepositoryRecord>
      */
-    private function groupRepositories(array $packages, array $excludedPackages): array
-    {
+    private function groupRepositories(
+        array $packages,
+        array $excludedPackages,
+        array $repositoryBlacklist,
+        array $repositoryWhitelist,
+    ): array {
         /** @var array<string, list<PackageRecord>> $grouped */
         $grouped = [];
         foreach ($packages as $package) {
             if (isset($excludedPackages[$package['name']])) {
+                continue;
+            }
+            if (isset($repositoryBlacklist[$package['repositoryKey']]) && !isset($repositoryWhitelist[$package['repositoryKey']])) {
                 continue;
             }
             $grouped[$package['repositoryKey']][] = $package;

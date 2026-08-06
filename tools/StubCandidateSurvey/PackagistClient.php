@@ -199,11 +199,14 @@ final class PackagistClient
         foreach ($discoveries as $discovery) {
             $urls[$discovery['name']] = $this->p2Url($discovery['name']);
         }
-        $responses = $this->http->fetchMany($urls, $this->cacheDirectory, $this->offline);
+        $responses = $this->http->fetchMany($urls, $this->cacheDirectory, $this->offline, true);
 
         $packages = [];
         foreach ($discoveries as $discovery) {
-            $body = $responses[$discovery['name']] ?? throw new RuntimeException(sprintf('Missing package metadata for %s.', $discovery['name']));
+            $body = $responses[$discovery['name']] ?? null;
+            if (null === $body) {
+                continue;
+            }
             $package = $this->releaseFromP2($discovery, $body);
             if (null !== $package) {
                 $packages[] = $package;

@@ -61,15 +61,24 @@ final class ReportWriterTest extends TestCase
 
         try {
             $writer = new ReportWriter();
-            $manifest = ['snapshot' => 'fixture', 'collectedAt' => '2026-08-06T01:21:33+00:00'];
+            $manifest = [
+                'snapshot' => 'fixture',
+                'profile' => 'science',
+                'collectedAt' => '2026-08-06T01:21:33+00:00',
+                'tagDiscoveries' => ['focused' => [], 'noisy' => ['measurement' => 1]],
+                'counts' => ['selectedNewRepositories' => 1, 'selectedBaselineRepositories' => 0],
+            ];
             $writer->write($first, [$repository], [$finding], $manifest);
             $writer->write($second, [$repository], [$finding], $manifest);
 
             self::assertFileEquals($first, $second);
             $contents = (string) file_get_contents($first);
             self::assertStringContainsString('- Collected at: `2026-08-06T01:21:33+00:00`', $contents);
+            self::assertStringContainsString('- Profile: `science`', $contents);
+            self::assertStringContainsString('- New repositories: 1', $contents);
             self::assertStringContainsString('1. **`example/measure` (`1.0.0`)** — noisy; signature;', $contents);
             self::assertStringContainsString('| noisy | 1 | 1 | 1 | 0 | 0 |', $contents);
+            self::assertStringContainsString('| noisy | `measurement` | 1 | 1 | 1 | 1 |', $contents);
             self::assertStringContainsString('These findings are broad discovery leads', $contents);
         } finally {
             if (is_file($first)) {

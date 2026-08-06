@@ -80,21 +80,30 @@ final class ReportWriter
         });
 
         $snapshot = isset($manifest['snapshot']) && is_string($manifest['snapshot']) ? $manifest['snapshot'] : 'unknown';
+        $profile = isset($manifest['profile']) && is_string($manifest['profile']) ? $manifest['profile'] : 'general';
         $collectedAt = isset($manifest['collectedAt']) && is_string($manifest['collectedAt']) ? $manifest['collectedAt'] : 'unknown';
+        $counts = isset($manifest['counts']) && is_array($manifest['counts']) ? $manifest['counts'] : [];
         $lines = [
             '# Stub Candidate Survey',
             '',
             sprintf('- Snapshot: `%s`', $snapshot),
+            sprintf('- Profile: `%s`', $profile),
             sprintf('- Collected at: `%s`', $collectedAt),
             sprintf('- Selected repositories: %d', count($repositories)),
             sprintf('- Successfully inspected: %d', count($findings)),
             sprintf('- Repository cap: %d', Config::HARD_REPOSITORY_LIMIT),
-            '',
-            '## Yield by stratum',
-            '',
-            '| Stratum | Selected | Inspected | Collision candidates | Single-unit | No evidence |',
-            '|---|---:|---:|---:|---:|---:|',
         ];
+        $selectedNew = $counts['selectedNewRepositories'] ?? null;
+        $selectedBaseline = $counts['selectedBaselineRepositories'] ?? null;
+        if (is_int($selectedNew) && is_int($selectedBaseline)) {
+            $lines[] = sprintf('- New repositories: %d', $selectedNew);
+            $lines[] = sprintf('- Baseline overlap: %d', $selectedBaseline);
+        }
+        $lines[] = '';
+        $lines[] = '## Yield by stratum';
+        $lines[] = '';
+        $lines[] = '| Stratum | Selected | Inspected | Collision candidates | Single-unit | No evidence |';
+        $lines[] = '|---|---:|---:|---:|---:|---:|';
 
         foreach (['curated', 'focused', 'noisy', 'popular'] as $stratum) {
             $selected = count(array_filter($repositories, static fn (array $repository): bool => $repository['stratum'] === $stratum));
@@ -104,6 +113,8 @@ final class ReportWriter
             $none = count(array_filter($stratumFindings, static fn (array $finding): bool => 'none' === $finding['locality']));
             $lines[] = sprintf('| %s | %d | %d | %d | %d | %d |', $stratum, $selected, count($stratumFindings), $collisions, $single, $none);
         }
+
+        $this->appendTagYield($lines, $repositories, $findings, $manifest);
 
         $lines[] = '';
         $lines[] = '## Ranked findings';
@@ -124,7 +135,9 @@ final class ReportWriter
                 $finding['distinctScaleCount'],
                 $repository['stats']['downloadsMonthly'] ?? 0,
             );
-            $lines[] = sprintf('   - Units: %s', $this->escape(implode('; ', $dimensionText)));
+            if ([] !== $dimensionText) {
+                $lines[] = sprintf('   - Units: %s', $this->escape(implode('; ', $dimensionText)));
+            }
         }
 
         $lines[] = '';
@@ -190,6 +203,73 @@ final class ReportWriter
         }
 
         return $queue;
+    }
+
+    /**
+     * @param list<string> $lines
+     * @param list<RepositoryRecord> $repositories
+     * @param list<FindingRecord> $findings
+     * @param array<mixed> $manifest
+     */
+    private function appendTagYield(array &$lines, array $repositories, array $findings, array $manifest): void
+    {
+        $tagDiscoveries = $manifest['tagDiscoveries'] ?? null;
+        if (!is_array($tagDiscoveries)) {
+            return;
+        }
+        /** @var array<string, FindingRecord> $findingByRepository */
+        $findingByRepository = [];
+        foreach ($findings as $finding) {
+            $findingByRepository[$finding['repositoryKey']] = $finding;
+        }
+
+        $lines[] = '';
+        $lines[] = '## Yield by tag';
+        $lines[] = '';
+        $lines[] = 'Repositories can appear under more than one tag, so rows are not additive.';
+        $lines[] = '';
+        $lines[] = '| Stratum | Tag | Discovered | Selected | Inspected | Collision candidates |';
+        $lines[] = '|---|---|---:|---:|---:|---:|';
+        foreach (['focused', 'noisy'] as $stratum) {
+            $tags = $tagDiscoveries[$stratum] ?? null;
+            if (!is_array($tags)) {
+                continue;
+            }
+            foreach ($tags as $tag => $discovered) {
+                if (!is_string($tag) || !is_int($discovered)) {
+                    continue;
+                }
+                $selected = 0;
+                $inspected = 0;
+                $collisions = 0;
+                foreach ($repositories as $repository) {
+                    if (!$this->hasTag($repository, $stratum, $tag)) {
+                        continue;
+                    }
+                    ++$selected;
+                    $finding = $findingByRepository[$repository['key']] ?? null;
+                    if (null !== $finding) {
+                        ++$inspected;
+                        if ($this->isCollision($finding)) {
+                            ++$collisions;
+                        }
+                    }
+                }
+                $lines[] = sprintf('| %s | `%s` | %d | %d | %d | %d |', $stratum, $tag, $discovered, $selected, $inspected, $collisions);
+            }
+        }
+    }
+
+    /** @param RepositoryRecord $repository */
+    private function hasTag(array $repository, string $stratum, string $tag): bool
+    {
+        foreach ($repository['sources'] as $source) {
+            if ($source['stratum'] === $stratum && $source['tag'] === $tag) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /** @param FindingRecord $finding */

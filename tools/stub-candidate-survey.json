@@ -1,8 +1,10 @@
 {
-    "schemaVersion": 1,
+    "schemaVersion": 2,
+    "profile": "general",
     "hardRepositoryLimit": 250,
     "popularPackageCount": 500,
     "searchResultsPerTag": 20,
+    "backfillFromPopular": true,
     "quotas": {
         "curated": 25,
         "focused": 90,
@@ -80,5 +82,7 @@
         { "package": "mjaschen/phpgeo", "role": "positive-control" },
         { "package": "symfony/stopwatch", "role": "positive-control" },
         { "package": "psr/cache", "role": "single-unit-control" }
-    ]
+    ],
+    "repositoryBlacklist": [],
+    "repositoryWhitelist": []
 }

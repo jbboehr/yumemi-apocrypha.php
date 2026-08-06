@@ -77,4 +77,19 @@ final class ConfigTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->config->quotasForLimit(251);
     }
+
+    public function testScienceProfilePreservesTheExpansionBoundary(): void
+    {
+        $config = Config::fromFile(__DIR__ . '/../../tools/stub-candidate-survey-science.json');
+
+        self::assertSame('science', $config->profile);
+        self::assertFalse($config->backfillFromPopular);
+        self::assertSame(
+            ['curated' => 25, 'focused' => 165, 'noisy' => 60, 'popular' => 0],
+            $config->quotasForLimit(250),
+        );
+        self::assertCount(250, $config->repositoryBlacklist);
+        self::assertCount(25, $config->repositoryWhitelist);
+        self::assertSame([], array_values(array_diff($config->repositoryWhitelist, $config->repositoryBlacklist)));
+    }
 }
