@@ -23,28 +23,24 @@ trap 'rm -rf -- "$WORK_DIR"' EXIT
 
 package_dir=$PROJECT_ROOT
 
-if [[ $PACKAGE_MODE == archive ]]; then
-    archive_dir=$WORK_DIR/archive
-    package_dir=$WORK_DIR/package
-    mkdir -p -- "$archive_dir" "$package_dir"
-
-    composer --working-dir="$PROJECT_ROOT" archive --format=tar --dir="$archive_dir" --no-interaction
-
-    archives=("$archive_dir"/*.tar)
-    if [[ ${#archives[@]} -ne 1 || ! -f ${archives[0]} ]]; then
-        printf 'Expected exactly one Composer archive in %s.\n' "$archive_dir" >&2
-        exit 1
-    fi
-
-    tar -xf "${archives[0]}" -C "$package_dir"
-
-    required_paths=(
+assert_archive_payload() {
+    local archive_name=$1
+    local archive_package_dir=$2
+    local path
+    local -a required_paths=(
+        CHANGELOG.md
+        LICENSE.md
+        README.md
         apocrypha.neon
         composer.json
         docs/LICENSE_EXCEPTION.md
         docs/THIRD_PARTY_NOTICES.md
+        docs/pages/README.md
         docs/pages/images/yumemi-banner.png
         extension.neon
+        src/Exception/ExceptionInterface.php
+        src/Exception/InvalidConfigurationException.php
+        src/Exception/LogicException.php
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
         src/PHPStan/LarastanCompatibilityIntegrationMetadata.php
         src/PHPStan/LarastanCompatibilityUnitBoundaryExtension.php
@@ -74,26 +70,81 @@ if [[ $PACKAGE_MODE == archive ]]; then
         stubs/symfony/stopwatch.stub
     )
     for path in "${required_paths[@]}"; do
-        if [[ ! -e $package_dir/$path ]]; then
-            printf 'Composer archive is missing required path %s.\n' "$path" >&2
+        if [[ ! -e $archive_package_dir/$path ]]; then
+            printf '%s is missing required path %s.\n' "$archive_name" "$path" >&2
             exit 1
         fi
     done
 
-    excluded_paths=(
+    local -a excluded_paths=(
+        .claude
         .codex
+        .direnv
+        .dvc
+        .editorconfig
+        .envrc
+        .gitattributes
         .github
+        .gitignore
+        .php-cs-fixer.cache
+        .php-cs-fixer.dist.php
         .phpunit.cache
+        .pre-commit-cache
+        .pre-commit-config.yaml
+        AGENTS.md
+        Makefile
+        build
+        clover.xml
+        composer.lock
+        coverage
+        docs/DOCTRINE-CODING-GUIDE.md
+        docs/DOCTRINE-IMAGE-GUIDE.md
+        docs/DOCTRINE-STYLE-GUIDE.md
+        docs/book.toml
         docs/development
+        docs/pages/images/logia
+        docs/theme
+        flake.lock
+        flake.nix
+        infection-summary.log
+        infection.json5.dist
+        infection.log
+        phpstan.neon.dist
+        phpunit.branch.xml.dist
+        phpunit.xml.dist
+        secrets
         tests
+        tmp
+        tools
         vendor
     )
     for path in "${excluded_paths[@]}"; do
-        if [[ -e $package_dir/$path ]]; then
-            printf 'Composer archive contains excluded path %s.\n' "$path" >&2
+        if [[ -e $archive_package_dir/$path ]]; then
+            printf '%s contains excluded path %s.\n' "$archive_name" "$path" >&2
             exit 1
         fi
     done
+}
+
+if [[ $PACKAGE_MODE == archive ]]; then
+    archive_dir=$WORK_DIR/archive
+    package_dir=$WORK_DIR/package
+    git_package_dir=$WORK_DIR/git-package
+    mkdir -p -- "$archive_dir" "$package_dir" "$git_package_dir"
+
+    composer --working-dir="$PROJECT_ROOT" archive --format=tar --dir="$archive_dir" --no-interaction
+
+    archives=("$archive_dir"/*.tar)
+    if [[ ${#archives[@]} -ne 1 || ! -f ${archives[0]} ]]; then
+        printf 'Expected exactly one Composer archive in %s.\n' "$archive_dir" >&2
+        exit 1
+    fi
+
+    tar -xf "${archives[0]}" -C "$package_dir"
+    assert_archive_payload 'Composer archive' "$package_dir"
+
+    git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar HEAD | tar -xf - -C "$git_package_dir"
+    assert_archive_payload 'Git archive' "$git_package_dir"
 elif [[ $PACKAGE_MODE != source ]]; then
     printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan]\n' "$0" >&2
     exit 2

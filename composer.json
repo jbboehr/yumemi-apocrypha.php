@@ -18,6 +18,7 @@
         "exclude": [
             "/.codex",
             "/.direnv",
+            "/.dvc",
             "/.envrc",
             "/.github",
             "/.gitignore",
@@ -47,7 +48,9 @@
             "/phpunit.branch.xml.dist",
             "/phpunit.xml.dist",
             "/result*",
+            "/secrets",
             "/tests",
+            "/tmp",
             "/tools",
             "/vendor"
         ]

@@ -66,8 +66,9 @@ guardrail, not a substitute for real consumer coverage: verify positional and na
 reads and writes, return precision, and both direct-package and `laravel/framework` installs. Unknown unpack positions
 must not produce a speculative `apocrypha.unit` diagnostic.
 
-At least one supported matrix entry uses a Composer archive. Archive tests must verify that runtime source, NEON entry
-points, legal notices, and stubs are present while tests and development tooling are excluded.
+At least one supported matrix entry uses a Composer archive. Each archive-mode run also verifies the corresponding Git
+archive. Both payload checks must confirm that runtime source, NEON entry points, legal notices, and stubs are present
+while tests, local state, and development tooling are excluded.
 
 ## Add An Integration
 
