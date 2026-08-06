@@ -57,6 +57,10 @@ Evaluate further integrations from observed application value rather than packag
 upstream alternatives when a signature differs between supported majors, and avoid timestamps or count-like integers
 whose physical semantics are not represented by Yumemi's native duration and quantity brands.
 
+The [August 2026 Packagist survey](stub-candidate-survey-2026-08-05.md) records the initial bounded candidate scan and
+its human interpretation. Treat its automated rankings as discovery leads; every candidate must still pass the gates
+below against the real upstream API.
+
 ### Evaluation Gates
 
 Unit-rich packages are candidates, not automatically good stub targets. Before ranking an integration by ecosystem reach
