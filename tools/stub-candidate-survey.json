@@ -1,0 +1,84 @@
+{
+    "schemaVersion": 1,
+    "hardRepositoryLimit": 250,
+    "popularPackageCount": 500,
+    "searchResultsPerTag": 20,
+    "quotas": {
+        "curated": 25,
+        "focused": 90,
+        "noisy": 30,
+        "popular": 105
+    },
+    "ownerLimits": {
+        "general": 15,
+        "noisy": 5
+    },
+    "http": {
+        "concurrency": 4,
+        "retries": 3
+    },
+    "archiveLimits": {
+        "compressedBytes": 20971520,
+        "uncompressedBytes": 104857600,
+        "entries": 20000,
+        "textFileBytes": 2097152,
+        "totalDownloadBytes": 1073741824
+    },
+    "focusedTags": [
+        "gis",
+        "geospatial",
+        "image-processing",
+        "video-processing",
+        "audio-processing",
+        "spreadsheet",
+        "ooxml",
+        "pdf-generation",
+        "mathematics",
+        "linear-algebra",
+        "numerical-analysis",
+        "trigonometry",
+        "scientific-computing",
+        "astronomy",
+        "geodesy"
+    ],
+    "noisyTags": [
+        "math",
+        "matrix",
+        "vector",
+        "statistics",
+        "physics",
+        "chemistry",
+        "engineering",
+        "measurement",
+        "units",
+        "unit-conversion",
+        "metrics",
+        "telemetry",
+        "geometry",
+        "coordinates",
+        "distance"
+    ],
+    "seeds": [
+        { "package": "illuminate/redis", "role": "candidate" },
+        { "package": "illuminate/database", "role": "candidate" },
+        { "package": "illuminate/session", "role": "candidate" },
+        { "package": "illuminate/validation", "role": "candidate" },
+        { "package": "phpoffice/phpspreadsheet", "role": "candidate" },
+        { "package": "phpoffice/phpword", "role": "candidate" },
+        { "package": "phpoffice/phppresentation", "role": "candidate" },
+        { "package": "intervention/image", "role": "candidate" },
+        { "package": "imagine/imagine", "role": "candidate" },
+        { "package": "league/flysystem", "role": "candidate" },
+        { "package": "open-telemetry/sdk", "role": "candidate" },
+        { "package": "samsara/newton", "role": "scientific-candidate" },
+        { "package": "irrevion/science", "role": "scientific-candidate" },
+        { "package": "mibo/properties", "role": "scientific-candidate" },
+        { "package": "nesbot/carbon", "role": "positive-control" },
+        { "package": "james-heinrich/getid3", "role": "positive-control" },
+        { "package": "guzzlehttp/guzzle", "role": "positive-control" },
+        { "package": "illuminate/queue", "role": "positive-control" },
+        { "package": "mjaschen/phpgeo", "role": "positive-control" },
+        { "package": "symfony/stopwatch", "role": "positive-control" },
+        { "package": "psr/cache", "role": "single-unit-control" }
+    ]
+}

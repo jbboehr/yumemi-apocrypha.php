@@ -11,5 +11,6 @@ parameters:
     paths:
         - src
         - tests
+        - tools
     excludePaths:
         - tests/Consumer (?)

@@ -48,6 +48,7 @@
             "/phpunit.xml.dist",
             "/result*",
             "/tests",
+            "/tools",
             "/vendor"
         ]
     },
@@ -67,15 +68,21 @@
         }
     },
     "require-dev": {
+        "composer/metadata-minifier": "^1.0.1",
+        "composer/semver": "^3.4",
         "ext-dom": "*",
+        "ext-curl": "*",
+        "ext-zip": "*",
         "friendsofphp/php-cs-fixer": "^3",
         "infection/infection": "^0.32.6",
+        "nikic/php-parser": "^5.8",
         "phpstan/phpstan-phpunit": "^2.0.13",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^11.5"
     },
     "autoload-dev": {
         "psr-4": {
+            "jbboehr\\Yumemi\\Apocrypha\\Tools\\": "tools/",
             "jbboehr\\Yumemi\\Apocrypha\\Tests\\": "tests"
         }
     },
@@ -95,6 +102,7 @@
         "docs:serve": "make docs-serve",
         "infection": "infection --no-progress",
         "infection:ci": "infection --no-progress --min-msi=90 --min-covered-msi=90",
+        "survey:candidates": "php tools/stub-candidate-survey.php",
         "test:consumer:carbon": "make test-consumer-carbon",
         "test:consumer:carbon:archive": "make test-consumer-carbon-archive",
         "test:consumer:getid3": "make test-consumer-getid3",
