@@ -57,9 +57,10 @@ Evaluate further integrations from observed application value rather than packag
 upstream alternatives when a signature differs between supported majors, and avoid timestamps or count-like integers
 whose physical semantics are not represented by Yumemi's native duration and quantity brands.
 
-The [August 2026 Packagist survey](stub-candidate-survey-2026-08-05.md) records the initial bounded candidate scan and
-its human interpretation. Treat its automated rankings as discovery leads; every candidate must still pass the gates
-below against the real upstream API.
+The [August 2026 Packagist survey](stub-candidate-survey-2026-08-05.md) records the initial bounded candidate scan, and
+the [science-focused follow-up](stub-candidate-survey-science-2026-08-05.md) adds 225 repositories selected through
+math, science, geospatial, measurement, and deliberately noisier tags. Treat both sets of automated rankings as
+discovery leads; every candidate must still pass the gates below against the real upstream API.
 
 ### Evaluation Gates
 
