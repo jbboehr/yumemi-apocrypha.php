@@ -89,12 +89,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jbboehr/yumemi.php.git",
-                "reference": "41d95c707401e411c20ba553dc7a57acbffb068d"
+                "reference": "e9047bf93f4bcfce206d5481b8e9d4689a3ee657"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/41d95c707401e411c20ba553dc7a57acbffb068d",
-                "reference": "41d95c707401e411c20ba553dc7a57acbffb068d",
+                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/e9047bf93f4bcfce206d5481b8e9d4689a3ee657",
+                "reference": "e9047bf93f4bcfce206d5481b8e9d4689a3ee657",
                 "shasum": ""
             },
             "require": {
@@ -107,9 +107,11 @@
                 "brick/varexporter": "^0.6",
                 "ext-dom": "*",
                 "friendsofphp/php-cs-fixer": "^3",
+                "giorgiosironi/eris": "^1.1",
                 "infection/infection": "^0.32.6",
                 "jbboehr/phpbench-perfidious": "dev-master",
                 "mrsuh/php-bison-skeleton": "^1.2",
+                "nikic/php-fuzzer": "^0.0.11",
                 "phpbench/phpbench": "^1.7",
                 "phpstan/phpstan": "^2.2.5",
                 "phpstan/phpstan-phpunit": "^2.0.13",
@@ -156,7 +158,7 @@
                 "issues": "https://github.com/jbboehr/yumemi.php/issues",
                 "source": "https://github.com/jbboehr/yumemi.php"
             },
-            "time": "2026-08-05T02:35:13+00:00"
+            "time": "2026-08-06T15:52:35+00:00"
         },
         {
             "name": "phpstan/phpstan",
