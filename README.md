@@ -4,6 +4,11 @@
 
 # Yumemi Apocrypha
 
+[![Build](https://github.com/jbboehr/yumemi-apocrypha.php/actions/workflows/ci.yml/badge.svg)](https://github.com/jbboehr/yumemi-apocrypha.php/actions/workflows/ci.yml)
+[![Built with Nix](https://img.shields.io/badge/built%20with-Nix-5277C3?logo=nixos&logoColor=white)](flake.nix)
+[![License: AGPL-3.0-only WITH romic-exception](https://img.shields.io/badge/license-AGPL--3.0--only%20WITH%20romic--exception-blue.svg)](LICENSE.md)
+[![AI burn](https://img.shields.io/endpoint?url=https%3A%2F%2Fgist.githubusercontent.com%2Fjbboehr%2F6cec1c1ceaaa57ec32e8488daa2b4499%2Fraw%2Fagent-badge.json&cacheSeconds=300)](https://github.com/arlegotin/agent-badge)
+
 Curated PHPStan unit annotations for third-party PHP packages, built on [Yumemi](https://github.com/jbboehr/yumemi.php).
 
 The package is under active development and has no tagged release. It currently covers selected unit-bearing APIs in:

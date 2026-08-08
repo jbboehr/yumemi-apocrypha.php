@@ -16,6 +16,14 @@
       url = "github:hercules-ci/gitignore.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    akashi = {
+      url = "github:jbboehr/akashi.php/master";
+      inputs.flake-utils.follows = "flake-utils";
+      inputs.gitignore.follows = "gitignore";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.pre-commit-hooks.follows = "pre-commit-hooks";
+      inputs.treefmt-nix.follows = "treefmt-nix";
+    };
   };
 
   outputs =
@@ -26,6 +34,7 @@
       pre-commit-hooks,
       treefmt-nix,
       gitignore,
+      akashi,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
@@ -91,6 +100,7 @@
           pkgs.mkShell {
             buildInputs = with pkgs; [
               actionlint
+              akashi.packages.${system}.agent-badge
               mdbook
               phpPackage
               phpPackage.packages.composer
