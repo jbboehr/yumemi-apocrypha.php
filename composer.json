@@ -71,13 +71,14 @@
         }
     },
     "require-dev": {
+        "ext-curl": "*",
+        "ext-dom": "*",
+        "ext-zip": "*",
         "composer/metadata-minifier": "^1.0.1",
         "composer/semver": "^3.4",
-        "ext-dom": "*",
-        "ext-curl": "*",
-        "ext-zip": "*",
         "friendsofphp/php-cs-fixer": "^3",
         "infection/infection": "^0.32.6",
+        "jbboehr/akashi": "dev-master",
         "nikic/php-parser": "^5.8",
         "phpstan/phpstan-phpunit": "^2.0.13",
         "phpstan/phpstan-strict-rules": "^2.0",

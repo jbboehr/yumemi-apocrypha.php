@@ -189,6 +189,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
 
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
+
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
@@ -244,6 +247,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
 
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
+
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
@@ -293,6 +299,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-guzzle-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
+
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
 
             - name: Test integration
               env:
@@ -362,6 +371,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-cache-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
+
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
 
             - name: Test integration
               env:
@@ -439,6 +451,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-http-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
+
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
 
             - name: Test integration
               env:
@@ -529,6 +544,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
 
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
+
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
@@ -600,6 +618,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
 
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
+
             - name: Test integrations through Laravel framework
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
@@ -654,6 +675,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-phpgeo-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
+
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
 
             - name: Test integration
               env:
@@ -722,6 +746,9 @@ jobs:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
 
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
+
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
@@ -776,6 +803,9 @@ jobs:
                       ${{ runner.os }}-symfony-stopwatch-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
+
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
 
             - name: Test integration
               env:
