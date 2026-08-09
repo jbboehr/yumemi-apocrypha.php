@@ -8,6 +8,8 @@ PROJECT_ROOT=$(cd -- "$FIXTURES_DIR/../.." && pwd)
 readonly PROJECT_ROOT
 AKASHI=$PROJECT_ROOT/vendor/bin/akashi
 readonly AKASHI
+DOCUMENTATION_EXAMPLE_RESOLVER=$PROJECT_ROOT/tests/Documentation/resolve-consumer-example.php
+readonly DOCUMENTATION_EXAMPLE_RESOLVER
 readonly PACKAGE_MODE=${1:-source}
 readonly FIXTURE_SUITE=${2:-illuminate-cache}
 readonly PACKAGE_MAJOR=${3:-12}
@@ -214,6 +216,50 @@ enable_larastan() {
     fi
 }
 
+extract_documentation_case() {
+    local consumer=$1
+    local output_file=$2
+    local marker=$3
+    local document
+
+    if [[ $consumer != "$FIXTURE_SUITE" ]]; then
+        printf 'Documentation example %s is assigned to %s, not the running %s consumer.\n' \
+            "$marker" "$consumer" "$FIXTURE_SUITE" >&2
+        exit 1
+    fi
+
+    if ! document=$(php "$DOCUMENTATION_EXAMPLE_RESOLVER" document "$consumer" "$marker"); then
+        exit 1
+    fi
+    "$AKASHI" extract --marker-name=yumemi-example \
+        "$PROJECT_ROOT/$document" "$marker" > "$output_file"
+}
+
+run_documentation_phpstan_case() {
+    local consumer=$1
+    local project_dir=$2
+    local configuration=$3
+    local output_file=$4
+    local marker=$5
+    local case_file=${output_file##*/}
+    local expected_diagnostics=()
+    local expectation_output
+
+    extract_documentation_case "$consumer" "$output_file" "$marker"
+    if ! expectation_output=$(
+        php "$DOCUMENTATION_EXAMPLE_RESOLVER" expectations "$consumer" "$marker"
+    ); then
+        exit 1
+    fi
+    if [[ -z $expectation_output ]]; then
+        printf 'Documentation example %s declares no PHPStan diagnostic expectations.\n' "$marker" >&2
+        exit 1
+    fi
+    mapfile -t expected_diagnostics <<< "$expectation_output"
+
+    run_phpstan_case "$project_dir" "$configuration" "$case_file" "${expected_diagnostics[@]}"
+}
+
 run_phpstan_case() {
     local project_dir=$1
     local configuration=$2
@@ -381,10 +427,8 @@ run_carbon() {
     run_phpstan_case "$project_dir" phpstan-autodetect.neon "invalid-$profile.php" "${expected_profile_diagnostics[@]}"
 
     if [[ $profile == 3-utc ]]; then
-        "$AKASHI" extract --marker-name=yumemi-example \
-            "$PROJECT_ROOT/docs/pages/integrations.md" carbon-invalid > "$documentation_case"
-        run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-            "recordElapsedMinutes expects unit_float<'minute'>, unit_float<'second'> given"
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case carbon "$project_dir" phpstan.neon "$documentation_case" carbon-invalid
     fi
 }
 
@@ -424,22 +468,13 @@ run_illuminate_cache() {
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
-    "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/docs/pages/integrations.md" illuminate-cache-invalid > "$documentation_case"
-    "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/docs/pages/getting-started.md" getting-started-invalid > "$getting_started_case"
-    "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/README.md" readme-cache-invalid > "$readme_case"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
-    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "RateLimiter::hit() expects DateInterval|DateTimeInterface|unit_int<'second'>, 2&unit_int<'minute'> given"
-    run_phpstan_case "$project_dir" phpstan.neon getting-started-invalid.php \
-        "Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given"
-    run_phpstan_case "$project_dir" phpstan.neon readme-invalid.php \
-        "Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given"
+    run_documentation_phpstan_case illuminate-cache "$project_dir" phpstan.neon "$documentation_case" illuminate-cache-invalid
+    run_documentation_phpstan_case illuminate-cache "$project_dir" phpstan.neon "$getting_started_case" getting-started-invalid
+    run_documentation_phpstan_case illuminate-cache "$project_dir" phpstan.neon "$readme_case" readme-cache-invalid
 }
 
 run_illuminate_http() {
@@ -480,14 +515,11 @@ run_illuminate_http() {
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
-    "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/docs/pages/integrations.md" illuminate-http-invalid > "$documentation_case"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
-    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "::timeout() expects unit_float<'second'>|unit_int<'second'>, 250&unit_int<'1/1000 * second'> given"
+    run_documentation_phpstan_case illuminate-http "$project_dir" phpstan.neon "$documentation_case" illuminate-http-invalid
 }
 
 run_simple_illuminate_integration() {
@@ -649,14 +681,11 @@ run_symfony_stopwatch() {
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
-    "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/docs/pages/integrations.md" symfony-stopwatch-invalid > "$documentation_case"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
-    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "recordProfileDurationInSeconds expects unit_float<'second'>|unit_int<'second'>, unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'> given"
+    run_documentation_phpstan_case symfony-stopwatch "$project_dir" phpstan.neon "$documentation_case" symfony-stopwatch-invalid
 }
 
 run_symfony_http_foundation() {
@@ -716,14 +745,10 @@ run_symfony_http_foundation() {
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
-    "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/docs/pages/integrations.md" symfony-http-foundation-invalid > "$documentation_case"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
-    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "Response::setMaxAge() expects unit_int<'second'>, 250&unit_int<'1/1000 * second'> given"
 
     if [[ $has_sse == 1 ]]; then
         mapfile -t expected_sse_diagnostics < "$project_dir/expected-diagnostics-sse.txt"
@@ -740,6 +765,8 @@ run_symfony_http_foundation() {
         run_phpstan_case "$project_dir" phpstan.neon invalid-ip.php "${expected_ip_diagnostics[@]}"
         run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-ip.php "${expected_ip_diagnostics[@]}"
     fi
+
+    run_documentation_phpstan_case symfony-http-foundation "$project_dir" phpstan.neon "$documentation_case" symfony-http-foundation-invalid
 }
 
 run_guzzle() {
@@ -764,8 +791,6 @@ run_guzzle() {
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
-    "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/docs/pages/integrations.md" guzzle-invalid > "$documentation_case"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     if [[ -f $project_dir/cases/valid-$PACKAGE_MAJOR.php ]]; then
@@ -774,8 +799,7 @@ run_guzzle() {
     fi
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
-    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "array{timeout: 250&unit_int<'1/1000 * second'>} given"
+    run_documentation_phpstan_case guzzle "$project_dir" phpstan.neon "$documentation_case" guzzle-invalid
 }
 
 run_phpgeo() {
@@ -800,14 +824,11 @@ run_phpgeo() {
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
-    "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/docs/pages/integrations.md" phpgeo-invalid > "$documentation_case"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
-    run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-        "calculateDestination() expects unit_float<'arc_degree'>, unit_float<'radian'> given"
+    run_documentation_phpstan_case phpgeo "$project_dir" phpstan.neon "$documentation_case" phpgeo-invalid
 }
 
 run_getid3() {
@@ -869,10 +890,7 @@ run_getid3() {
     run_phpstan_case "$project_dir" phpstan-autodetect.neon "$invalid_case" "${expected_diagnostics[@]}"
 
     if [[ $PACKAGE_MAJOR == 2 || $PACKAGE_MAJOR == 2.0.0-beta6 ]]; then
-        "$AKASHI" extract --marker-name=yumemi-example \
-            "$PROJECT_ROOT/docs/pages/integrations.md" getid3-invalid > "$documentation_case"
-        run_phpstan_case "$project_dir" phpstan.neon documentation-invalid.php \
-            "recordMediaDuration expects unit_float<'second'>|unit_int<'second'>, unit_float<'bit / second'>|unit_int<'bit / second'> given"
+        run_documentation_phpstan_case getid3 "$project_dir" phpstan.neon "$documentation_case" getid3-invalid
     fi
 }
 

@@ -100,11 +100,13 @@ use function jbboehr\Yumemi\unit;
 function verifyApocryphaInstallation(Store $cache): void
 {
     $cache->put('report', 'ready', unit(30, 'second'));
-    $cache->put('report', 'stale', unit(1, 'minute')); // PHPStan rejects this seconds boundary.
+    //! Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given
+    $cache->put('report', 'stale', unit(1, 'minute'));
 }
 ```
 
-Run the project's normal PHPStan command. Once the mismatch is reported, remove the rejected call and consult the
+Here `//!` marks the expected PHPStan diagnostic exercised by the documentation test; it is not Yumemi syntax. Run the
+project's normal PHPStan command. Once the mismatch is reported, remove the rejected call and consult the
 [integration reference](integrations.md) for the complete annotated surface.
 
 [Documentation index](./) · [Repository README](https://github.com/jbboehr/yumemi-apocrypha.php)

@@ -35,8 +35,10 @@ claims to support and semantically accurate about the represented units.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   a representative Composer archive, and Laravel 11 through 13 replacement metadata for every Illuminate integration.
   Every Illuminate subpackage and the combined framework fixture run both with and without Larastan.
-- Akashi extracts the explicitly marked README and documentation examples used by isolated consumers, preserving each
-  authored fixture exactly while leaving package installation and PHPStan verification in the consumer harness.
+- Akashi inventories every fenced PHP example in the README and public documentation. An explicit manifest assigns each
+  current example to its real isolated consumer, and coverage tests reject unlisted documents, unmarked or unclassified
+  examples, stale manifest entries, and routes that are not wired into the consumer harness. Akashi preserves each
+  authored fixture exactly while leaving package installation and PHPStan verification in that consumer.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
   stubs and their selection policy.
 
@@ -50,11 +52,6 @@ unverified Larastan major is rejected until its combined behavior passes the sam
 
 ## Maintenance Backlog
 
-- Extend the current Akashi adoption from marked isolated-consumer fixtures to Yumemi's whole-corpus model. Inventory
-  every PHP fence in `README.md` and `docs/pages/**`, execute dependency-free examples, and analyze every unit-relevant
-  example with PHPStan. Route examples that depend on third-party packages through the appropriate isolated consumer so
-  they retain real upstream verification, and use standalone `//!` expectations consistently. The suite should fail when
-  a new public example has no declared verification path.
 - Before the first public release, perform a corpus-wide semantic audit of every branded third-party boundary. Record
   the upstream evidence and verified version profile for each parameter, return, property, and array-shape field;
   confirm corresponding valid and invalid consumer coverage; and recheck the distinctions most likely to remain

@@ -59,7 +59,8 @@ function recordElapsedMinutes(float $elapsed): void {}
 $started = CarbonImmutable::parse('2026-08-05 09:00:00');
 $finished = CarbonImmutable::parse('2026-08-05 09:00:30');
 
-recordElapsedMinutes($started->diffInSeconds($finished)); //! PHPStan rejects seconds at this minutes boundary.
+//! recordElapsedMinutes expects unit_float<'minute'>, unit_float<'second'> given
+recordElapsedMinutes($started->diffInSeconds($finished));
 ```
 
 Here `//!` marks the expected PHPStan diagnostic exercised by the documentation test; it is not Yumemi syntax.
@@ -103,8 +104,9 @@ use function jbboehr\Yumemi\unit;
 function fetchRemoteReport(Client $client): void
 {
     $client->request('GET', '/reports', ['timeout' => unit(2, 'second')]);
+    //! array{timeout: 250&unit_int<'1/1000 * second'>} given
     $client->request('GET', '/reports', [
-        'timeout' => unit(250, 'millisecond'), // PHPStan rejects milliseconds at this seconds boundary.
+        'timeout' => unit(250, 'millisecond'),
     ]);
 }
 ```
@@ -146,7 +148,8 @@ if (isset($metadata['playtime_seconds'])) {
 }
 
 if (isset($metadata['bitrate'])) {
-    recordMediaDuration($metadata['bitrate']); //! PHPStan rejects a bitrate at this duration boundary.
+    //! recordMediaDuration expects unit_float<'second'>|unit_int<'second'>, unit_float<'bit / second'>|unit_int<'bit / second'> given
+    recordMediaDuration($metadata['bitrate']);
 }
 ```
 
@@ -191,7 +194,8 @@ use function jbboehr\Yumemi\unit;
 function recordCacheAttempt(RateLimiter $limiter): void
 {
     $limiter->hit('report', unit(30, 'second'));
-    $limiter->hit('report', unit(2, 'minute')); // PHPStan rejects minutes at this seconds boundary.
+    //! RateLimiter::hit() expects DateInterval|DateTimeInterface|unit_int<'second'>, 2&unit_int<'minute'> given
+    $limiter->hit('report', unit(2, 'minute'));
 }
 ```
 
@@ -241,7 +245,8 @@ use function jbboehr\Yumemi\unit;
 function configureRemoteArchive(PendingRequest $request): void
 {
     $request->timeout(unit(30, 'second'));
-    $request->timeout(unit(250, 'millisecond')); // PHPStan rejects milliseconds at this seconds boundary.
+    //! ::timeout() expects unit_float<'second'>|unit_int<'second'>, 250&unit_int<'1/1000 * second'> given
+    $request->timeout(unit(250, 'millisecond'));
 }
 ```
 
@@ -308,9 +313,10 @@ use function jbboehr\Yumemi\unit;
 function projectSurveyPoint(BearingSpherical $bearing, Coordinate $origin): void
 {
     $bearing->calculateDestination($origin, unit(45.0, 'degree'), unit(500.0, 'meter'));
+    //! calculateDestination() expects unit_float<'arc_degree'>, unit_float<'radian'> given
     $bearing->calculateDestination(
         $origin,
-        unit(0.5, 'radian'), // PHPStan rejects radians at this degree boundary.
+        unit(0.5, 'radian'),
         unit(500.0, 'meter'),
     );
 }
@@ -350,7 +356,8 @@ use function jbboehr\Yumemi\unit;
 function cacheHttpFoundationReport(Response $response): void
 {
     $response->setMaxAge(unit(30, 'second'));
-    $response->setMaxAge(unit(250, 'millisecond')); // PHPStan rejects milliseconds at this seconds boundary.
+    //! Response::setMaxAge() expects unit_int<'second'>, 250&unit_int<'1/1000 * second'> given
+    $response->setMaxAge(unit(250, 'millisecond'));
 }
 ```
 
@@ -388,7 +395,8 @@ function recordProfileDurationInSeconds(int|float $duration): void {}
 
 $event = (new Stopwatch())->start('render-report');
 
-recordProfileDurationInSeconds($event->getDuration()); // PHPStan rejects milliseconds at this seconds boundary.
+//! recordProfileDurationInSeconds expects unit_float<'second'>|unit_int<'second'>, unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'> given
+recordProfileDurationInSeconds($event->getDuration());
 ```
 
 Origins and relative start and end times remain unbranded. They are clock coordinates, not elapsed durations, and

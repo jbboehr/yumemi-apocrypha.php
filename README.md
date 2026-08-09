@@ -58,9 +58,12 @@ use function jbboehr\Yumemi\unit;
 
 function cacheReportForOneMinute(Store $cache): void
 {
-    $cache->put('report', 'ready', unit(1, 'minute')); // PHPStan rejects minutes at this seconds boundary.
+    //! Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given
+    $cache->put('report', 'ready', unit(1, 'minute'));
 }
 ```
+
+`//!` marks the expected PHPStan diagnostic used by documentation testing; it is not Yumemi syntax.
 
 ## Documentation
 

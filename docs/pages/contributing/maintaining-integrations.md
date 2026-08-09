@@ -70,6 +70,14 @@ At least one supported matrix entry uses a Composer archive. Each archive-mode r
 archive. Both payload checks must confirm that runtime source, NEON entry points, legal notices, and stubs are present
 while tests, local state, and development tooling are excluded.
 
+Every fenced PHP example in `README.md` and `docs/pages/**` must have a `yumemi-example` marker and an entry in the
+public-documentation verification manifest. Examples that use third-party APIs belong to the corresponding isolated
+consumer; the harness resolves their source document through that manifest before Akashi extracts the authored fence. Do
+not copy an example into a fixture or declare a consumer route without wiring that marker into the consumer harness.
+Route a future dependency-free example through a root runtime or PHPStan test instead of assigning it to an unrelated
+consumer. Write `//!` expectations on their own line so Akashi can parse them when a verification path uses its PHPStan
+adapter.
+
 ## Add An Integration
 
 1. Add the package and finite verified-major list to `SUPPORTED_INTEGRATIONS`; record a package-specific minimum when
