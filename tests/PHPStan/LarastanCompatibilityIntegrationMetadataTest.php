@@ -61,6 +61,15 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
         yield 'illuminate/queue 11.53.0' => ['illuminate/queue', 11, '11.53.0'];
         yield 'illuminate/queue v11.53.0' => ['illuminate/queue', 11, 'v11.53.0'];
         yield 'illuminate/queue 11.x-dev' => ['illuminate/queue', 11, '11.x-dev'];
+        yield 'illuminate/queue 12.59.0' => ['illuminate/queue', 12, '12.59.0'];
+        yield 'illuminate/queue 12.60.0' => ['illuminate/queue', 12, '12.60.0'];
+        yield 'illuminate/queue 13.9.0' => ['illuminate/queue', 13, '13.9.0'];
+        yield 'illuminate/queue 13.10.0' => ['illuminate/queue', 13, '13.10.0'];
+        yield 'illuminate/http 11.35.0' => ['illuminate/http', 11, '11.35.0'];
+        yield 'illuminate/http normalized 11.35.0' => ['illuminate/http', 11, '11.35.0.0'];
+        yield 'illuminate/http v11.35.1' => ['illuminate/http', 11, 'v11.35.1'];
+        yield 'illuminate/http normalized 11.35.1' => ['illuminate/http', 11, '11.35.1.0'];
+        yield 'illuminate/http 11.x-dev' => ['illuminate/http', 11, '11.x-dev'];
     }
 
     #[DataProvider('integrationMajors')]
@@ -206,7 +215,12 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
                     continue;
                 }
 
-                unset($boundary['majors'], $boundary['minimumVersions'], $boundary['strategy']);
+                unset(
+                    $boundary['majors'],
+                    $boundary['minimumVersions'],
+                    $boundary['beforeVersions'],
+                    $boundary['strategy'],
+                );
                 $boundary['type'] = $this->normalizeType($boundary['type']);
                 $boundaries[$kind][] = $boundary;
             }
@@ -224,14 +238,23 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
             'illuminate/cache' => [$base . 'cache.stub'],
             'illuminate/cookie' => [$base . 'cookie.stub'],
             'illuminate/filesystem' => [$base . 'filesystem.stub'],
-            'illuminate/http' => [$base . 'http.stub'],
+            'illuminate/http' => [$base . (
+                $major === 11
+                && $version !== '11.x-dev'
+                && version_compare(ltrim($version, 'v'), '11.35.1', '<')
+                    ? 'http-11.stub'
+                    : 'http.stub'
+            )],
             'illuminate/process' => [$base . ($major === 13 ? 'process-13.stub' : 'process.stub')],
             'illuminate/queue' => [
                 $base . 'queue.stub',
                 $base . (
-                    $major === 11
-                    && $version !== '11.x-dev'
-                    && version_compare(ltrim($version, 'v'), '11.53.0', '<')
+                    $version !== $major . '.x-dev'
+                    && version_compare(
+                        ltrim($version, 'v'),
+                        [11 => '11.53.0', 12 => '12.60.0', 13 => '13.10.0'][$major],
+                        '<',
+                    )
                         ? 'queue-worker-11.stub'
                         : 'queue-worker-12.stub'
                 ),

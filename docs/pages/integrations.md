@@ -9,16 +9,16 @@ CI resolves the latest compatible release of each verified major and any package
 unknown future major, or a release below a stated minimum, is rejected until its signatures and semantics have been
 reviewed.
 
-| Package family         | Verified versions                   | Verification snapshots                                                 | Checked    |
-| ---------------------- | ----------------------------------- | ---------------------------------------------------------------------- | ---------- |
-| Carbon                 | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.1`                | 2026-08-05 |
-| Guzzle                 | 7, 8                                | `7.15.2`, `8.0.1`                                                      | 2026-08-04 |
-| getID3                 | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                      | 2026-08-04 |
-| Illuminate packages    | 11, 12, 13                          | `v11.51.0`, `v12.64.0`, `v13.23.0`                                     | 2026-08-03 |
-| Laravel framework      | 11, 12, 13                          | `11.x-dev@c0f062f`, `v12.64.0`, `v13.24.0`                             | 2026-08-04 |
-| phpgeo                 | 4, 5, 6                             | `4.2.1`, `5.0.0`, `6.0.2`                                              | 2026-08-04 |
-| Symfony HttpFoundation | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.2.9`, `v7.3.0`, `v7.4.15`, `v8.0.0`, `v8.1.2` | 2026-08-05 |
-| Symfony Stopwatch      | 6, 7, 8                             | `v6.4.24`, `v7.4.8`, `v8.1.0`                                          | 2026-08-04 |
+| Package family         | Verified versions                   | Verification snapshots                                                           | Checked    |
+| ---------------------- | ----------------------------------- | -------------------------------------------------------------------------------- | ---------- |
+| Carbon                 | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                          | 2026-08-09 |
+| Guzzle                 | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                          | 2026-08-09 |
+| getID3                 | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-09 |
+| Illuminate packages    | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
+| Laravel framework      | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
+| phpgeo                 | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                      | 2026-08-09 |
+| Symfony HttpFoundation | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4` | 2026-08-09 |
+| Symfony Stopwatch      | 6, 7, 8                             | `v6.0.0`, `v6.4.24`, `v7.0.0`, `v7.4.8`, `v8.0.0`, `v8.1.0`                      | 2026-08-09 |
 
 Laravel applications may install these APIs through `laravel/framework` instead of separate `illuminate/*` component
 packages. Continue to select the precise component integration names, such as `illuminate/cache`; Composer's exact
@@ -83,7 +83,8 @@ offsets also remain outside this integration.
 
 Enable `guzzlehttp/guzzle` to brand selected request options, retry delays, progress byte counts, and transfer times.
 The same open request-option shape applies to `Client` construction, concrete convenience methods such as `get()`, and
-the synchronous and asynchronous methods shared with `ClientInterface`.
+the synchronous and asynchronous methods shared with `ClientInterface`. Request delay values remain branded integers
+through Guzzle 7.10 and accept branded integers or floats from Guzzle 7.11 onward.
 
 | API concern                                        | Unit          |
 | -------------------------------------------------- | ------------- |
@@ -232,6 +233,8 @@ Enable `illuminate/http` to brand request timeouts, retry delays, and fake-uploa
 
 Laravel's fake-upload API describes its input as kilobytes but computes it by multiplying the supplied value by 1024.
 Apocrypha therefore uses the exact unit `1024 * byte`; the decimal UDUNITS `kilobyte` is not definitionally equivalent.
+Laravel 11.35.1 widened `PendingRequest::timeout()` and `connectTimeout()` from `int` to `int|float`. Apocrypha selects
+an integer-only profile through 11.35.0 and the integer-or-float profile for 11.35.1 and later.
 
 <!-- yumemi-example: illuminate-http-invalid -->
 
@@ -263,6 +266,7 @@ Enable `illuminate/support` to brand framework timing helpers and benchmark resu
 
 The fluent `Sleep::for($value)->seconds()` form is not annotated because the unit is selected after the numeric value
 crosses the first method boundary. The direct `sleep()` and `usleep()` entry points have unambiguous units.
+`Sleep::sleep()` preserves Laravel's integer-or-float input, while `Sleep::usleep()` preserves its integer-only input.
 
 ## Illuminate Process
 
@@ -282,9 +286,10 @@ Enable `illuminate/queue` to brand delayed dispatches, job release delays, and p
 | Worker memory limit                                | `1048576 * byte` |
 
 The memory limit is measured in binary megabytes by Laravel's worker implementation, so Apocrypha uses the exact scale
-`1048576 * byte`. Attempt counts, maximum jobs, and other dimensionless controls remain ordinary integers. Laravel 11.53
-added `stopWhenEmptyFor` to the 11.x line, and Laravel 12 and 13 also provide it. Apocrypha selects a complete worker
-profile at that release boundary so earlier Laravel 11 projects retain their original constructor and property surface.
+`1048576 * byte`. Attempt counts, maximum jobs, and other dimensionless controls remain ordinary integers.
+`stopWhenEmptyFor` was added independently to Laravel 11.53.0, 12.60.0, and 13.10.0. Apocrypha selects the complete
+worker profile at each release boundary so earlier releases in every supported major retain their original constructor
+and property surface.
 
 ## phpgeo
 

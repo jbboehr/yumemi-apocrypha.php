@@ -80,7 +80,8 @@ use PHPStan\Type\VerbosityLevel;
  *     property: non-empty-string,
  *     type: non-empty-string,
  *     majors?: non-empty-list<int>,
- *     minimumVersions?: non-empty-array<int, non-empty-string>
+ *     minimumVersions?: non-empty-array<int, non-empty-string>,
+ *     beforeVersions?: non-empty-array<int, non-empty-string>
  * }
  *
  * @implements Rule<Expr>

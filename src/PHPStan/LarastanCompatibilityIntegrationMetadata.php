@@ -49,14 +49,16 @@ namespace jbboehr\Yumemi\Apocrypha\PHPStan;
  *     name: non-empty-string,
  *     type: non-empty-string,
  *     majors?: non-empty-list<int>,
- *     minimumVersions?: non-empty-array<int, non-empty-string>
+ *     minimumVersions?: non-empty-array<int, non-empty-string>,
+ *     beforeVersions?: non-empty-array<int, non-empty-string>
  * }
  * @phpstan-type PropertyBoundary array{
  *     class: non-empty-string,
  *     property: non-empty-string,
  *     type: non-empty-string,
  *     majors?: non-empty-list<int>,
- *     minimumVersions?: non-empty-array<int, non-empty-string>
+ *     minimumVersions?: non-empty-array<int, non-empty-string>,
+ *     beforeVersions?: non-empty-array<int, non-empty-string>
  * }
  * @phpstan-type ReturnBoundary array{
  *     class: non-empty-string,
@@ -65,7 +67,8 @@ namespace jbboehr\Yumemi\Apocrypha\PHPStan;
  *     type: non-empty-string,
  *     strategy?: 'benchmark-measure'|'benchmark-value',
  *     majors?: non-empty-list<int>,
- *     minimumVersions?: non-empty-array<int, non-empty-string>
+ *     minimumVersions?: non-empty-array<int, non-empty-string>,
+ *     beforeVersions?: non-empty-array<int, non-empty-string>
  * }
  * @phpstan-type IntegrationBoundaries array{
  *     arguments: list<ArgumentBoundary>,
@@ -148,8 +151,10 @@ final class LarastanCompatibilityIntegrationMetadata
         ],
         'illuminate/http' => [
             'arguments' => [
-                ['class' => 'Illuminate\\Http\\Client\\PendingRequest', 'kind' => 'method', 'method' => 'timeout', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>"],
-                ['class' => 'Illuminate\\Http\\Client\\PendingRequest', 'kind' => 'method', 'method' => 'connectTimeout', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>"],
+                ['class' => 'Illuminate\\Http\\Client\\PendingRequest', 'kind' => 'method', 'method' => 'timeout', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>", 'majors' => [11], 'beforeVersions' => [11 => '11.35.1']],
+                ['class' => 'Illuminate\\Http\\Client\\PendingRequest', 'kind' => 'method', 'method' => 'connectTimeout', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>", 'majors' => [11], 'beforeVersions' => [11 => '11.35.1']],
+                ['class' => 'Illuminate\\Http\\Client\\PendingRequest', 'kind' => 'method', 'method' => 'timeout', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [11, 12, 13], 'minimumVersions' => [11 => '11.35.1']],
+                ['class' => 'Illuminate\\Http\\Client\\PendingRequest', 'kind' => 'method', 'method' => 'connectTimeout', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [11, 12, 13], 'minimumVersions' => [11 => '11.35.1']],
                 ['class' => 'Illuminate\\Http\\Client\\PendingRequest', 'kind' => 'method', 'method' => 'retry', 'position' => 0, 'name' => 'times', 'type' => "array<int, unit_int<'millisecond'>>|int"],
                 ['class' => 'Illuminate\\Http\\Client\\PendingRequest', 'kind' => 'method', 'method' => 'retry', 'position' => 1, 'name' => 'sleepMilliseconds', 'type' => "(\\Closure(int, mixed): unit_int<'millisecond'>)|unit_int<'millisecond'>"],
                 ['class' => 'Illuminate\\Http\\Testing\\FileFactory', 'kind' => 'method', 'method' => 'create', 'position' => 1, 'name' => 'kilobytes', 'type' => "string|unit_int<'1024 * byte'>"],
@@ -184,7 +189,7 @@ final class LarastanCompatibilityIntegrationMetadata
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 4, 'name' => 'sleep', 'type' => "unit_int<'second'>"],
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 9, 'name' => 'maxTime', 'type' => "unit_int<'second'>"],
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 10, 'name' => 'rest', 'type' => "unit_int<'second'>"],
-                ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 11, 'name' => 'stopWhenEmptyFor', 'type' => "unit_int<'second'>", 'majors' => [11, 12, 13], 'minimumVersions' => [11 => '11.53.0']],
+                ['class' => 'Illuminate\\Queue\\WorkerOptions', 'kind' => 'constructor', 'method' => '__construct', 'position' => 11, 'name' => 'stopWhenEmptyFor', 'type' => "unit_int<'second'>", 'majors' => [11, 12, 13], 'minimumVersions' => [11 => '11.53.0', 12 => '12.60.0', 13 => '13.10.0']],
             ],
             'properties' => [
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'backoff', 'type' => "unit_int<'second'>|array<unit_int<'second'>>"],
@@ -193,13 +198,13 @@ final class LarastanCompatibilityIntegrationMetadata
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'sleep', 'type' => "unit_int<'second'>"],
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'rest', 'type' => "unit_int<'second'>"],
                 ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'maxTime', 'type' => "unit_int<'second'>"],
-                ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'stopWhenEmptyFor', 'type' => "unit_int<'second'>", 'majors' => [11, 12, 13], 'minimumVersions' => [11 => '11.53.0']],
+                ['class' => 'Illuminate\\Queue\\WorkerOptions', 'property' => 'stopWhenEmptyFor', 'type' => "unit_int<'second'>", 'majors' => [11, 12, 13], 'minimumVersions' => [11 => '11.53.0', 12 => '12.60.0', 13 => '13.10.0']],
             ],
             'returns' => [],
         ],
         'illuminate/support' => [
             'arguments' => [
-                ['class' => 'Illuminate\\Support\\Sleep', 'kind' => 'static', 'method' => 'usleep', 'position' => 0, 'name' => 'duration', 'type' => "unit_int<'microsecond'>|unit_float<'microsecond'>"],
+                ['class' => 'Illuminate\\Support\\Sleep', 'kind' => 'static', 'method' => 'usleep', 'position' => 0, 'name' => 'duration', 'type' => "unit_int<'microsecond'>"],
                 ['class' => 'Illuminate\\Support\\Sleep', 'kind' => 'static', 'method' => 'sleep', 'position' => 0, 'name' => 'duration', 'type' => "unit_int<'second'>|unit_float<'second'>"],
                 ['class' => 'Illuminate\\Support\\Timebox', 'kind' => 'method', 'method' => 'call', 'position' => 1, 'name' => 'microseconds', 'type' => "unit_int<'microsecond'>"],
             ],
@@ -230,6 +235,7 @@ final class LarastanCompatibilityIntegrationMetadata
      * @param array{
      *     majors?: non-empty-list<int>,
      *     minimumVersions?: non-empty-array<int, non-empty-string>,
+     *     beforeVersions?: non-empty-array<int, non-empty-string>,
      *     ...
      * } $boundary
      *
@@ -243,10 +249,11 @@ final class LarastanCompatibilityIntegrationMetadata
         }
 
         $minimumVersion = $boundary['minimumVersions'][$major] ?? null;
+        $beforeVersion = $boundary['beforeVersions'][$major] ?? null;
         $normalizedVersion = ltrim($version, 'v');
+        $developmentVersion = $normalizedVersion === $major . '.x-dev';
 
-        return $minimumVersion === null
-            || $normalizedVersion === $major . '.x-dev'
-            || version_compare($normalizedVersion, $minimumVersion, '>=');
+        return ($minimumVersion === null || $developmentVersion || version_compare($normalizedVersion, $minimumVersion, '>='))
+            && ($beforeVersion === null || (!$developmentVersion && version_compare($normalizedVersion, $beforeVersion, '<')));
     }
 }

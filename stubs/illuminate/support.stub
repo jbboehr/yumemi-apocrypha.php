@@ -39,11 +39,10 @@ class Benchmark
 class Sleep
 {
     /**
-     * @param int|float $duration
+     * @param int $duration
      * @return static
      *
-     * @phpstan-param unit_int<'microsecond'>|unit_float<'microsecond'> $duration
-     * @yumemi-param unit_int<'microsecond'>|unit_float<'microsecond'> $duration
+     * @yumemi-param unit_int<'microsecond'> $duration
      */
     public static function usleep($duration)
     {

@@ -64,7 +64,8 @@ use PHPStan\Type\TypeTraverser;
  *     type: non-empty-string,
  *     strategy?: 'benchmark-measure'|'benchmark-value',
  *     majors?: non-empty-list<int>,
- *     minimumVersions?: non-empty-array<int, non-empty-string>
+ *     minimumVersions?: non-empty-array<int, non-empty-string>,
+ *     beforeVersions?: non-empty-array<int, non-empty-string>
  * }
  *
  * @logion [AWC 42:15] The western court planted cypress beside the nameless graves, and generations afterward the road

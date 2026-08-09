@@ -71,12 +71,20 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             'majors' => [7, 8],
             'files' => [
                 __DIR__ . '/../../stubs/guzzle/guzzle.stub',
-                __DIR__ . '/../../stubs/guzzle/guzzle-7.stub',
+                __DIR__ . '/../../stubs/guzzle/guzzle-7-pre-7.11.stub',
             ],
             'filesByMajor' => [
                 8 => [
                     __DIR__ . '/../../stubs/guzzle/guzzle.stub',
                     __DIR__ . '/../../stubs/guzzle/guzzle-8.stub',
+                ],
+            ],
+            'filesByMinimumVersion' => [
+                7 => [
+                    '7.11.0' => [
+                        __DIR__ . '/../../stubs/guzzle/guzzle.stub',
+                        __DIR__ . '/../../stubs/guzzle/guzzle-7.stub',
+                    ],
                 ],
             ],
         ],
@@ -94,7 +102,16 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         ],
         'illuminate/http' => [
             'majors' => [11, 12, 13],
-            'files' => [__DIR__ . '/../../stubs/illuminate/http.stub'],
+            'files' => [__DIR__ . '/../../stubs/illuminate/http-11.stub'],
+            'filesByMajor' => [
+                12 => [__DIR__ . '/../../stubs/illuminate/http.stub'],
+                13 => [__DIR__ . '/../../stubs/illuminate/http.stub'],
+            ],
+            'filesByMinimumVersion' => [
+                11 => [
+                    '11.35.1' => [__DIR__ . '/../../stubs/illuminate/http.stub'],
+                ],
+            ],
         ],
         'illuminate/process' => [
             'majors' => [11, 12, 13],
@@ -109,19 +126,21 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 __DIR__ . '/../../stubs/illuminate/queue.stub',
                 __DIR__ . '/../../stubs/illuminate/queue-worker-11.stub',
             ],
-            'filesByMajor' => [
-                12 => [
-                    __DIR__ . '/../../stubs/illuminate/queue.stub',
-                    __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
-                ],
-                13 => [
-                    __DIR__ . '/../../stubs/illuminate/queue.stub',
-                    __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
-                ],
-            ],
             'filesByMinimumVersion' => [
                 11 => [
                     '11.53.0' => [
+                        __DIR__ . '/../../stubs/illuminate/queue.stub',
+                        __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
+                    ],
+                ],
+                12 => [
+                    '12.60.0' => [
+                        __DIR__ . '/../../stubs/illuminate/queue.stub',
+                        __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
+                    ],
+                ],
+                13 => [
+                    '13.10.0' => [
                         __DIR__ . '/../../stubs/illuminate/queue.stub',
                         __DIR__ . '/../../stubs/illuminate/queue-worker-12.stub',
                     ],

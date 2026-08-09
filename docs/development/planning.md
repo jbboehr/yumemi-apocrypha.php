@@ -16,7 +16,7 @@ claims to support and semantically accurate about the represented units.
 - `james-heinrich/getid3` covers a bounded open result shape for byte counts, durations, bitrates, sample rates, and
   frame rates from getID3 1.9.22 and later 1.x releases and 2.0.0-beta6 and later 2.x releases.
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
-  transfer times across Guzzle 7 and 8.
+  transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
   `illuminate/process`, and `illuminate/queue` cover stable unit-bearing APIs across Laravel 11 through 13.
 - Every Illuminate integration coexists automatically with Larastan 3. Standalone analysis uses the package stubs;
@@ -29,9 +29,10 @@ claims to support and semantically accurate about the represented units.
   timestamps remain unbranded.
 - `symfony/stopwatch` covers event and period durations and memory results across Symfony Stopwatch 6 through 8.
 - The loader can enforce a minimum release within a major and select major- or minor-version-specific stub files when a
-  supported upstream signature differs. Carbon uses three release profiles; Illuminate Queue distinguishes Laravel 11
-  before and after 11.53; getID3 uses minimum and major selection for its global 1.x and namespaced 2.x APIs; Illuminate
-  Process and Guzzle use major-specific files.
+  supported upstream signature differs. Carbon uses three release profiles; Illuminate HTTP distinguishes Laravel 11
+  before and after 11.35.1; Illuminate Queue uses cutovers at Laravel 11.53.0, 12.60.0, and 13.10.0; Guzzle
+  distinguishes request delays before and after 7.11.0; getID3 uses minimum and major selection for its global 1.x and
+  namespaced 2.x APIs; Illuminate Process and Guzzle also use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   a representative Composer archive, and Laravel 11 through 13 replacement metadata for every Illuminate integration.
   Every Illuminate subpackage and the combined framework fixture run both with and without Larastan.
@@ -52,11 +53,8 @@ unverified Larastan major is rejected until its combined behavior passes the sam
 
 ## Maintenance Backlog
 
-- Before the first public release, perform a corpus-wide semantic audit of every branded third-party boundary. Record
-  the upstream evidence and verified version profile for each parameter, return, property, and array-shape field;
-  confirm corresponding valid and invalid consumer coverage; and recheck the distinctions most likely to remain
-  internally consistent when mistaken: timestamps versus durations, exact byte scales, open versus sealed shapes,
-  preserved native alternatives and ranges, and release-specific signatures.
+- Keep the [integration semantic audit](integration-semantic-audit.md) current when an integration or verified version
+  profile changes. Re-run its source, structure, valid-case, and invalid-case checks before the first public release.
 
 ## Future Candidates
 

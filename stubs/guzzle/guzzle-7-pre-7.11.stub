@@ -1,0 +1,216 @@
+<?php
+
+namespace GuzzleHttp;
+
+/**
+ * @phpstan-type YumemiRequestOptions array{
+ *     connect_timeout?: unit_int<'second'>|unit_float<'second'>,
+ *     delay?: unit_int<'millisecond'>,
+ *     expect?: bool|unit_int<'byte'>,
+ *     progress?: callable(
+ *         unit_int<'byte'>,
+ *         unit_int<'byte'>,
+ *         unit_int<'byte'>,
+ *         unit_int<'byte'>
+ *     ): mixed,
+ *     read_timeout?: unit_int<'second'>|unit_float<'second'>,
+ *     timeout?: unit_int<'second'>|unit_float<'second'>,
+ *     ...
+ * }
+ */
+class Client
+{
+    /**
+     * @phpstan-param YumemiRequestOptions $config
+     * @yumemi-param YumemiRequestOptions $config
+     */
+    public function __construct(array $config = [])
+    {
+    }
+
+    /**
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function send(\Psr\Http\Message\RequestInterface $request, array $options = []): \Psr\Http\Message\ResponseInterface
+    {
+    }
+
+    /**
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function sendAsync(\Psr\Http\Message\RequestInterface $request, array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function request(string $method, $uri = '', array $options = []): \Psr\Http\Message\ResponseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function requestAsync(string $method, $uri = '', array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function get($uri, array $options = []): \Psr\Http\Message\ResponseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function head($uri, array $options = []): \Psr\Http\Message\ResponseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function put($uri, array $options = []): \Psr\Http\Message\ResponseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function post($uri, array $options = []): \Psr\Http\Message\ResponseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function patch($uri, array $options = []): \Psr\Http\Message\ResponseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function delete($uri, array $options = []): \Psr\Http\Message\ResponseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function getAsync($uri, array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function headAsync($uri, array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function putAsync($uri, array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function postAsync($uri, array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function patchAsync($uri, array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    {
+    }
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function deleteAsync($uri, array $options = []): \GuzzleHttp\Promise\PromiseInterface
+    {
+    }
+}
+
+/** @phpstan-import-type YumemiRequestOptions from Client */
+interface ClientInterface
+{
+    /**
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function send(\Psr\Http\Message\RequestInterface $request, array $options = []): \Psr\Http\Message\ResponseInterface;
+
+    /**
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function sendAsync(\Psr\Http\Message\RequestInterface $request, array $options = []): \GuzzleHttp\Promise\PromiseInterface;
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function request(string $method, $uri, array $options = []): \Psr\Http\Message\ResponseInterface;
+
+    /**
+     * @param string|\Psr\Http\Message\UriInterface $uri
+     * @phpstan-param YumemiRequestOptions $options
+     * @yumemi-param YumemiRequestOptions $options
+     */
+    public function requestAsync(string $method, $uri, array $options = []): \GuzzleHttp\Promise\PromiseInterface;
+}
+
+final class Middleware
+{
+    /**
+     * @param callable $decider
+     * @param (callable(int): int)|null $delay
+     *
+     * @phpstan-param (callable(int): unit_int<'millisecond'>)|null $delay
+     * @yumemi-param (callable(int): unit_int<'millisecond'>)|null $delay
+     */
+    public static function retry(callable $decider, ?callable $delay = null): callable
+    {
+    }
+}

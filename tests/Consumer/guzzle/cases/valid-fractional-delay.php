@@ -36,54 +36,12 @@
 
 declare(strict_types=1);
 
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Http\Testing\File;
-use Illuminate\Http\Testing\FileFactory;
+use GuzzleHttp\Client;
+use GuzzleHttp\RequestOptions;
 
 use function jbboehr\Yumemi\unit;
-use function PHPStan\Testing\assertType;
 
-/** @param unit_int<'byte'> $bytes */
-function acceptHttpBytes(int $bytes): void
-{
-}
-
-/** @param int<100, 500> $delay */
-function exerciseBoundedIlluminateHttpRetry(PendingRequest $request, int $delay): void
-{
-    $milliseconds = unit($delay, 'millisecond');
-    assertType("unit_int<'1/1000 * second'>&int<100, 500>", $milliseconds);
-
-    $doubled = $milliseconds * 2;
-    assertType("unit_int<'1/1000 * second'>&int<200, 1000>", $doubled);
-
-    $request->retry(3, $doubled);
-}
-
-function exerciseIlluminateHttpStubs(PendingRequest $request, FileFactory $files): void
-{
-    $seconds = unit(30, 'second');
-    $milliseconds = unit(250, 'millisecond');
-    $fakeFileSize = unit(2, '1024 * byte');
-
-    $request->timeout($seconds);
-    $request->connectTimeout($seconds);
-    $request->retry(3, $milliseconds);
-    $request->retry([
-        unit(100, 'millisecond'),
-        unit(250, 'millisecond'),
-    ]);
-    $request->retry(
-        3,
-        static fn (int $attempt, mixed $exception): int => unit($attempt * 100, 'millisecond'),
-    );
-    $request->retry(3);
-
-    $files->create('empty.txt');
-    $files->create('report.txt', 'contents');
-    $files->create('report.txt', $fakeFileSize, 'text/plain');
-    File::create('empty.txt');
-    $file = File::create('report.txt', $fakeFileSize);
-    $file->size($fakeFileSize);
-    acceptHttpBytes($file->getSize());
-}
+$client = new Client();
+$client->request('GET', '/reports', [
+    RequestOptions::DELAY => unit(0.5, 'millisecond'),
+]);

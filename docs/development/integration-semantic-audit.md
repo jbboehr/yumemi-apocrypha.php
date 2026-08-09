@@ -1,0 +1,210 @@
+# Integration Semantic Audit
+
+This ledger records the source evidence and consumer coverage behind every branded third-party boundary. It was last
+reviewed on 2026-08-09. The public supported-version matrix remains in
+[`docs/pages/integrations.md`](../pages/integrations.md); this document is the maintainer-facing evidence behind it.
+
+## Method
+
+Each integration was checked against tagged upstream source, not inferred from a method name alone. `S` means the
+consumer's `verify.php` checks that the class, method, parameter, property, or release profile exists in the installed
+package. `V` means a branded value is accepted or an inferred return is asserted in `cases/valid*.php`. `I` means
+`cases/invalid*.php` rejects a plain scalar, a differently scaled compatible unit, or a different dimension. `I-family`
+means the boundary is exercised directly by `V`, while rejection is tested on another boundary with the identical
+promoted type. Every integration runs explicit and autodetected registration; every Illuminate integration also runs
+through the Larastan adapter, whose catalog is mechanically compared with the selected canonical stub.
+
+The audit preserves upstream scalar alternatives and nullability, keeps dynamic result and option arrays open, and does
+not narrow plain upstream integers from implementation behavior alone. It distinguishes relative durations from Unix
+timestamps and records byte scales from the actual arithmetic rather than from friendly parameter names.
+
+## Verified Profiles
+
+| Package                       | Profiles and source snapshots                                          | Profile evidence                                                         |
+| ----------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Carbon                        | 2.62.1–2.x; 3.0–3.1 `Real`; 3.2+ `UTC`                                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                  |
+| Guzzle                        | 7 through 7.10 integer request delay; 7.11+ numeric request delay; 8   | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                  |
+| getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                        |
+| Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.55.0`, `12.65.0`, `13.24.0`                    |
+| Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.55.0`, `12.0.0`, `12.65.0`, `13.0.0`, `13.24.0`            |
+| Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                |
+| Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                        |
+| phpgeo                        | 4–6                                                                    | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                              |
+| Symfony HttpFoundation        | 6.4+ base; 7.3+ SSE; 8+ IP byte counts                                 | `6.4.0`, `6.4.43`, `7.0.0`, `7.2.9`, `7.3.0`, `7.4.16`, `8.0.0`, `8.1.4` |
+| Symfony Stopwatch             | 6–8                                                                    | `6.0.0`, `6.4.24`, `7.0.0`, `7.4.8`, `8.0.0`, `8.1.0`                    |
+
+The source links below point to a representative current snapshot. The profile table names the additional tags checked
+for signature changes.
+
+## Carbon
+
+Evidence: Carbon's
+[`Difference` trait](https://github.com/briannesbitt/Carbon/blob/3.13.2/src/Carbon/Traits/Difference.php),
+[`Date` trait](https://github.com/briannesbitt/Carbon/blob/3.13.2/src/Carbon/Traits/Date.php), and
+[`CarbonInterface`](https://github.com/briannesbitt/Carbon/blob/3.13.2/src/Carbon/CarbonInterface.php), plus the
+corresponding files at every profile boundary.
+
+| Boundaries                                                                                                               | Promoted type                                                      | Coverage     |
+| ------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------ | ------------ |
+| Carbon 2 `diffInRealMicroseconds`, `diffInRealMilliseconds`, `diffInRealSeconds`, `diffInRealMinutes`, `diffInRealHours` | integer microseconds through hours                                 | S/V/I-family |
+| Carbon 2 `floatDiffInRealSeconds`, `floatDiffInRealMinutes`, `floatDiffInRealHours`                                      | float seconds through hours                                        | S/V/I-family |
+| Carbon 2 `addReal*` and `subReal*` fixed-time adjustments                                                                | integer unit matching the suffix                                   | S/V/I        |
+| Carbon 3 `diffInMicroseconds` through `diffInHours`, `secondsSinceMidnight`, `secondsUntilEndOfDay`                      | float unit matching the method                                     | S/V/I-family |
+| Carbon 3 `sleep()` on `CarbonInterface`, `Carbon`, `CarbonImmutable`, `FactoryImmutable`, and `WrapperClock`             | integer or float seconds                                           | S/V/I        |
+| Carbon 3.0–3.1 `diffInReal*`, `addReal*`, `subReal*`; 3.2+ `diffInUTC*`, `addUTC*`, `subUTC*`                            | float returns and integer-or-float adjustments matching the suffix | S/V/I        |
+
+Calendar-relative days, weeks, months, and years, timezone offsets, and timestamps remain unbranded. The profile tests
+also confirm that the inactive `Real` or `UTC` family is not manufactured by a stub.
+
+## Guzzle
+
+Evidence: [`RequestOptions`](https://github.com/guzzle/guzzle/blob/8.0.2/src/RequestOptions.php),
+[`Client`](https://github.com/guzzle/guzzle/blob/8.0.2/src/Client.php),
+[`Middleware`](https://github.com/guzzle/guzzle/blob/8.0.2/src/Middleware.php), and
+[`TransferStats`](https://github.com/guzzle/guzzle/blob/8.0.2/src/TransferStats.php), checked against both major
+profiles.
+
+| Boundaries                                                                                                           | Promoted type                 | Coverage |
+| -------------------------------------------------------------------------------------------------------------------- | ----------------------------- | -------- |
+| Open request-option keys `connect_timeout`, `read_timeout`, `timeout` on `Client` and `ClientInterface` entry points | integer or float seconds      | S/V/I    |
+| Open request-option key `delay` through Guzzle 7.10                                                                  | integer milliseconds          | S/V/I    |
+| The same request-option key from Guzzle 7.11 onward                                                                  | integer or float milliseconds | S/V/I    |
+| `Middleware::retry()` delay callback result                                                                          | integer milliseconds          | S/V/I    |
+| Open request-option key `expect`                                                                                     | `bool` or integer bytes       | S/V/I    |
+| Open request-option key `progress` callback parameters                                                               | four integer byte counts      | S/V/I    |
+| `TransferStats::__construct($transferTime)` and `getTransferTime()`                                                  | nullable float seconds        | S/V/I    |
+
+The request shape deliberately ends in `...`; unrelated Guzzle options are not sealed out. Guzzle 7 and 8 retain their
+different retry callback signatures.
+
+## getID3
+
+Evidence: the 1.x [`getID3` analyzer](https://github.com/JamesHeinrich/getID3/blob/1.9.25/getid3/getid3.php) and the 2.x
+[`GetID3` analyzer](https://github.com/JamesHeinrich/getID3/blob/2.0.0-beta6/src/GetID3.php), together with format
+modules that calculate the published fields.
+
+| Boundaries                                                   | Promoted type                                                            | Coverage     |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------ |
+| `openfile($filesize)` and `analyze($filesize)`               | nullable integer bytes                                                   | S/V/I        |
+| Open result keys `filesize`, `avdataoffset`, `avdataend`     | optional integer bytes                                                   | S/V/I-family |
+| Open result key `playtime_seconds`                           | optional integer or float seconds                                        | S/V/I        |
+| Open result keys `bitrate`, `audio.bitrate`, `video.bitrate` | optional integer or float bits per second; audio also preserves `'free'` | S/V/I-family |
+| Open result keys `audio.sample_rate`, `video.frame_rate`     | optional integer or float hertz                                          | S/V/I-family |
+
+The top-level, audio, and video shapes remain open because format modules add keys dynamically. All branded keys remain
+optional. Pixel dimensions remain unbranded.
+
+## Illuminate Cache and Cookie
+
+Evidence: Laravel's
+[`Repository`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cache/Repository.php),
+[`RateLimiter`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cache/RateLimiter.php),
+[`Lock`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cache/Lock.php),
+[`Limit`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cache/RateLimiting/Limit.php), and
+[`CookieJar`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cookie/CookieJar.php), checked at the
+initial and current release of Laravel 11–13.
+
+| Boundaries                                                                                                                           | Promoted type                                                                             | Coverage     |
+| ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ------------ |
+| Cache contract/repository `put`, `add`, `remember`, `set`, `putMany`, `setMultiple`; store `put`, `putMany`                          | integer seconds with each upstream date, interval, closure, or null alternative preserved | S/V/I-family |
+| Cache lock provider/contract/concrete constructor and `block`                                                                        | integer seconds                                                                           | S/V/I-family |
+| `Lock::betweenBlockedAttemptsSleepFor()`                                                                                             | integer milliseconds                                                                      | S/V/I        |
+| `Repository::getDefaultCacheTime()`, `setDefaultCacheTime()`; `RateLimiter::attempt`, `hit`, `increment`, `decrement`, `availableIn` | integer seconds with upstream alternatives preserved                                      | S/V/I-family |
+| `Limit::$decaySeconds`, constructor, and `perSecond`; `perMinute(s)`, `perHour`, `perDay` inputs                                     | stored seconds; factory inputs use the unit named by the method                           | S/V/I-family |
+| Cookie factory contract and `CookieJar::make($minutes)`                                                                              | integer minutes                                                                           | S/V/I        |
+
+Cookie expiration timestamps and the variadic queue API remain unbranded.
+
+## Illuminate Filesystem and HTTP
+
+Evidence: Laravel's
+[`Filesystem`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Filesystem/Filesystem.php),
+[`PendingRequest`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Http/Client/PendingRequest.php),
+and fake-upload [`File`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Http/Testing/File.php) and
+[`FileFactory`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Http/Testing/FileFactory.php).
+
+| Boundaries                                                                  | Promoted type                                                                    | Coverage     |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------ |
+| Filesystem contract, local filesystem, adapter, and `LockableFile` `size()` | integer bytes                                                                    | S/V/I-family |
+| Local filesystem `put`, `prepend`, `append`                                 | integer bytes, with `put` preserving `false`                                     | S/V/I-family |
+| `PendingRequest::timeout()` and `connectTimeout()` through Laravel 11.35.0  | integer seconds                                                                  | S/V/I        |
+| The same timeout methods from Laravel 11.35.1 and in 12–13                  | integer or float seconds                                                         | S/V/I        |
+| `PendingRequest::retry()` schedule elements and scalar/callback sleep       | integer milliseconds; retry count remains dimensionless                          | S/V/I        |
+| `FileFactory::create`, `File::create`, and `File::size` numeric input       | integer `1024 * byte`, preserving the string-content alternative where published | S/V/I        |
+| `File::getSize()`                                                           | integer bytes                                                                    | S/V/I        |
+
+The fake-upload input scale follows Laravel's multiplication by 1024, not decimal `kilobyte`. Filesystem modification
+times remain unbranded timestamps.
+
+## Illuminate Process, Queue, and Support
+
+Evidence: Laravel's
+[`PendingProcess`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Process/PendingProcess.php),
+[`WorkerOptions`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Queue/WorkerOptions.php),
+[`Benchmark`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Benchmark.php),
+[`Sleep`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Sleep.php), and
+[`Timebox`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Timebox.php).
+
+| Boundaries                                                                     | Promoted type                                                                     | Coverage     |
+| ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | ------------ |
+| Process `timeout` and `idleTimeout`                                            | integer seconds; Laravel 13 also preserves `CarbonInterval`                       | S/V/I        |
+| Queue contract `later`, `laterOn`; job contract/concrete/trait `release`       | integer seconds with date and interval alternatives where upstream publishes them | S/V/I-family |
+| `WorkerOptions::$backoff` and constructor input                                | integer seconds or array of integer seconds                                       | S/V/I-family |
+| Worker `timeout`, `sleep`, `rest`, `maxTime` properties and constructor inputs | integer seconds                                                                   | S/V/I-family |
+| Worker `memory` property and constructor input                                 | integer `1048576 * byte`                                                          | S/V/I        |
+| Worker `stopWhenEmptyFor` property and constructor input                       | integer seconds from 11.53.0, 12.60.0, and 13.10.0 only                           | S/V/I-family |
+| `Benchmark::measure()` and `value()` elapsed results                           | float milliseconds, preserving array keys and tuple value type                    | S/V/I-family |
+| `Sleep::sleep()`; `Sleep::usleep()`                                            | integer or float seconds; integer microseconds                                    | S/V/I        |
+| `Timebox::call($microseconds)`                                                 | integer microseconds                                                              | S/V/I        |
+
+Worker memory is compared after division by 1024 twice, which establishes the binary-megabyte scale. Attempt counts, job
+counts, and retry counts remain unbranded.
+
+## phpgeo
+
+Evidence: phpgeo's distance, bearing, geometry, factory, utility, and polyline processor sources at
+[`6.0.4`](https://github.com/mjaschen/phpgeo/tree/6.0.4/src), checked against the equivalent declarations in majors 4
+and 5. Runtime consumer checks independently confirm an equatorial degree is about 111.2 km and east is 90 degrees.
+
+| Boundaries                                                                                                                    | Promoted type                  | Coverage     |
+| ----------------------------------------------------------------------------------------------------------------------------- | ------------------------------ | ------------ |
+| Distance interface, `Haversine`, `Vincenty`, and `Coordinate::getDistance()` returns                                          | float meters                   | S/V/I-family |
+| `Coordinate::hasSameLocation`, polyline uniqueness/containment, point-to-line epsilon, simplifier tolerance, bounds expansion | float meters                   | S/V/I-family |
+| Line/polyline length, polygon perimeter, perpendicular and point-to-line distance returns                                     | float meters                   | S/V/I-family |
+| Polygon area                                                                                                                  | float square meters            | S/V/I        |
+| Line and bearing calculator bearing/final-bearing returns                                                                     | float degrees                  | S/V/I-family |
+| Spherical/ellipsoidal destination bearing and distance inputs; ellipsoidal final-bearing return                               | float degrees and float meters | S/V/I        |
+| Cardinal north/east/south/west setters and getters                                                                            | float meters                   | S/V/I-family |
+
+Latitude and longitude remain unbranded because origin and range are part of their meaning. Bearing ranges remain
+unexpressed until branded float ranges exist.
+
+## Symfony HttpFoundation and Stopwatch
+
+Evidence: HttpFoundation's [`Response`](https://github.com/symfony/http-foundation/blob/v8.1.4/Response.php),
+[`Cookie`](https://github.com/symfony/http-foundation/blob/v8.1.4/Cookie.php),
+[`UploadedFile`](https://github.com/symfony/http-foundation/blob/v8.1.4/File/UploadedFile.php), SSE classes, session
+classes, and [`IpUtils`](https://github.com/symfony/http-foundation/blob/v8.1.4/IpUtils.php); Stopwatch's
+[`StopwatchEvent`](https://github.com/symfony/stopwatch/blob/v8.1.0/StopwatchEvent.php) and
+[`StopwatchPeriod`](https://github.com/symfony/stopwatch/blob/v8.1.0/StopwatchPeriod.php).
+
+| Boundaries                                                                                                   | Promoted type                                                             | Coverage     |
+| ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- | ------------ |
+| Response age/max-age/TTL getters; max-age, shared-max-age, stale, TTL setters; open `setCache` duration keys | integer seconds, preserving nullable returns                              | S/V/I        |
+| `Cookie::getMaxAge()`                                                                                        | integer seconds                                                           | S/V/I        |
+| Session invalidate/migrate/regenerate lifetime and metadata lifetime                                         | nullable integer seconds on inputs; integer seconds on return             | S/V/I-family |
+| `UploadedFile::getMaxFilesize()`                                                                             | integer or float bytes                                                    | S/V/I        |
+| Symfony 7.3+ `EventStreamResponse` and `ServerEvent` retry constructor/getter/setter                         | nullable integer milliseconds, preserving each method's exact nullability | S/V/I        |
+| Symfony 8+ `IpUtils::anonymize($v4Bytes, $v6Bytes)`                                                          | integer bytes intersected with `int<0, 4>` and `int<0, 16>`               | S/V/I        |
+| Stopwatch event/period `getDuration()`; `getMemory()`                                                        | integer or float milliseconds; integer bytes                              | S/V/I        |
+
+The HttpFoundation cache option shape remains open. Cookie expiration inputs and `getExpiresTime()` remain Unix
+timestamps and are intentionally unbranded. Symfony 7's commented future IP parameters are not treated as public
+reflection parameters before Symfony 8.
+
+## Re-audit Triggers
+
+Repeat the affected section when adding a boundary, admitting a new package major, changing a minimum version, or when
+upstream changes a native signature inside a supported major. Adjacent releases around a discovered cutover belong in
+both the focused consumer matrix and this ledger; checking only the newest release is insufficient for a structural
+change.

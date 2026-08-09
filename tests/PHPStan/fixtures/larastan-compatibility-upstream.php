@@ -121,7 +121,7 @@ final class Sleep
         return new self();
     }
 
-    public static function usleep(int|float $duration): self
+    public static function usleep(int $duration): self
     {
         return new self();
     }

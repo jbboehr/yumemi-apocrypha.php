@@ -80,3 +80,22 @@ verifyMethods(Illuminate\Http\Testing\File::class, [
     'size' => ['kilobytes'],
     'getSize' => [],
 ]);
+
+$version = Composer\InstalledVersions::getVersion('illuminate/http')
+    ?? Composer\InstalledVersions::getVersion('laravel/framework')
+    ?? throw new RuntimeException('Unable to determine the installed Illuminate HTTP version.');
+$expectedTimeoutType = version_compare(ltrim($version, 'v'), '11.35.1', '>=') ? 'int|float' : 'int';
+foreach (['timeout', 'connectTimeout'] as $method) {
+    $type = (new ReflectionMethod(Illuminate\Http\Client\PendingRequest::class, $method))
+        ->getParameters()[0]
+        ->getType();
+    if ((string) $type !== $expectedTimeoutType) {
+        throw new RuntimeException(sprintf(
+            'PendingRequest::%s() expected parameter type %s for %s; found %s.',
+            $method,
+            $expectedTimeoutType,
+            $version,
+            (string) $type,
+        ));
+    }
+}

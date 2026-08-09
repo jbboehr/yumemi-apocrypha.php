@@ -70,7 +70,12 @@ $workerParameters = array_map(
     static fn (ReflectionParameter $parameter): string => $parameter->getName(),
     (new ReflectionMethod(Illuminate\Queue\WorkerOptions::class, '__construct'))->getParameters(),
 );
-$supportsStopWhenEmptyFor = $major >= 12 || version_compare(ltrim($version, 'v'), '11.53.0', '>=');
+$minimumVersions = [11 => '11.53.0', 12 => '12.60.0', 13 => '13.10.0'];
+$supportsStopWhenEmptyFor = version_compare(
+    ltrim($version, 'v'),
+    $minimumVersions[$major] ?? throw new RuntimeException(sprintf('Unsupported Queue major %d.', $major)),
+    '>=',
+);
 $expectedLastParameter = $supportsStopWhenEmptyFor ? 'stopWhenEmptyFor' : 'rest';
 if ($workerParameters[array_key_last($workerParameters)] !== $expectedLastParameter) {
     throw new RuntimeException(sprintf(

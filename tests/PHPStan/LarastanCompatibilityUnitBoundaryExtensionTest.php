@@ -69,8 +69,8 @@ final class LarastanCompatibilityUnitBoundaryExtensionTest extends RuleTestCase
                     65,
                 ],
                 [
-                    "Illuminate\\Support\\Sleep::usleep() expects unit_float<'1/1000000 * second'>|"
-                        . "unit_int<'1/1000000 * second'>, 1&unit_int<'1/1000 * second'> given at a Yumemi "
+                    "Illuminate\\Support\\Sleep::usleep() expects unit_int<'1/1000000 * second'>, "
+                        . "1&unit_int<'1/1000 * second'> given at a Yumemi "
                         . 'Apocrypha unit boundary.',
                     66,
                 ],

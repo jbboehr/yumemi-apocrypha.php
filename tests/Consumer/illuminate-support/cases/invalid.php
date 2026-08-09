@@ -44,6 +44,7 @@ use function jbboehr\Yumemi\unit;
 Sleep::sleep(2);
 Sleep::sleep(unit(500, 'millisecond'));
 Sleep::usleep(unit(2, 'second'));
+Sleep::usleep(unit(0.5, 'microsecond'));
 
 (new Timebox())->call(static function (): void {
 }, unit(250, 'millisecond'));

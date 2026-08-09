@@ -49,7 +49,9 @@ $stubFiles = (new jbboehr\Yumemi\Apocrypha\PHPStan\ConfiguredIntegrationStubFile
     false,
     true,
 ))->getFiles();
-$expectedVersionStub = sprintf('guzzle-%s.stub', $matches[1]);
+$expectedVersionStub = $matches[1] === '7' && version_compare(ltrim($version, 'v'), '7.11.0', '<')
+    ? 'guzzle-7-pre-7.11.stub'
+    : sprintf('guzzle-%s.stub', $matches[1]);
 $selectedExpectedStub = false;
 foreach ($stubFiles as $stubFile) {
     if (basename($stubFile) === $expectedVersionStub) {

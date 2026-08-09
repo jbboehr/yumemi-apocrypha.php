@@ -618,6 +618,115 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([realpath(__DIR__ . '/../../apocrypha.neon')], $extension->getFiles());
     }
 
+    /** @return iterable<string, array{non-empty-string, list<non-empty-string>}> */
+    public static function guzzleVersionProfiles(): iterable
+    {
+        yield 'before fractional request delay' => [
+            '7.10.0',
+            ['guzzle.stub', 'guzzle-7-pre-7.11.stub'],
+        ];
+        yield 'with fractional request delay' => [
+            '7.11.0',
+            ['guzzle.stub', 'guzzle-7.stub'],
+        ];
+    }
+
+    /** @param list<non-empty-string> $expectedFiles */
+    #[DataProvider('guzzleVersionProfiles')]
+    public function testGuzzleSelectsItsVersionProfile(string $version, array $expectedFiles): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['guzzlehttp/guzzle'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'guzzlehttp/guzzle',
+            static fn (): string => $version,
+        );
+
+        self::assertSame(
+            array_map(
+                static fn (string $file): string => (string) realpath(
+                    __DIR__ . '/../../stubs/guzzle/' . $file,
+                ),
+                $expectedFiles,
+            ),
+            $extension->getFiles(),
+        );
+    }
+
+    /** @return iterable<string, array{non-empty-string, non-empty-string, list<non-empty-string>}> */
+    public static function illuminateVersionProfiles(): iterable
+    {
+        yield 'HTTP before fractional timeouts' => [
+            'illuminate/http',
+            '11.35.0',
+            ['http-11.stub'],
+        ];
+        yield 'HTTP with fractional timeouts' => [
+            'illuminate/http',
+            '11.35.1',
+            ['http.stub'],
+        ];
+        yield 'Queue 11 before stop-when-empty duration' => [
+            'illuminate/queue',
+            '11.52.0',
+            ['queue.stub', 'queue-worker-11.stub'],
+        ];
+        yield 'Queue 11 with stop-when-empty duration' => [
+            'illuminate/queue',
+            '11.53.0',
+            ['queue.stub', 'queue-worker-12.stub'],
+        ];
+        yield 'Queue 12 before stop-when-empty duration' => [
+            'illuminate/queue',
+            '12.59.0',
+            ['queue.stub', 'queue-worker-11.stub'],
+        ];
+        yield 'Queue 12 with stop-when-empty duration' => [
+            'illuminate/queue',
+            '12.60.0',
+            ['queue.stub', 'queue-worker-12.stub'],
+        ];
+        yield 'Queue 13 before stop-when-empty duration' => [
+            'illuminate/queue',
+            '13.9.0',
+            ['queue.stub', 'queue-worker-11.stub'],
+        ];
+        yield 'Queue 13 with stop-when-empty duration' => [
+            'illuminate/queue',
+            '13.10.0',
+            ['queue.stub', 'queue-worker-12.stub'],
+        ];
+    }
+
+    /** @param list<non-empty-string> $expectedFiles */
+    #[DataProvider('illuminateVersionProfiles')]
+    public function testIlluminateSelectsItsVersionProfile(
+        string $integration,
+        string $version,
+        array $expectedFiles,
+    ): void {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            [$integration],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === $integration,
+            static fn (): string => $version,
+        );
+
+        self::assertSame(
+            array_map(
+                static fn (string $file): string => (string) realpath(
+                    __DIR__ . '/../../stubs/illuminate/' . $file,
+                ),
+                $expectedFiles,
+            ),
+            $extension->getFiles(),
+        );
+    }
+
     /** @return iterable<string, array{string, list<string>}> */
     public static function symfonyHttpFoundationProfiles(): iterable
     {
