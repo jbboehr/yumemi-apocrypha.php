@@ -80,6 +80,7 @@
         "infection/infection": "^0.32.6",
         "jbboehr/akashi": "dev-master",
         "nikic/php-parser": "^5.8",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0.13",
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^11.5"
