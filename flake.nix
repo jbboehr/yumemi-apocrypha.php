@@ -17,7 +17,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     akashi = {
-      url = "github:jbboehr/akashi.php/master";
+      url = "git+https://github.com/jbboehr/akashi.php?ref=master";
       inputs.flake-utils.follows = "flake-utils";
       inputs.gitignore.follows = "gitignore";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -19,18 +19,18 @@
         ]
       },
       "locked": {
-        "lastModified": 1786091581,
-        "narHash": "sha256-OzSaaSBs48iIDu12D8q/OCVg2weQHy4QLnd1gf964nQ=",
-        "owner": "jbboehr",
-        "repo": "akashi.php",
-        "rev": "225cc33f61d5779791112fb6c3b0f473e9c8e5ae",
-        "type": "github"
+        "lastModified": 1786294919,
+        "narHash": "sha256-HzNoRpCFUz3v51rzFavCn+M2CBALpT8CpZS/8lcEk8g=",
+        "ref": "master",
+        "rev": "5f2bf519be07b6c2df4bd5563e1cf6b67da1a29a",
+        "revCount": 54,
+        "type": "git",
+        "url": "https://github.com/jbboehr/akashi.php"
       },
       "original": {
-        "owner": "jbboehr",
         "ref": "master",
-        "repo": "akashi.php",
-        "type": "github"
+        "type": "git",
+        "url": "https://github.com/jbboehr/akashi.php"
       }
     },
     "flake-compat": {

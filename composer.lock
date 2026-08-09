@@ -1471,12 +1471,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jbboehr/akashi.php.git",
-                "reference": "225cc33f61d5779791112fb6c3b0f473e9c8e5ae"
+                "reference": "5f2bf519be07b6c2df4bd5563e1cf6b67da1a29a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jbboehr/akashi.php/zipball/225cc33f61d5779791112fb6c3b0f473e9c8e5ae",
-                "reference": "225cc33f61d5779791112fb6c3b0f473e9c8e5ae",
+                "url": "https://api.github.com/repos/jbboehr/akashi.php/zipball/5f2bf519be07b6c2df4bd5563e1cf6b67da1a29a",
+                "reference": "5f2bf519be07b6c2df4bd5563e1cf6b67da1a29a",
                 "shasum": ""
             },
             "require": {
@@ -1491,6 +1491,7 @@
                 "ext-dom": "*",
                 "friendsofphp/php-cs-fixer": "^3",
                 "infection/infection": "^0.32.6",
+                "jbboehr/doctrine-of-the-second-sun": "dev-master",
                 "phpstan/phpstan": "^2.2.5",
                 "phpstan/phpstan-phpunit": "^2.0.13",
                 "phpstan/phpstan-strict-rules": "^2.0",
@@ -1498,7 +1499,7 @@
             },
             "suggest": {
                 "phpstan/phpstan": "Enables PHPStan documentation-example verification (PHPStan 2.x).",
-                "phpunit/phpunit": "Enables runtime and PHPStan test integration (PHPUnit 11.5)."
+                "phpunit/phpunit": "Enables runtime and PHPStan test integration (PHPUnit 10.5 or 11.5)."
             },
             "default-branch": true,
             "bin": [
@@ -1520,13 +1521,20 @@
                     "email": "jbboehr@gmail.com"
                 }
             ],
-            "description": "Executable documentation testing for PHP.",
+            "description": "Test PHP examples in Markdown through PHPUnit and PHPStan.",
             "homepage": "https://github.com/jbboehr/akashi.php",
+            "keywords": [
+                "PHPStan",
+                "doctest",
+                "documentation",
+                "phpunit",
+                "testing"
+            ],
             "support": {
                 "issues": "https://github.com/jbboehr/akashi.php/issues",
                 "source": "https://github.com/jbboehr/akashi.php"
             },
-            "time": "2026-08-07T08:33:01+00:00"
+            "time": "2026-08-09T17:01:59+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
