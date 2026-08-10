@@ -379,6 +379,47 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         $files = [];
         $selectedMajors = $this->selectedMajors();
         $selectedVersions = $this->selectedVersions;
+        $sourcePackageRoot = dirname(__DIR__, 2);
+        $installedPackageRoot = null;
+
+        foreach (array_reverse(InstalledVersions::getAllRawData()) as $installed) {
+            $root = $installed['root'];
+            if ($root['name'] === 'jbboehr/yumemi-apocrypha') {
+                $installedPackageRoot = $sourcePackageRoot;
+
+                break;
+            }
+
+            $metadata = $installed['versions']['jbboehr/yumemi-apocrypha'] ?? null;
+            if (!is_array($metadata)) {
+                continue;
+            }
+
+            $installPath = $metadata['install_path'] ?? null;
+            if (!is_string($installPath) || $installPath === '') {
+                throw new LogicException(
+                    'The active Composer package metadata does not provide a usable Yumemi Apocrypha install path.',
+                );
+            }
+
+            $installPath = rtrim($installPath, '/\\');
+            $installParent = realpath(dirname($installPath));
+            $installBasename = basename($installPath);
+            if ($installParent === false || $installBasename === '' || $installBasename === '.' || $installBasename === '..') {
+                throw new LogicException(sprintf(
+                    'Unable to resolve the installed Yumemi Apocrypha package path: %s.',
+                    $installPath,
+                ));
+            }
+
+            $installedPackageRoot = $installParent . DIRECTORY_SEPARATOR . $installBasename;
+
+            break;
+        }
+
+        if ($installedPackageRoot === null) {
+            throw new LogicException('Unable to locate Yumemi Apocrypha in the active Composer package metadata.');
+        }
 
         if ($selectedVersions === null) {
             throw new LogicException('Selected integration versions were not resolved with their majors.');
@@ -411,9 +452,29 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             }
 
             foreach ($configuredFiles as $file) {
-                $path = realpath($file);
-                if ($path === false) {
-                    throw new LogicException(sprintf('Configured Yumemi Apocrypha stub file does not exist: %s.', $file));
+                $configuredPath = realpath($file);
+                if ($configuredPath === false) {
+                    throw new LogicException(sprintf(
+                        'Configured Yumemi Apocrypha stub file does not exist: %s (resolved path unavailable).',
+                        $file,
+                    ));
+                }
+
+                if (
+                    $installedPackageRoot !== $sourcePackageRoot
+                    && str_starts_with($configuredPath, $sourcePackageRoot . DIRECTORY_SEPARATOR)
+                ) {
+                    $path = $installedPackageRoot . substr($configuredPath, strlen($sourcePackageRoot));
+                } else {
+                    $path = $configuredPath;
+                }
+
+                if (!is_file($path)) {
+                    throw new LogicException(sprintf(
+                        'Configured Yumemi Apocrypha stub file does not exist: %s (resolved as %s).',
+                        $file,
+                        $path,
+                    ));
                 }
 
                 $files[$path] = true;

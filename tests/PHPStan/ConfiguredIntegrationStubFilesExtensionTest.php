@@ -134,6 +134,134 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame('v12.4.0', $extension->getSelectedVersion('illuminate/process'));
     }
 
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testStubFilesUseTheConsumerPackageInstallPathFromTheProjectDataset(): void
+    {
+        $temporaryPath = tempnam(sys_get_temp_dir(), 'yumemi-apocrypha-install-');
+        self::assertNotFalse($temporaryPath);
+        self::assertTrue(unlink($temporaryPath));
+        $packageRoot = $temporaryPath . '/vendor/jbboehr/yumemi-apocrypha';
+        $stubRoot = $packageRoot . '/stubs/guzzle';
+        self::assertTrue(mkdir($stubRoot, 0o777, true));
+        self::assertTrue(copy(__DIR__ . '/../../stubs/guzzle/guzzle.stub', $stubRoot . '/guzzle.stub'));
+        self::assertTrue(copy(__DIR__ . '/../../stubs/guzzle/guzzle-7.stub', $stubRoot . '/guzzle-7.stub'));
+
+        try {
+            $this->reloadInstalledPackageMetadata(
+                [
+                    'pretty_version' => '7.15.3',
+                    'version' => '7.15.3.0',
+                ],
+                'guzzlehttp/guzzle',
+                $packageRoot . DIRECTORY_SEPARATOR,
+            );
+            $extension = new ConfiguredIntegrationStubFilesExtension(['guzzlehttp/guzzle'], false, true);
+
+            self::assertSame([
+                $stubRoot . '/guzzle.stub',
+                $stubRoot . '/guzzle-7.stub',
+            ], $extension->getFiles());
+        } finally {
+            self::assertTrue(unlink($stubRoot . '/guzzle.stub'));
+            self::assertTrue(unlink($stubRoot . '/guzzle-7.stub'));
+            self::assertTrue(rmdir($stubRoot));
+            self::assertTrue(rmdir(dirname($stubRoot)));
+            self::assertTrue(rmdir(dirname($stubRoot, 2)));
+            self::assertTrue(rmdir(dirname($stubRoot, 3)));
+            self::assertTrue(rmdir(dirname($stubRoot, 4)));
+            self::assertTrue(rmdir($temporaryPath));
+        }
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testInvalidConsumerPackageInstallPathsAreReportedExplicitly(): void
+    {
+        $temporaryPath = tempnam(sys_get_temp_dir(), 'yumemi-apocrypha-invalid-install-');
+        self::assertNotFalse($temporaryPath);
+        self::assertTrue(unlink($temporaryPath));
+        $metadataError =
+            'The active Composer package metadata does not provide a usable Yumemi Apocrypha install path.';
+
+        foreach ([false, ''] as $installPath) {
+            $this->reloadInstalledPackageMetadata(
+                ['pretty_version' => '7.15.3', 'version' => '7.15.3.0'],
+                'guzzlehttp/guzzle',
+                $installPath,
+            );
+
+            try {
+                (new ConfiguredIntegrationStubFilesExtension(['guzzlehttp/guzzle'], false, true))->getFiles();
+                self::fail('Invalid Composer package metadata was accepted.');
+            } catch (LogicException $exception) {
+                self::assertSame($metadataError, $exception->getMessage());
+            }
+        }
+
+        foreach ([
+            $temporaryPath . '/missing/yumemi-apocrypha',
+            DIRECTORY_SEPARATOR,
+            sys_get_temp_dir() . DIRECTORY_SEPARATOR . '.',
+        ] as $installPath) {
+            $this->reloadInstalledPackageMetadata(
+                ['pretty_version' => '7.15.3', 'version' => '7.15.3.0'],
+                'guzzlehttp/guzzle',
+                $installPath,
+            );
+
+            try {
+                (new ConfiguredIntegrationStubFilesExtension(['guzzlehttp/guzzle'], false, true))->getFiles();
+                self::fail('An invalid Composer package install path was accepted.');
+            } catch (LogicException $exception) {
+                self::assertStringStartsWith(
+                    'Unable to resolve the installed Yumemi Apocrypha package path:',
+                    $exception->getMessage(),
+                );
+            }
+        }
+    }
+
+    #[RunInSeparateProcess]
+    #[PreserveGlobalState(false)]
+    public function testConsumerInstallPathDoesNotRebaseConfiguredFilesOutsideThePackage(): void
+    {
+        $temporaryPath = tempnam(sys_get_temp_dir(), 'yumemi-apocrypha-external-stub-');
+        self::assertNotFalse($temporaryPath);
+        self::assertTrue(unlink($temporaryPath));
+        $packageRoot = $temporaryPath . '/vendor/jbboehr/yumemi-apocrypha';
+        self::assertTrue(mkdir($packageRoot, 0o777, true));
+        $externalStub = $temporaryPath . '/external.stub';
+        self::assertNotFalse(file_put_contents($externalStub, "<?php\n"));
+
+        try {
+            $this->reloadInstalledPackageMetadata(
+                ['pretty_version' => '12.0.0', 'version' => '12.0.0.0'],
+                'vendor/one',
+                $packageRoot,
+            );
+            $extension = $this->extension(
+                integrations: ['vendor/one'],
+                supported: [
+                    'vendor/one' => [
+                        'majors' => [12],
+                        'files' => [$externalStub],
+                    ],
+                ],
+                installed: static fn (): bool => true,
+                version: static fn (): string => '12.0.0',
+            );
+
+            self::assertSame([$externalStub], $extension->getFiles());
+        } finally {
+            self::assertTrue(unlink($externalStub));
+            self::assertTrue(rmdir($packageRoot));
+            self::assertTrue(rmdir(dirname($packageRoot)));
+            self::assertTrue(rmdir(dirname($packageRoot, 2)));
+            self::assertTrue(rmdir($temporaryPath));
+        }
+    }
+
     public function testIntegrationAndLarastanSelectionsAreCached(): void
     {
         $installedPackages = [];
@@ -899,7 +1027,13 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
     {
         yield 'unknown version' => [
             null,
-            'Unable to determine the installed Larastan major version from "unknown"',
+            'Unable to determine the installed Larastan major version from "unknown" while selecting Illuminate '
+                . 'integrations.',
+        ];
+        yield 'unanchored major' => [
+            'prefix3.0.0',
+            'Unable to determine the installed Larastan major version from "prefix3.0.0" while selecting Illuminate '
+                . 'integrations.',
         ];
         yield 'future major' => [
             '4.0.0',
@@ -992,8 +1126,23 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
     }
 
     /** @param array{pretty_version?: string, version?: string, replaced?: list<string>, provided?: list<string>} $metadata */
-    private function reloadInstalledPackageMetadata(array $metadata, string $package = 'illuminate/cache'): void
-    {
+    private function reloadInstalledPackageMetadata(
+        array $metadata,
+        string $package = 'illuminate/cache',
+        string|false|null $apocryphaInstallPath = null,
+    ): void {
+        $apocryphaMetadata = [
+            'pretty_version' => 'dev-consumer',
+            'version' => 'dev-consumer',
+            'reference' => null,
+            'type' => 'phpstan-extension',
+            'aliases' => [],
+            'dev_requirement' => true,
+        ];
+        if ($apocryphaInstallPath !== false) {
+            $apocryphaMetadata['install_path'] = $apocryphaInstallPath ?? (string) realpath(__DIR__ . '/../..');
+        }
+
         InstalledVersions::reload([
             'root' => [
                 'name' => 'consumer/project',
@@ -1015,15 +1164,7 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
                     'aliases' => [],
                     'dev_requirement' => false,
                 ],
-                'jbboehr/yumemi-apocrypha' => [
-                    'pretty_version' => 'dev-consumer',
-                    'version' => 'dev-consumer',
-                    'reference' => null,
-                    'type' => 'phpstan-extension',
-                    'install_path' => __DIR__ . '/../..',
-                    'aliases' => [],
-                    'dev_requirement' => true,
-                ],
+                'jbboehr/yumemi-apocrypha' => $apocryphaMetadata,
                 $package => ['dev_requirement' => false] + $metadata,
             ],
         ]);

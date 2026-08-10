@@ -22,6 +22,13 @@ extension installer with `--dev`.
 With `phpstan/extension-installer`, Composer registers both PHPStan extensions automatically. Apocrypha remains inert
 until at least one integration is selected or autodetection is enabled.
 
+Composer may ask whether it may execute the extension installer. For a non-interactive installation, approve that
+specific plugin before running the install command:
+
+```shell
+composer config --no-plugins allow-plugins.phpstan/extension-installer true
+```
+
 If the project already includes Larastan or another PHPStan extension manually, remove that extension's manual include
 when adopting `phpstan/extension-installer`. The installer discovers all participating packages, not only Apocrypha;
 leaving an old include in place loads the same extension twice. Alternatively, keep the existing manual registration and

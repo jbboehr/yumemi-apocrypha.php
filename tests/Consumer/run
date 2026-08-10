@@ -353,6 +353,48 @@ run_phpstan_without_apocrypha_diagnostic() {
     fi
 }
 
+assert_stub_paths_use_consumer_install() {
+    local project_dir=$1
+    local integration=$2
+
+    # The single-quoted argument is a PHP program, not a shell expression.
+    # shellcheck disable=SC2016
+    php -r '
+require $argv[1]."/vendor/autoload.php";
+
+$extension = new jbboehr\Yumemi\Apocrypha\PHPStan\ConfiguredIntegrationStubFilesExtension(
+    [$argv[2]],
+    false,
+    true,
+);
+$files = $extension->getFiles();
+if ($files === []) {
+    fwrite(STDERR, sprintf("No stub files were registered for %s.\n", $argv[2]));
+    exit(1);
+}
+
+$expectedPrefix = $argv[1].DIRECTORY_SEPARATOR."vendor".DIRECTORY_SEPARATOR
+    ."jbboehr".DIRECTORY_SEPARATOR."yumemi-apocrypha".DIRECTORY_SEPARATOR;
+
+foreach ($files as $file) {
+    if (!str_starts_with($file, $expectedPrefix)) {
+        fwrite(STDERR, sprintf("Stub path escaped the consumer package install: %s\n", $file));
+        exit(1);
+    }
+
+    $relativePath = substr($file, strlen($expectedPrefix));
+    if (
+        $relativePath === ""
+        || in_array("..", explode(DIRECTORY_SEPARATOR, $relativePath), true)
+        || !is_file($file)
+    ) {
+        fwrite(STDERR, sprintf("Stub path is not a contained package file: %s\n", $file));
+        exit(1);
+    }
+}
+' "$project_dir" "$integration"
+}
+
 run_carbon() {
     local project_dir=$WORK_DIR/carbon
     local documentation_case=$project_dir/cases/documentation-invalid.php
@@ -895,6 +937,7 @@ run_guzzle() {
     fi
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
+    assert_stub_paths_use_consumer_install "$project_dir" guzzlehttp/guzzle
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php

@@ -8,8 +8,62 @@ application wrappers, Laravel facades and helpers, and unrelated methods on clas
 
 The follow-up implementation replaced Carbon's partial stubs with version-aware metadata extensions, made the Yumemi tag
 include safe under symlinked Composer path repositories, added Larastan coverage for the Cache facade and zero-argument
-`cache()` helper, documented extension-registration migration, and documented the application-wrapper limitation. The
-isolated consumers cover those corrections; repeating this application-scale test remains a separate maintenance task.
+`cache()` helper, documented extension-registration migration, and documented the application-wrapper limitation. A
+repeat against the same BookStack revision confirms those corrections at application scale. It also exposed and fixed a
+separate symlink-path defect in stub registration.
+
+## Follow-up Retest
+
+The repeat test used a fresh BookStack checkout and the same upstream revision so that changes in the result could be
+attributed to Apocrypha rather than to application drift.
+
+| Item                        | Value                                                                                                                                  |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Application revision        | [`c813c1b3628c0b6bd757c12cadaa56f50724117d`](https://codeberg.org/BookStack/bookstack/commit/c813c1b3628c0b6bd757c12cadaa56f50724117d) |
+| Apocrypha starting revision | `5e1e6a3c90c3359f51295b1193c3b77d7b868a4e` plus the stub-path correction under review                                                  |
+| Yumemi revision             | `e9047bf` from `dev-master`                                                                                                            |
+| Analysis stack              | Laravel `12.64.0`, Larastan `3.10.0`, PHPStan `2.2.8`                                                                                  |
+| Other integrations          | Carbon `3.13.1`, Guzzle `7.15.2`, Symfony HttpFoundation `7.4.14`                                                                      |
+| Baseline and inert install  | Both passed full BookStack PHPStan analysis                                                                                            |
+| Autodetection result        | Seven intended cache-duration diagnostics; no Carbon or unrelated diagnostics                                                          |
+| Final adoption result       | Passed full BookStack PHPStan analysis after all seven durations were branded                                                          |
+
+The package was installed from Composer's default symlinked path repository. BookStack's manual Larastan include was
+removed because `phpstan/extension-installer` registered it automatically. A non-interactive Composer install also
+required explicit approval of that plugin through Composer's `allow-plugins.phpstan/extension-installer` setting. With
+no integration selected, analysis passed, confirming that installation alone remained inert and that the corrected
+Yumemi include worked without the original mirror workaround.
+
+Autodetection initially terminated PHP with exit status 139. Integration-by-integration isolation reduced the failure to
+`guzzlehttp/guzzle`: the Guzzle profile failed from the symlinked package but passed from an otherwise identical
+mirrored package. `ConfiguredIntegrationStubFilesExtension` had called `realpath()` on each stub, collapsing the
+consumer-visible path beneath `vendor/jbboehr/yumemi-apocrypha/` to the external source checkout. Preserving a path
+beneath the installed Composer package fixes final stub validation while retaining file-existence checks. A consumer
+regression now rejects any selected Guzzle stub path that escapes the consumer's `vendor/` tree.
+
+After that correction, both autodetection and an explicit selection of every applicable integration completed normally
+and produced the same seven diagnostics:
+
+| BookStack location                                 | Boundary                               | Entry point                    |
+| -------------------------------------------------- | -------------------------------------- | ------------------------------ |
+| `app/Access/Controllers/Saml2Controller.php:91`    | `Repository::set()` cache seconds      | zero-argument `cache()` helper |
+| `app/Access/Controllers/ThrottlesLogins.php:31`    | `RateLimiter::hit()` decay seconds     | injected rate limiter          |
+| `app/Access/Oidc/OidcProviderSettings.php:101`     | `Repository::remember()` cache seconds | cache contract                 |
+| `app/Api/ApiDocsGenerator.php:46`                  | `Cache::put()` cache seconds           | Laravel facade                 |
+| `app/Entities/Tools/PageContent.php:348`           | `Repository::put()` cache seconds      | zero-argument `cache()` helper |
+| `app/Theming/CustomHtmlHeadContentProvider.php:28` | `Repository::remember()` cache seconds | cache contract                 |
+| `app/Theming/CustomHtmlHeadContentProvider.php:45` | `Repository::remember()` cache seconds | cache contract                 |
+
+The temporary adoption patch changed six application files. It wrapped each duration with `unit(..., 'second')` and
+moved `jbboehr/yumemi` from a development dependency to a runtime dependency because BookStack then called `unit()` at
+runtime. Apocrypha and the extension installer remained development dependencies. Full PHPStan analysis passed after the
+seven changes; PHP_CodeSniffer passed on all six application files, and `git diff --check` passed. Runtime BookStack
+PHPUnit was not run because this exercise targeted installation and static analysis. No BookStack commit was created.
+
+The repeat resolves the original Carbon, symlinked-include, facade, and helper concerns. It also supplies application
+evidence for the new installed-path correction: source installations must preserve consumer-visible stub paths as well
+as consumer-visible NEON includes. The sections below retain the original test record and describe the state before
+those corrections.
 
 ## Subject and Result
 
@@ -257,6 +311,9 @@ temporary BookStack dependency graph, were not introduced or investigated as par
 do not alter the Apocrypha findings above.
 
 ## Recommended Actions
+
+> **Historical record:** All six recommendations below were completed before the follow-up retest. They are retained to
+> show how the original findings were resolved, not as an active backlog.
 
 1. Replace or redesign the Carbon partial stubs so branded methods preserve the complete upstream method surface. Add a
    consumer regression that chains an annotated fixed-duration method into an unrelated real or magic Carbon method.

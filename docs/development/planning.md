@@ -38,7 +38,12 @@ upstream versions it claims to support and semantically accurate about the repre
   default symlinked path installs, a representative Composer archive, and Laravel 11 through 13 replacement metadata for
   every Illuminate integration. Every Illuminate subpackage and the combined framework fixture run both with and without
   Larastan. HttpFoundation and Stopwatch run both with and without `phpstan/phpstan-symfony` 2 across every supported
-  Symfony major.
+  Symfony major. Source installs keep selected stub paths beneath the consumer's `vendor/` tree instead of resolving
+  symlinks back to an external checkout.
+- The repeated [BookStack application smoke test](bookstack-application-smoke-test-2026-08-09.md) verifies an inert
+  symlinked install, full autodetection with Larastan, Cache facade and helper entry points, and clean adoption after
+  seven cache durations are branded. Carbon preserves unrelated methods, and the complete applicable integration set
+  produces no unintended application diagnostics.
 - Akashi inventories every fenced PHP example in the README and public documentation. An explicit manifest assigns each
   current example to its real isolated consumer, and coverage tests reject unlisted documents, unmarked or unclassified
   examples, stale manifest entries, and routes that are not wired into the consumer harness. Akashi preserves each
@@ -59,8 +64,6 @@ metadata adapter rather than loading both.
 
 ## Maintenance Backlog
 
-- Repeat the [BookStack application smoke test](bookstack-application-smoke-test-2026-08-09.md) after the Carbon,
-  symlinked-install, and Laravel cache entry-point fixes, and retain the new upstream revision and dependency versions.
 - Add scheduled CI that resolves and tests the latest compatible upstream releases. The consumer matrix currently
   exercises those releases when CI runs, but push- and pull-request-only triggers cannot detect upstream drift while the
   repository is otherwise idle.

@@ -84,7 +84,10 @@ archive. Both payload checks must confirm that runtime source, NEON entry points
 while tests, local state, and development tooling are excluded.
 
 Source-mode consumers use Composer's default symlinked path-repository layout; archive-mode consumers use a mirrored
-path. Keep both modes because package-relative NEON includes can behave differently after symlink resolution.
+path. Keep both modes because package-relative NEON includes and registered stub paths can behave differently after
+symlink resolution. A source-mode consumer must confirm that returned stub paths remain beneath its own `vendor/` tree;
+resolving them to the external checkout can make PHPStan validate a different package boundary or fail during stub
+validation.
 
 Every fenced PHP example in `README.md` and `docs/pages/**` must have a `yumemi-example` marker and an entry in the
 public-documentation verification manifest. Examples that use third-party APIs belong to the corresponding isolated
