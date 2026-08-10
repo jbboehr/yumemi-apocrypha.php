@@ -9,9 +9,11 @@ composer.lock linguist-generated
 .gitattributes export-ignore
 .github export-ignore
 .gitignore export-ignore
+.phpbench export-ignore
 .php-cs-fixer.dist.php export-ignore
 AGENTS.md export-ignore
 Makefile export-ignore
+benchmarks export-ignore
 composer.lock export-ignore
 docs/DOCTRINE-CODING-GUIDE.md export-ignore
 docs/DOCTRINE-IMAGE-GUIDE.md export-ignore
@@ -24,6 +26,8 @@ docs/theme export-ignore
 flake.lock export-ignore
 flake.nix export-ignore
 infection.json5.dist export-ignore
+phpbench-perfidious.json export-ignore
+phpbench.json export-ignore
 phpstan.neon.dist export-ignore
 phpunit.branch.xml.dist export-ignore
 phpunit.xml.dist export-ignore

@@ -48,6 +48,9 @@ upstream versions it claims to support and semantically accurate about the repre
   current example to its real isolated consumer, and coverage tests reject unlisted documents, unmarked or unclassified
   examples, stale manifest entries, and routes that are not wired into the consumer harness. Akashi preserves each
   authored fixture exactly while leaving package installation and PHPStan verification in that consumer.
+- PHPBench microbenchmarks track cold explicit and autodetected integration selection, cached adapter decisions, and
+  metadata version filtering. CI runs a portable discovery profile; the Linux Nix shell supplies `php-perfidious` for
+  explicit local `phpbench-perfidious` counter measurements.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
   stubs, metadata adapters, and their selection policy.
 
@@ -69,6 +72,18 @@ metadata adapter rather than loading both.
   repository is otherwise idle.
 - Keep the [integration semantic audit](integration-semantic-audit.md) current when an integration or verified version
   profile changes. Re-run its source, structure, valid-case, and invalid-case checks before the first public release.
+
+## Performance and Robustness Backlog
+
+- Establish an application-scale PHPStan benchmark against a pinned BookStack revision. Compare baseline Larastan, an
+  inert Apocrypha installation, and full autodetection with the result cache disabled; record repeated wall time and
+  peak memory separately from correctness smoke tests.
+- Add a generated PHPStan stress fixture with enough direct calls, facade calls, helpers, named arguments, and unpacked
+  arguments to expose nonlinear extension behavior. Verify its diagnostic count as well as its analysis time.
+- Add isolated source-consumer coverage with a nondefault Composer `vendor-dir` so path resolution is exercised outside
+  the conventional `vendor/` layout.
+- Consider Eris only for pure loader and version-profile invariants that can be generated independently of Composer and
+  PHPStan. Do not add Probator unless Apocrypha gains its own parser or another grammar whose behavior merits fuzzing.
 
 ## Future Candidates
 

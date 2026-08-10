@@ -14,6 +14,12 @@
             "email": "jbboehr@gmail.com"
         }
     ],
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/jbboehr/phpbench-perfidious"
+        }
+    ],
     "archive": {
         "exclude": [
             "/.codex",
@@ -23,6 +29,7 @@
             "/.github",
             "/.gitignore",
             "/.idea",
+            "/.phpbench",
             "/.php-cs-fixer.cache",
             "/.php-cs-fixer.dist.php",
             "/.phpunit.cache",
@@ -30,6 +37,7 @@
             "/.pre-commit-config.yaml",
             "/AGENTS.md",
             "/Makefile",
+            "/benchmarks",
             "/build",
             "/clover.xml",
             "/composer.lock",
@@ -44,6 +52,8 @@
             "/flake.nix",
             "/infection.json5.dist",
             "/*.log",
+            "/phpbench-perfidious.json",
+            "/phpbench.json",
             "/phpstan.neon.dist",
             "/phpunit.branch.xml.dist",
             "/phpunit.xml.dist",
@@ -79,7 +89,9 @@
         "friendsofphp/php-cs-fixer": "^3",
         "infection/infection": "^0.32.6",
         "jbboehr/akashi": "dev-master",
+        "jbboehr/phpbench-perfidious": "dev-master",
         "nikic/php-parser": "^5.8",
+        "phpbench/phpbench": "^1.7",
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0.13",
         "phpstan/phpstan-strict-rules": "^2.0",
@@ -87,6 +99,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "jbboehr\\Yumemi\\Apocrypha\\Benchmarks\\": "benchmarks/",
             "jbboehr\\Yumemi\\Apocrypha\\Tools\\": "tools/",
             "jbboehr\\Yumemi\\Apocrypha\\Tests\\": "tests"
         }
@@ -99,6 +112,9 @@
         }
     },
     "scripts": {
+        "benchmark": "phpbench run --report=aggregate",
+        "benchmark:perf": "phpbench run --config=phpbench-perfidious.json --report=perfidious",
+        "benchmark:smoke": "phpbench run --iterations=1 --revs=1 --warmup=1 --progress=none",
         "coverage:branch": "make coverage-branch",
         "cs": "php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff",
         "cs:fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",

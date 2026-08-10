@@ -39,6 +39,25 @@ make docs-serve
 The generated site is written to `build/docs`. Integration examples should be exercised by the isolated consumer suite
 against the real upstream package rather than only by local synthetic declarations.
 
+## Benchmarks
+
+Run the portable benchmark suite, or its one-revolution discovery check, with:
+
+```shell
+composer benchmark
+composer benchmark:smoke
+```
+
+On Linux, the default Nix development shell also loads the `php-perfidious` extension. Use it for explicit local
+hardware- and software-counter measurements:
+
+```shell
+nix develop --command composer benchmark:perf
+```
+
+The perfidious profile requires host access to Linux `perf_events`; it is intentionally not a GitHub Actions check.
+Treat benchmark results as comparisons made on the same controlled host rather than portable absolute measurements.
+
 ## Definitions
 
 The project as a whole is distributed under:

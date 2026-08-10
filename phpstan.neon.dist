@@ -10,6 +10,7 @@ includes:
 parameters:
     level: max
     paths:
+        - benchmarks
         - src
         - tests
         - tools

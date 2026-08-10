@@ -24,6 +24,10 @@
       inputs.pre-commit-hooks.follows = "pre-commit-hooks";
       inputs.treefmt-nix.follows = "treefmt-nix";
     };
+    php-perfidious = {
+      url = "github:jbboehr/php-perfidious";
+      flake = false;
+    };
   };
 
   outputs =
@@ -35,12 +39,21 @@
       treefmt-nix,
       gitignore,
       akashi,
+      php-perfidious,
     }:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
         php-unwrapped = pkgs.php82;
+        perfidious = pkgs.callPackage "${php-perfidious}/nix/derivation.nix" {
+          php = php-unwrapped;
+          src = php-perfidious;
+          buildPecl = pkgs.callPackage "${nixpkgs}/pkgs/build-support/php/build-pecl.nix" {
+            php = php-unwrapped;
+          };
+          valgrindSupport = false;
+        };
         php = php-unwrapped.buildEnv {
           extraConfig = "memory_limit = 2G";
           extensions =
@@ -48,7 +61,7 @@
               enabled,
               all,
             }:
-            enabled ++ [ all.pcov ];
+            enabled ++ [ all.pcov ] ++ pkgs.lib.optional pkgs.stdenv.isLinux perfidious;
         };
         php-xdebug = php-unwrapped.buildEnv {
           extraConfig = ''

@@ -91,6 +91,10 @@ jobs:
             - name: Run PHPUnit
               run: vendor/bin/phpunit --colors=never --no-coverage
 
+            - name: Discover benchmarks
+              if: matrix.php-version == '8.2'
+              run: composer benchmark:smoke
+
             - name: Run mutation tests
               if: matrix.php-version == '8.2'
               run: composer infection:ci
