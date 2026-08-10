@@ -113,6 +113,10 @@
     },
     "scripts": {
         "benchmark": "phpbench run --report=aggregate",
+        "benchmark:bookstack": [
+            "Composer\\Config::disableProcessTimeout",
+            "benchmarks/bookstack/run"
+        ],
         "benchmark:perf": "phpbench run --config=phpbench-perfidious.json --report=perfidious",
         "benchmark:smoke": "phpbench run --iterations=1 --revs=1 --warmup=1 --progress=none",
         "coverage:branch": "make coverage-branch",

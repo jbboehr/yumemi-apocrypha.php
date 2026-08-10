@@ -51,6 +51,9 @@ upstream versions it claims to support and semantically accurate about the repre
 - PHPBench microbenchmarks track cold explicit and autodetected integration selection, cached adapter decisions, and
   metadata version filtering. CI runs a portable discovery profile; the Linux Nix shell supplies `php-perfidious` for
   explicit local `phpbench-perfidious` counter measurements.
+- The pinned [BookStack application benchmark](bookstack-performance-benchmark-2026-08-09.md) compares baseline
+  Larastan, inert Apocrypha registration, and full autodetection without PHPStan's result cache or parallel workers. Its
+  first balanced run found a stable four-percent autodetection increment over the inert configuration.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
   stubs, metadata adapters, and their selection policy.
 
@@ -75,9 +78,9 @@ metadata adapter rather than loading both.
 
 ## Performance and Robustness Backlog
 
-- Establish an application-scale PHPStan benchmark against a pinned BookStack revision. Compare baseline Larastan, an
-  inert Apocrypha installation, and full autodetection with the result cache disabled; record repeated wall time and
-  peak memory separately from correctness smoke tests.
+- Index active metadata argument boundaries by call kind and case-insensitive method name, and avoid sorting complete
+  integration boundary lists for every analyzed call. Preserve receiver and version checks, then re-run the pinned
+  BookStack benchmark to measure the autodetection increment against its inert configuration.
 - Add a generated PHPStan stress fixture with enough direct calls, facade calls, helpers, named arguments, and unpacked
   arguments to expose nonlinear extension behavior. Verify its diagnostic count as well as its analysis time.
 - Add isolated source-consumer coverage with a nondefault Composer `vendor-dir` so path resolution is exercised outside

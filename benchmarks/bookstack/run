@@ -1,0 +1,188 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly BOOKSTACK_REVISION="c813c1b3628c0b6bd757c12cadaa56f50724117d"
+readonly APOCRYPHA_CONSTRAINT="${BOOKSTACK_BENCHMARK_APOCRYPHA_CONSTRAINT:-@dev}"
+readonly EXPECTED_AUTODETECT_DIAGNOSTICS="${BOOKSTACK_BENCHMARK_EXPECTED_DIAGNOSTICS:-7}"
+readonly MEASURED_RUNS="${BOOKSTACK_BENCHMARK_RUNS:-6}"
+SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIRECTORY
+PROJECT_DIRECTORY="$(cd "$SCRIPT_DIRECTORY/../.." && pwd)"
+readonly PROJECT_DIRECTORY
+readonly WORK_DIRECTORY="${BOOKSTACK_BENCHMARK_DIR:-$PROJECT_DIRECTORY/.phpbench/bookstack}"
+readonly DOWNLOAD_DIRECTORY="$WORK_DIRECTORY/downloads"
+readonly SUBJECT_DIRECTORY="$WORK_DIRECTORY/subject-$BOOKSTACK_REVISION"
+readonly CONFIG_DIRECTORY="$SUBJECT_DIRECTORY/.apocrypha-benchmark"
+RESULTS_DIRECTORY="$WORK_DIRECTORY/results/$(date -u +%Y%m%dT%H%M%SZ)-$$"
+readonly RESULTS_DIRECTORY
+readonly ARCHIVE="$DOWNLOAD_DIRECTORY/$BOOKSTACK_REVISION.tar.gz"
+
+if [[ ! "$MEASURED_RUNS" =~ ^[1-9][0-9]*$ ]]; then
+    echo "BOOKSTACK_BENCHMARK_RUNS must be a positive integer." >&2
+    exit 2
+fi
+
+if [[ ! "$EXPECTED_AUTODETECT_DIAGNOSTICS" =~ ^[0-9]+$ ]]; then
+    echo "BOOKSTACK_BENCHMARK_EXPECTED_DIAGNOSTICS must be a nonnegative integer." >&2
+    exit 2
+fi
+
+time_binary="$(type -P time || true)"
+if [[ -z "$time_binary" ]] || ! "$time_binary" --version 2>&1 | grep -q "GNU Time"; then
+    echo "The BookStack benchmark requires GNU time; run it through nix develop." >&2
+    exit 2
+fi
+readonly TIME_BINARY="$time_binary"
+
+mkdir -p "$DOWNLOAD_DIRECTORY" "$RESULTS_DIRECTORY"
+
+if [[ ! -f "$ARCHIVE" ]]; then
+    echo "Downloading pinned BookStack revision $BOOKSTACK_REVISION..."
+    curl --fail --location --retry 3 --silent --show-error \
+        --output "$ARCHIVE.part" \
+        "https://codeberg.org/BookStack/bookstack/archive/$BOOKSTACK_REVISION.tar.gz"
+    mv "$ARCHIVE.part" "$ARCHIVE"
+fi
+
+if [[ ! -f "$SUBJECT_DIRECTORY/composer.json" ]]; then
+    echo "Extracting the BookStack fixture..."
+    mkdir -p "$SUBJECT_DIRECTORY"
+    tar -xzf "$ARCHIVE" --strip-components=1 -C "$SUBJECT_DIRECTORY"
+fi
+
+mkdir -p "$CONFIG_DIRECTORY"
+cp "$SCRIPT_DIRECTORY/config/phpstan-inert.neon" "$CONFIG_DIRECTORY/phpstan-inert.neon"
+cp "$SCRIPT_DIRECTORY/config/phpstan-autodetect.neon" "$CONFIG_DIRECTORY/phpstan-autodetect.neon"
+
+echo "Resolving the shared benchmark dependency tree..."
+(
+    cd "$SUBJECT_DIRECTORY"
+    composer config repositories.yumemi-apocrypha path "$PROJECT_DIRECTORY"
+    composer require --dev --no-update \
+        "jbboehr/yumemi:dev-master" \
+        "jbboehr/yumemi-apocrypha:$APOCRYPHA_CONSTRAINT"
+    composer update \
+        jbboehr/yumemi \
+        jbboehr/yumemi-apocrypha \
+        phpstan/phpstan \
+        --with-all-dependencies \
+        --no-interaction \
+        --no-progress \
+        --no-scripts
+)
+
+if [[ ! -L "$SUBJECT_DIRECTORY/vendor/jbboehr/yumemi-apocrypha" ]]; then
+    echo "Expected Composer to install Yumemi Apocrypha as a symlinked path repository." >&2
+    exit 1
+fi
+
+readonly RESULTS_FILE="$RESULTS_DIRECTORY/results.tsv"
+printf "phase\tround\tposition\tscenario\telapsed_seconds\tpeak_rss_kib\texit_code\tdiagnostics\n" \
+    > "$RESULTS_FILE"
+
+run_scenario() {
+    local phase="$1"
+    local round="$2"
+    local position="$3"
+    local scenario="$4"
+    local config
+    local expected_exit
+    local expected_diagnostics
+
+    case "$scenario" in
+        baseline)
+            config="phpstan.neon.dist"
+            expected_exit=0
+            expected_diagnostics=0
+            ;;
+        inert)
+            config=".apocrypha-benchmark/phpstan-inert.neon"
+            expected_exit=0
+            expected_diagnostics=0
+            ;;
+        autodetect)
+            config=".apocrypha-benchmark/phpstan-autodetect.neon"
+            expected_exit=1
+            expected_diagnostics="$EXPECTED_AUTODETECT_DIAGNOSTICS"
+            ;;
+        *)
+            echo "Unknown BookStack benchmark scenario: $scenario" >&2
+            return 2
+            ;;
+    esac
+
+    local stem="$phase-$round-$position-$scenario"
+    local log_file="$RESULTS_DIRECTORY/$stem.log"
+    local metrics_file="$RESULTS_DIRECTORY/$stem.time"
+    local exit_code
+    local diagnostics
+    local elapsed_seconds
+    local peak_rss_kib
+
+    echo "Running $phase round $round, position $position: $scenario..."
+    set +e
+    (
+        cd "$SUBJECT_DIRECTORY"
+        "$TIME_BINARY" --quiet --format "%e\t%M" --output "$metrics_file" \
+            php -d opcache.enable_cli=0 vendor/bin/phpstan analyse \
+                --configuration "$config" \
+                --memory-limit=2G \
+                --debug \
+                --error-format=raw \
+                --no-ansi
+    ) > "$log_file" 2>&1
+    exit_code=$?
+    set -e
+
+    diagnostics="$(
+        awk '/at a Yumemi Apocrypha unit boundary\./ { count++ } END { print count + 0 }' "$log_file"
+    )"
+    IFS=$'\t' read -r elapsed_seconds peak_rss_kib < "$metrics_file"
+
+    if [[ "$exit_code" -ne "$expected_exit" ]] || [[ "$diagnostics" -ne "$expected_diagnostics" ]]; then
+        echo "Unexpected $scenario result: exit $exit_code, $diagnostics diagnostics; expected exit" \
+            "$expected_exit and $expected_diagnostics diagnostics." >&2
+        echo "See $log_file" >&2
+        exit 1
+    fi
+
+    printf "%s\t%s\t%s\t%s\t%s\t%s\t%s\t%s\n" \
+        "$phase" \
+        "$round" \
+        "$position" \
+        "$scenario" \
+        "$elapsed_seconds" \
+        "$peak_rss_kib" \
+        "$exit_code" \
+        "$diagnostics" \
+        >> "$RESULTS_FILE"
+}
+
+readonly -a SCENARIOS=(baseline inert autodetect)
+
+for scenario in "${SCENARIOS[@]}"; do
+    run_scenario warmup 0 0 "$scenario"
+done
+
+for ((round = 1; round <= MEASURED_RUNS; round++)); do
+    for ((position = 1; position <= ${#SCENARIOS[@]}; position++)); do
+        index=$(((round + position - 2) % ${#SCENARIOS[@]}))
+        run_scenario measure "$round" "$position" "${SCENARIOS[$index]}"
+    done
+done
+
+(
+    cd "$SUBJECT_DIRECTORY"
+    {
+        printf "bookstack_revision\t%s\n" "$BOOKSTACK_REVISION"
+        printf "apocrypha_revision\t%s\n" "$(git -C "$PROJECT_DIRECTORY" rev-parse HEAD)"
+        printf "apocrypha_dirty_paths\t%s\n" "$(git -C "$PROJECT_DIRECTORY" status --porcelain | wc -l)"
+        printf "php\t%s\n" "$(php -r 'echo PHP_VERSION;')"
+        printf "composer_lock_sha256\t%s\n" "$(sha256sum composer.lock | cut -d ' ' -f 1)"
+    } > "$RESULTS_DIRECTORY/metadata.txt"
+    composer show --locked --format=json > "$RESULTS_DIRECTORY/packages.json"
+)
+
+php "$SCRIPT_DIRECTORY/summarize.php" "$RESULTS_FILE" | tee "$RESULTS_DIRECTORY/summary.txt"
+echo "Raw BookStack benchmark results: $RESULTS_DIRECTORY"

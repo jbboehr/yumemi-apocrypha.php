@@ -1,0 +1,11 @@
+includes:
+    - ../phpstan.neon.dist
+    - ../vendor/jbboehr/yumemi/extension.neon
+    - ../vendor/jbboehr/yumemi-apocrypha/extension.neon
+
+parameters:
+    tmpDir: cache/autodetect
+    yumemiApocrypha:
+        integrations: []
+        autoDetect: true
+        strictAutoDetect: true

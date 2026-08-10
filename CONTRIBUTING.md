@@ -58,6 +58,19 @@ nix develop --command composer benchmark:perf
 The perfidious profile requires host access to Linux `perf_events`; it is intentionally not a GitHub Actions check.
 Treat benchmark results as comparisons made on the same controlled host rather than portable absolute measurements.
 
+The application-scale benchmark prepares a persistent checkout of the pinned BookStack fixture beneath `.phpbench/` and
+compares baseline Larastan, an inert Apocrypha configuration, and full autodetection. Run it from the Nix shell so GNU
+`time` is available for peak-memory measurement:
+
+```shell
+nix develop --command composer benchmark:bookstack
+```
+
+PHPStan runs in debug mode so every sample disables the result cache and parallel processing. The harness rotates
+scenario order across six measured rounds, verifies each scenario's diagnostics, and writes raw logs and tab-separated
+measurements beneath `.phpbench/bookstack/results/`. Override the round count with `BOOKSTACK_BENCHMARK_RUNS` for an
+explicit shorter or longer investigation.
+
 ## Definitions
 
 The project as a whole is distributed under:

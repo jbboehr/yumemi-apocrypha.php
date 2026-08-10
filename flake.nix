@@ -118,6 +118,7 @@
               phpPackage
               phpPackage.packages.composer
               pre-commit
+              time
               treefmt.config.build.wrapper
             ];
             shellHook = ''
