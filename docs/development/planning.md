@@ -11,7 +11,7 @@ claims to support and semantically accurate about the represented units.
 - Explicit selections and strict autodetection reject installed package versions that have not been verified, including
   releases below a package-specific minimum.
 - `nesbot/carbon` covers fixed-duration differences, adjustments, and waits from Carbon 2.62.1 through Carbon 3. Its
-  three complete profiles preserve Carbon 2's integer APIs, Carbon 3.0 through 3.1's `Real` compatibility aliases, and
+  three version profiles preserve Carbon 2's integer APIs, Carbon 3.0 through 3.1's `Real` compatibility aliases, and
   Carbon 3.2 and later's `UTC` aliases without presenting calendar-relative operations as fixed durations.
 - `james-heinrich/getid3` covers a bounded open result shape for byte counts, durations, bitrates, sample rates, and
   frame rates from getID3 1.9.22 and later 1.x releases and 2.0.0-beta6 and later 2.x releases.
@@ -57,6 +57,17 @@ metadata adapter rather than loading both.
 
 ## Maintenance Backlog
 
+- Resolve the release-blocking Carbon API-preservation failure found by the
+  [BookStack application smoke test](bookstack-application-smoke-test-2026-08-09.md). A partial `CarbonInterface` stub
+  can hide unrelated valid methods after a branded call; replace it with metadata-driven extensions or another design
+  that preserves the complete upstream surface, then add a chained unrelated-method regression case.
+- Make the package entry point safe for Composer's default symlinked path repositories and add a symlink-mode consumer
+  test. The existing mirror and archive cases do not expose the current parent-relative Yumemi include failure.
+- Document the migration from a manually included Larastan extension to automatic Composer extension discovery. Both
+  registration mechanisms work, but enabling the installer without removing the manual Larastan include loads it twice.
+- Extend the Larastan compatibility adapter to cover supported boundaries reached through facades and global helpers.
+  The BookStack probe found that direct cache repository calls are enforced while `Cache::put()` and `cache()->put()`
+  are not.
 - Add scheduled CI that resolves and tests the latest compatible upstream releases. The consumer matrix currently
   exercises those releases when CI runs, but push- and pull-request-only triggers cannot detect upstream drift while the
   repository is otherwise idle.

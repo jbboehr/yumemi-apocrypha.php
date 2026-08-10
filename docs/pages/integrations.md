@@ -69,7 +69,11 @@ Carbon 2.62.1 through 2.x uses integer-returning `diffInReal*()` methods, float-
 and integer `addReal*()`/`subReal*()` adjustments. Carbon 3 uses float-returning `diffIn*()` methods and accepts either
 integer or float branded values for fixed-time adjustments. Carbon 3.0 and 3.1 expose the compatibility aliases
 `addReal*()`, `subReal*()`, and `diffInReal*()`; Carbon 3.2 and later use `addUTC*()`, `subUTC*()`, and `diffInUTC*()`.
-Apocrypha selects the matching complete profile from the installed release.
+Apocrypha selects the matching version profile from the installed release.
+
+The current development Carbon profiles are not yet application-ready. Their partial `CarbonInterface` declarations can
+hide unrelated valid Carbon methods after a branded call. Keep the Carbon integration disabled until the profile is
+replaced with an API-preserving implementation.
 
 The Carbon 2 integration starts at 2.62.1, the first release in the supported signature line that runs on Apocrypha's
 PHP 8.2 baseline. Earlier Carbon 2 releases may advertise PHP 8 compatibility but fail against PHP 8.2's `DateTime`

@@ -38,6 +38,11 @@ for signature changes.
 
 ## Carbon
 
+> **Application-audit finding:** the [BookStack smoke test](bookstack-application-smoke-test-2026-08-09.md) showed that
+> the partial Carbon 3 `CarbonInterface` stub can hide unrelated valid methods after a branded call. The S/V/I checks
+> below establish the selected boundaries and release profiles, but do not establish preservation of Carbon's complete
+> API. Treat the Carbon integration as not release-ready until that regression is fixed and covered.
+
 Evidence: Carbon's
 [`Difference` trait](https://github.com/briannesbitt/Carbon/blob/3.13.2/src/Carbon/Traits/Difference.php),
 [`Date` trait](https://github.com/briannesbitt/Carbon/blob/3.13.2/src/Carbon/Traits/Date.php), and
