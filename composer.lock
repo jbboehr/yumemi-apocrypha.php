@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "75f76a513b35af74ca61c530281d4c02",
+    "content-hash": "9a56e3bb23c96725ee7a3091f840ad3c",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -1612,6 +1612,55 @@
                 "source": "https://github.com/jbboehr/akashi.php"
             },
             "time": "2026-08-09T17:01:59+00:00"
+        },
+        {
+            "name": "jbboehr/doctrine-of-the-second-sun",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/jbboehr/doctrine-of-the-second-sun.git",
+                "reference": "822fe565e8c6127e4939b0f389bb5380b1501916"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/jbboehr/doctrine-of-the-second-sun/zipball/822fe565e8c6127e4939b0f389bb5380b1501916",
+                "reference": "822fe565e8c6127e4939b0f389bb5380b1501916",
+                "shasum": ""
+            },
+            "require-dev": {
+                "php-cs-fixer/shim": "^3.95",
+                "phpstan/phpstan": "^2.1",
+                "phpunit/phpunit": "^10.5 || ^11.5"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "DoctrineOfTheSecondSun\\PHPStan\\": "integrations/phpstan/src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "(CC-BY-SA-4.0 AND AGPL-3.0-only WITH romic-exception)"
+            ],
+            "authors": [
+                {
+                    "name": "John Boehr",
+                    "email": "jbboehr@mailbox.org"
+                }
+            ],
+            "description": "Portable doctrine, visual, coding, and software-stewardship guides",
+            "keywords": [
+                "doctrine",
+                "documentation",
+                "software-maintenance",
+                "writing"
+            ],
+            "support": {
+                "issues": "https://github.com/jbboehr/doctrine-of-the-second-sun/issues",
+                "source": "https://github.com/jbboehr/doctrine-of-the-second-sun"
+            },
+            "time": "2026-08-10T07:56:41+00:00"
         },
         {
             "name": "jbboehr/phpbench-perfidious",
@@ -7147,6 +7196,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "jbboehr/akashi": 20,
+        "jbboehr/doctrine-of-the-second-sun": 20,
         "jbboehr/phpbench-perfidious": 20,
         "jbboehr/yumemi": 20
     },

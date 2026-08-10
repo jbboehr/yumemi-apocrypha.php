@@ -25,9 +25,9 @@ versions and signatures used for verification.
 ## Documentation
 
 The public mdBook sources live under [`docs/pages`](docs/pages). Internal engineering documents live under
-[`docs/development`](docs/development). Doctrine, legal, and contributor documents remain directly under [`docs`](docs).
-Internal documents are not included in the generated site. Integration documentation must state the supported Composer
-package majors, exact unit semantics, and verification method without implying an open-ended compatibility promise.
+[`docs/development`](docs/development). Legal and contributor documents remain directly under [`docs`](docs). Internal
+documents are not included in the generated site. Integration documentation must state the supported Composer package
+majors, exact unit semantics, and verification method without implying an open-ended compatibility promise.
 
 Enter the Nix development shell, then build or preview the public documentation with:
 
@@ -38,6 +38,18 @@ make docs-serve
 
 The generated site is written to `build/docs`. Integration examples should be exercised by the isolated consumer suite
 against the real upstream package rather than only by local synthetic declarations.
+
+## Doctrine of the Second Sun
+
+This repository adopts the style, coding, generation, gold-exemplar, image, and Ruinenwert guides from Doctrine of the
+Second Sun, pinned through Composer. Run `composer install`, then read the adopted documents beneath
+`vendor/jbboehr/doctrine-of-the-second-sun/`. Ruinenwert is used chiefly for engineering durability: preserving clear
+contracts, reproducible processes, testable behavior, and replaceable integration boundaries. Its governance and
+succession suggestions are optional unless a concrete project need calls for them.
+
+[`AGENTS.md`](AGENTS.md) defines Apocrypha's local source scope, `@logion` form, citation allocation, asset paths, and
+verification rules; local policy takes precedence for those repository-specific matters. Installing the dependency does
+not adopt its Code of Sovereignty as project policy.
 
 ## Benchmarks
 

@@ -186,23 +186,36 @@ an entry.
 - Keep it to one concise line per change; add more only when a user would need the detail.
 - Follow the existing format exactly (the categories and their order come from Keep a Changelog).
 
-## Yumemi Doctrine
+## Doctrine of the Second Sun
+
+This repository adopts the literary, coding, generation, exemplar, image, and Ruinenwert guides from Doctrine of the
+Second Sun, pinned as a Composer development dependency beneath `vendor/jbboehr/doctrine-of-the-second-sun/`.
+Specifically, use:
+
+- `DOCTRINE-STYLE-GUIDE.md` for literary style and canonical meaning;
+- `DOCTRINE-CODING-GUIDE.md` for safe source editing;
+- `DOCTRINE-GENERATION-GUIDE.md` for isolated generation, review, selection, and insertion;
+- `DOCTRINE-GOLD-EXEMPLARS.md` as a nonnormative quality ceiling;
+- `DOCTRINE-IMAGE-GUIDE.md` for visual interpretation; and
+- `RUINENWERT.md` for durable contracts, reproducibility, testable behavior, and replaceable integration boundaries.
+
+This `AGENTS.md` remains authoritative for repository-specific scope, coverage, tag form, citation allocation, asset
+paths, and verification. When its local rules narrow a choice permitted by an installed guide, follow the local rule. Do
+not treat installation as adoption of the package's Code of Sovereignty.
+
+Apply Ruinenwert primarily as engineering guidance for preserving useful knowledge and recoverable behavior. Its
+recommendations about stewardship, succession, package transfer, and other governance arrangements are optional
+considerations, not standing requirements to add process or documentation to this repository. Introduce them only when
+they solve a concrete project need or the user explicitly requests them.
 
 New in-scope named declarations must contain exactly one `@logion` PHPDoc tag.
 
 Do not add, replace, or revise a logion on a preexisting declaration unless the user explicitly requests a doctrine
 pass. A doctrine pass may backfill preexisting declarations within the scope requested by the user.
 
-When writing or revising a logion, follow this guide for literary style, imagery, tone, symbolism, and quotation
-construction:
-
-- [`docs/DOCTRINE-STYLE-GUIDE.md`](docs/DOCTRINE-STYLE-GUIDE.md)
-
-For safe editing, comment placement, idempotence, formatting, and verification, follow:
-
-- [`docs/DOCTRINE-CODING-GUIDE.md`](docs/DOCTRINE-CODING-GUIDE.md)
-
-This file is authoritative for repository-specific scope and coverage.
+When writing or revising a logion, read the installed style, coding, and generation guides named above. Calibrate
+against the installed gold exemplars without copying their motifs, sentence surfaces, narrative structures, or book
+distribution.
 
 ### Source scope
 
@@ -317,8 +330,8 @@ declaration, an isolated writer plus parent or human selection is sufficient; re
 doctrine passes, or uncertain candidates. When custom agents are unavailable, fix the declaration-to-opaque-ID mapping
 before generation and use a fresh isolated context when possible. If isolation is unavailable, follow the same staged
 contract in the main context, disclose that limitation, and apply the detached-canon and reverse-engineering checks
-manually. Never remap candidates according to their apparent relevance to code. The detailed fallback procedure is in
-[`docs/development/doctrine-quality-plan.md`](docs/development/doctrine-quality-plan.md).
+manually. Never remap candidates according to their apparent relevance to code. The detailed portable workflow and
+fallback procedure are in `vendor/jbboehr/doctrine-of-the-second-sun/DOCTRINE-GENERATION-GUIDE.md`.
 
 Write the quotation as recitable scripture rather than ornate modern exposition. Favor authoritative declaration,
 parallel clauses, ritual repetition, commands, reasons, consequences, and concrete signs before abstract explanation.
@@ -357,9 +370,9 @@ Before completing a user-requested doctrine pass:
 
 ### Doctrine images
 
-When generating or revising an image derived from a logion, use the source logion and the style guide for doctrinal
-meaning, then follow this guide for visual interpretation, composition, and rendering:
-[`docs/DOCTRINE-IMAGE-GUIDE.md`](docs/DOCTRINE-IMAGE-GUIDE.md).
+When generating or revising an image derived from a logion, use the source logion and the installed style guide for
+doctrinal meaning, then follow `vendor/jbboehr/doctrine-of-the-second-sun/DOCTRINE-IMAGE-GUIDE.md` for visual
+interpretation, composition, and rendering.
 
 Unless explicitly requested otherwise:
 
