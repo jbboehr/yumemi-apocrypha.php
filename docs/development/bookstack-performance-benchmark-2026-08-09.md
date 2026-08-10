@@ -48,20 +48,48 @@ and the same seven cache-duration diagnostics recorded by the smoke test. No unr
 
 ## Interpretation
 
-Cold integration selection and cached selection access are too small in the PHPBench suite to explain this result. The
-stronger candidate is the metadata rule's application-wide call path. For every ordinary method call, static call, or
-construction, `PackageIntegrationUnitBoundaryExtension::processCall()` maps the arguments, visits each metadata
-integration, checks whether its adapter is active, copies and sorts its complete argument-boundary list, and then scans
-for matching kind, method, version, and receiver information.
+Cold integration selection and cached selection access were too small in the PHPBench suite to explain the initial
+result. At the time of that run, the stronger candidate was the metadata rule's application-wide call path. For every
+ordinary method call, static call, or construction, `PackageIntegrationUnitBoundaryExtension::processCall()` mapped the
+arguments, visited each metadata integration, checked whether its adapter was active, copied and sorted its complete
+argument-boundary list, and then scanned for matching kind, method, version, and receiver information. The indexed
+implementation measured afterward is described in the follow-up below.
 
-The autodetection increment was consistent across execution positions and is large enough to optimize deliberately.
-Index active argument boundaries by call kind and lowercased method name, filter version profiles once per configured
-selection, and preserve the existing receiver checks. Re-run this fixture after that change; the relevant comparison is
-autodetect versus inert, while the seven-diagnostic contract must remain unchanged.
+The initial autodetection increment was consistent across execution positions and justified a targeted optimization:
+index active argument boundaries by call kind and lowercased method name, filter version profiles once per configured
+selection, and preserve the existing receiver checks. The follow-up below tests that change against the relevant
+autodetect-versus-inert comparison while retaining the seven-diagnostic contract.
 
 The smaller baseline-to-inert delta includes Yumemi's own PHPStan extension and optional tag-promotion parser as well as
 Apocrypha's inactive services. This benchmark does not isolate those components, and the baseline sample spread is large
 enough that no further conclusion should be drawn from the 1.6% figure alone.
+
+## Indexed Call-Path Follow-up
+
+A same-host six-round control immediately before indexing the metadata call path measured a 0.285-second (1.6%)
+autodetection increment over inert registration. After the rule began indexing active, version-applicable argument
+boundaries by call kind and lowercase method name, the same six-round benchmark measured a 0.050-second (0.3%)
+increment:
+
+| Revision state       | Baseline median | Inert median | Autodetect median | Autodetect over inert | Incremental peak RSS |
+| -------------------- | --------------: | -----------: | ----------------: | --------------------: | -------------------: |
+| Pre-index control    |        17.145 s |     18.215 s |          18.500 s |        0.285 s (1.6%) |              2.5 MiB |
+| Indexed working tree |        16.810 s |     17.340 s |          17.390 s |        0.050 s (0.3%) |              1.7 MiB |
+
+The indexed result reduces the measured incremental wall time by 82%. It also removes repeated argument mapping,
+integration selection, version filtering, complete boundary-list sorting, and receiver checks from calls whose kind and
+method name have no active boundary. Matching candidates retain the original catalog order within each integration, with
+exact receiver classes stably preceding compatible interfaces and traits.
+
+The pre-index control contained several host-load outliers: its baseline and inert ranges extended to 22.630 and 23.750
+seconds, while the indexed run's ranges were 16.790–16.930 and 17.240–17.450 seconds. The conclusion therefore rests on
+the scenario-relative autodetect-versus-inert increment rather than the absolute cross-run totals. All baseline and
+inert analyses remained clean, and every autodetection analysis produced exactly the established seven diagnostics in
+both runs.
+
+The raw follow-up runs are stored locally beneath `.phpbench/bookstack/results/20260810T064626Z-48193` and
+`.phpbench/bookstack/results/20260810T070637Z-59303`. These paths are intentionally ignored benchmark artifacts rather
+than repository fixtures.
 
 ## Reproduction
 

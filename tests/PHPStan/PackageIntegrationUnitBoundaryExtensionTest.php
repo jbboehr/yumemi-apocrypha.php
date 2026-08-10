@@ -169,6 +169,21 @@ final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
                         . 'Apocrypha unit boundary.',
                     96,
                 ],
+                [
+                    "Illuminate\\Support\\Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    116,
+                ],
+                [
+                    "Illuminate\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    123,
+                ],
+                [
+                    "Carbon\\CarbonInterface::addUTCSeconds() expects unit_float<'second'>|unit_int<'second'>, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    124,
+                ],
             ],
         );
     }

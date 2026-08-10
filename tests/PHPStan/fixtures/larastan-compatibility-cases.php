@@ -112,4 +112,14 @@ function exerciseLarastanCompatibilityExtensions(
         "array{17, unit_float<'1/1000 * second'>}",
         Benchmark::value(static fn (): int => 17),
     );
+
+    Sleep::SLEEP(unit(1, 'minute'));
+}
+
+function exerciseIndexedArgumentBoundaryLookup(
+    \Illuminate\Cache\Repository $cache,
+    \Carbon\CarbonInterface $carbon,
+): void {
+    $cache->put('key', 'value', unit(1, 'minute'));
+    $carbon->addUTCSeconds(unit(1, 'minute'));
 }

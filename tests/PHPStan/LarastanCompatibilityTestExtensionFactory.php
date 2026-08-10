@@ -45,13 +45,15 @@ final class LarastanCompatibilityTestExtensionFactory
     public static function createSelection(): ConfiguredIntegrationStubFilesExtension
     {
         return new ConfiguredIntegrationStubFilesExtension(
-            ['illuminate/filesystem', 'illuminate/queue', 'illuminate/support'],
+            ['illuminate/cache', 'illuminate/filesystem', 'illuminate/queue', 'illuminate/support', 'nesbot/carbon'],
             false,
             true,
             packageInstalledResolver: static fn (): bool => true,
-            packageVersionResolver: static fn (string $package): string => $package === 'larastan/larastan'
-                ? '3.10.0'
-                : '12.0.0',
+            packageVersionResolver: static fn (string $package): string => match ($package) {
+                'larastan/larastan' => '3.10.0',
+                'nesbot/carbon' => '3.2.0',
+                default => '12.0.0',
+            },
         );
     }
 }

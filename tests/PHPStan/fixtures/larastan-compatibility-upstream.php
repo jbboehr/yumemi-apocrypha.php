@@ -141,3 +141,33 @@ final class Timebox
         return $callback();
     }
 }
+
+namespace Illuminate\Contracts\Cache;
+
+interface Repository
+{
+    public function put(mixed $key, mixed $value, int $ttl = 0): bool;
+}
+
+/** Provides the deliberately incompatible candidate between the contract and concrete Repository boundaries. */
+interface Store
+{
+    public function put(mixed $key, mixed $value, int $seconds): bool;
+}
+
+namespace Illuminate\Cache;
+
+final class Repository implements \Illuminate\Contracts\Cache\Repository
+{
+    public function put(mixed $key, mixed $value, int $ttl = 0): bool
+    {
+        return true;
+    }
+}
+
+namespace Carbon;
+
+interface CarbonInterface
+{
+    public function addUTCSeconds(int|float $value): static;
+}

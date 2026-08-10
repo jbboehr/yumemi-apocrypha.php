@@ -71,10 +71,18 @@ use PHPStan\Type\VerbosityLevel;
 /**
  * Enforces package argument and property boundaries without replacing upstream declarations.
  *
+ * @phpstan-import-type ArgumentBoundary from PackageIntegrationUnitBoundaryMetadata
+ *
  * @phpstan-type MappedArgument array{type: Type, node: Arg}
  * @phpstan-type MappedArguments array{
  *     positions: array<array-key, MappedArgument>,
  *     names: array<array-key, MappedArgument>
+ * }
+ * @phpstan-type ArgumentBoundaryGroups array<non-empty-string, non-empty-list<ArgumentBoundary>>
+ * @phpstan-type ArgumentBoundaryIndex array{
+ *     constructor: array<non-empty-string, ArgumentBoundaryGroups>,
+ *     method: array<non-empty-string, ArgumentBoundaryGroups>,
+ *     static: array<non-empty-string, ArgumentBoundaryGroups>
  * }
  * @phpstan-type PropertyMatch array{
  *     integration: non-empty-string,
@@ -112,6 +120,14 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
      *     returning households laid their first loaves beneath its branches.
      */
     private readonly RuleLevelHelper $ruleLevelHelper;
+
+    /**
+     * @logion [SFA 18:73] Beneath the cedar floor the old map waited without complaint, and when the roads were lost
+     *     beneath the flood, its patient lines restored the journeys of the living.
+     *
+     * @var ArgumentBoundaryIndex|null
+     */
+    private ?array $argumentBoundaryIndex = null;
 
     /**
      * @logion [OSD 97:39] Set the two candles upon separate stones, and let neither diminish the other; for the altar
@@ -199,12 +215,6 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
 
             $kind = 'method';
             $method = $call->name->toString();
-            $receiver = $call->var instanceof FuncCall
-                && $call->var->name instanceof Name
-                && strcasecmp($scope->resolveName($call->var->name), 'cache') === 0
-                && $call->var->getArgs() === []
-                    ? new ObjectType('Illuminate\\Cache\\Repository')
-                    : $scope->getType($call->var);
         } elseif ($call instanceof StaticCall) {
             if (!$call->name instanceof Identifier) {
                 return [];
@@ -212,9 +222,6 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
 
             $kind = 'static';
             $method = $call->name->toString();
-            $receiver = $call->class instanceof Name
-                ? new ObjectType($scope->resolveName($call->class))
-                : $scope->getType($call->class)->getObjectTypeOrClassStringObjectType();
         } else {
             if (!$call->class instanceof Name && !$call->class instanceof Expr) {
                 return [];
@@ -222,91 +229,140 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
 
             $kind = 'constructor';
             $method = '__construct';
-            $receiver = $call->class instanceof Name
-                ? new ObjectType($scope->resolveName($call->class))
-                : $scope->getType($call->class)->getObjectTypeOrClassStringObjectType();
+        }
+
+        $boundaryGroups = $this->argumentBoundaries($kind, $method);
+        if ($boundaryGroups === []) {
+            return [];
+        }
+
+        if ($call instanceof MethodCall) {
+            $receiver = $call->var instanceof FuncCall
+                && $call->var->name instanceof Name
+                && strcasecmp($scope->resolveName($call->var->name), 'cache') === 0
+                && $call->var->getArgs() === []
+                    ? new ObjectType('Illuminate\\Cache\\Repository')
+                    : $scope->getType($call->var);
+        } elseif ($call->class instanceof Name) {
+            $receiver = new ObjectType($scope->resolveName($call->class));
+        } elseif ($call->class instanceof Expr) {
+            $receiver = $scope->getType($call->class)->getObjectTypeOrClassStringObjectType();
+        } else {
+            return [];
+        }
+
+        $receiverClassNames = $receiver->getObjectClassNames();
+        $boundaries = [];
+        foreach ($boundaryGroups as $group) {
+            $exact = [];
+            $compatible = [];
+
+            foreach ($group as $boundary) {
+                if (!$this->matchesReceiver($receiver, $boundary['class'])) {
+                    continue;
+                }
+
+                if (in_array($boundary['class'], $receiverClassNames, true)) {
+                    $exact[] = $boundary;
+                } else {
+                    $compatible[] = $boundary;
+                }
+            }
+
+            array_push($boundaries, ...$exact, ...$compatible);
+        }
+        if ($boundaries === []) {
+            return [];
         }
 
         $mapped = $this->mappedArguments($call->getArgs(), $scope);
         $errors = [];
         $checked = [];
 
-        foreach (PackageIntegrationUnitBoundaryMetadata::all() as $integration => $metadata) {
-            if (!$this->selection->usesUnitBoundaryAdapter($integration)) {
+        foreach ($boundaries as $boundary) {
+            $argument = $mapped['names'][$boundary['name']]
+                ?? $mapped['positions'][$boundary['position']]
+                ?? null;
+            if ($argument === null) {
                 continue;
             }
 
-            $major = $this->selection->getSelectedMajor($integration);
-            $version = $this->selection->getSelectedVersion($integration);
-            if ($major === null || $version === null) {
+            $expected = $this->typeStringResolver->resolve($boundary['type']);
+            $key = spl_object_id($argument['node']) . ':' . $expected->describe(VerbosityLevel::precise());
+            if (isset($checked[$key])) {
+                continue;
+            }
+            $checked[$key] = true;
+
+            if ($this->ruleLevelHelper->accepts(
+                $expected,
+                $argument['type'],
+                $scope->isDeclareStrictTypes(),
+            )->result) {
                 continue;
             }
 
-            $boundaries = $metadata['arguments'];
-            usort(
-                $boundaries,
-                static fn (array $left, array $right): int => (int) !in_array(
-                    $left['class'],
-                    $receiver->getObjectClassNames(),
-                    true,
-                ) <=> (int) !in_array($right['class'], $receiver->getObjectClassNames(), true),
+            if (!$this->upstreamAccepts(
+                $receiver,
+                $method,
+                $call->getArgs(),
+                $boundary['position'],
+                $argument['type'],
+                $scope,
+            )) {
+                continue;
+            }
+
+            $errors[] = $this->error(
+                $kind === 'constructor'
+                    ? sprintf('Parameter $%s of class %s constructor', $boundary['name'], $boundary['class'])
+                    : sprintf('%s::%s()', $boundary['class'], $boundary['method']),
+                $expected,
+                $argument['type'],
+                $argument['node']->getStartLine(),
             );
-
-            foreach ($boundaries as $boundary) {
-                if (
-                    $boundary['kind'] !== $kind
-                    || strcasecmp($boundary['method'], $method) !== 0
-                    || !PackageIntegrationUnitBoundaryMetadata::supportsVersion($boundary, $major, $version)
-                    || !$this->matchesReceiver($receiver, $boundary['class'])
-                ) {
-                    continue;
-                }
-
-                $argument = $mapped['names'][$boundary['name']]
-                    ?? $mapped['positions'][$boundary['position']]
-                    ?? null;
-                if ($argument === null) {
-                    continue;
-                }
-
-                $expected = $this->typeStringResolver->resolve($boundary['type']);
-                $key = spl_object_id($argument['node']) . ':' . $expected->describe(VerbosityLevel::precise());
-                if (isset($checked[$key])) {
-                    continue;
-                }
-                $checked[$key] = true;
-
-                if ($this->ruleLevelHelper->accepts(
-                    $expected,
-                    $argument['type'],
-                    $scope->isDeclareStrictTypes(),
-                )->result) {
-                    continue;
-                }
-
-                if (!$this->upstreamAccepts(
-                    $receiver,
-                    $method,
-                    $call->getArgs(),
-                    $boundary['position'],
-                    $argument['type'],
-                    $scope,
-                )) {
-                    continue;
-                }
-
-                $errors[] = $this->error(
-                    $kind === 'constructor'
-                        ? sprintf('Parameter $%s of class %s constructor', $boundary['name'], $boundary['class'])
-                        : sprintf('%s::%s()', $boundary['class'], $boundary['method']),
-                    $expected,
-                    $argument['type'],
-                    $argument['node']->getStartLine(),
-                );
-            }
         }
 
         return $errors;
+    }
+
+    /**
+     * @logion [OSD 44:29] Gather the names at the outer court before the witnesses are summoned, that no household be
+     *     awakened for a cause in which it hath no portion.
+     *
+     * @param 'constructor'|'method'|'static' $kind
+     *
+     * @return ArgumentBoundaryGroups
+     */
+    private function argumentBoundaries(string $kind, string $method): array
+    {
+        if ($this->argumentBoundaryIndex === null) {
+            $index = ['constructor' => [], 'method' => [], 'static' => []];
+
+            foreach (PackageIntegrationUnitBoundaryMetadata::all() as $integration => $metadata) {
+                if (!$this->selection->usesUnitBoundaryAdapter($integration)) {
+                    continue;
+                }
+
+                $major = $this->selection->getSelectedMajor($integration);
+                $version = $this->selection->getSelectedVersion($integration);
+                if ($major === null || $version === null) {
+                    continue;
+                }
+
+                foreach ($metadata['arguments'] as $boundary) {
+                    if (!PackageIntegrationUnitBoundaryMetadata::supportsVersion($boundary, $major, $version)) {
+                        continue;
+                    }
+
+                    $index[$boundary['kind']][strtolower($boundary['method'])][$integration][] = $boundary;
+                }
+            }
+
+            $this->argumentBoundaryIndex = $index;
+        }
+
+        return $this->argumentBoundaryIndex[$kind][strtolower($method)] ?? [];
     }
 
     /**
