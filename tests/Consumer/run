@@ -616,20 +616,6 @@ run_simple_illuminate_integration() {
         package_constraint="^$package_major.0"
     fi
 
-    if [[ $FIXTURE_SUITE == illuminate-queue ]]; then
-        case $PACKAGE_MAJOR in
-            11 | 11.53.0 | 12 | 12.60.0)
-                profile_case=12
-                ;;
-            13 | 13.10.0)
-                profile_case=13
-                ;;
-            11.52.0 | 12.59.0 | 13.9.0)
-                profile_case=pre-stop-when-empty
-                ;;
-        esac
-    fi
-
     mkdir -p -- "$project_dir"
     cp -R -- "$FIXTURES_DIR/$FIXTURE_SUITE/." "$project_dir/"
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
@@ -670,6 +656,19 @@ run_simple_illuminate_integration() {
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
+    if [[ $FIXTURE_SUITE == illuminate-queue ]]; then
+        profile_case=pre-stop-when-empty
+        if php -r "
+            require \$argv[1];
+            exit(property_exists(Illuminate\Queue\WorkerOptions::class, 'stopWhenEmptyFor') ? 0 : 1);
+        " "$project_dir/vendor/autoload.php"; then
+            if [[ $package_major == 13 ]]; then
+                profile_case=13
+            else
+                profile_case=12
+            fi
+        fi
+    fi
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     if [[ $COMPATIBILITY_MODE == larastan && -f $project_dir/cases/valid-larastan.php ]]; then

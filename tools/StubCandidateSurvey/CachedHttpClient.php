@@ -157,7 +157,6 @@ final class CachedHttpClient
             $ok = curl_exec($curl);
             $status = curl_getinfo($curl, CURLINFO_RESPONSE_CODE);
             $lastError = curl_error($curl);
-            curl_close($curl);
             fclose($handle);
 
             if ($overflow) {
@@ -241,7 +240,6 @@ final class CachedHttpClient
                 $error = curl_error($handle);
                 $body = curl_multi_getcontent($handle);
                 curl_multi_remove_handle($multi, $handle);
-                curl_close($handle);
 
                 if (304 === $status) {
                     $cached = $this->readCachedBody($cacheDirectory, $url);

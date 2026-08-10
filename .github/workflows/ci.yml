@@ -86,7 +86,7 @@ jobs:
               run: composer cs
 
             - name: Run PHPStan
-              run: vendor/bin/phpstan analyse --no-progress --error-format=raw
+              run: vendor/bin/phpstan analyse --no-progress --error-format=raw --memory-limit=1G
 
             - name: Run PHPUnit
               run: vendor/bin/phpunit --colors=never --no-coverage
@@ -114,7 +114,7 @@ jobs:
               run: composer update --prefer-lowest --prefer-stable --prefer-dist --no-interaction --no-progress
 
             - name: Run PHPStan
-              run: vendor/bin/phpstan analyse --no-progress --error-format=raw
+              run: vendor/bin/phpstan analyse --no-progress --error-format=raw --memory-limit=1G
 
             - name: Run PHPUnit
               run: vendor/bin/phpunit --colors=never --no-coverage
