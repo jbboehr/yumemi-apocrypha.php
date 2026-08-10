@@ -100,5 +100,7 @@ nix develop --command composer benchmark:bookstack
 ```
 
 The default performs one warm-up and six measured runs per scenario. The harness caches the pinned BookStack checkout
-and dependency installation beneath `.phpbench/bookstack/`, rotates scenario order, validates diagnostics, and writes
-raw logs, metadata, a tab-separated sample file, and a generated summary beneath `.phpbench/bookstack/results/`.
+and dependency installation beneath `.phpbench/bookstack/`, rotates scenario order, and compares every normalized
+autodetection diagnostic with the committed path, line, message, and identifier snapshot. It writes raw logs, normalized
+diagnostics, metadata including a fingerprint of tracked working-tree changes, a tab-separated sample file, and a
+generated summary beneath `.phpbench/bookstack/results/`.

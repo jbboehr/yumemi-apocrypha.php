@@ -67,9 +67,11 @@ nix develop --command composer benchmark:bookstack
 ```
 
 PHPStan runs in debug mode so every sample disables the result cache and parallel processing. The harness rotates
-scenario order across six measured rounds, verifies each scenario's diagnostics, and writes raw logs and tab-separated
-measurements beneath `.phpbench/bookstack/results/`. Override the round count with `BOOKSTACK_BENCHMARK_RUNS` for an
-explicit shorter or longer investigation.
+scenario order across six measured rounds and compares every autodetection diagnostic, including its normalized
+BookStack path, line, message, and identifier, with the committed snapshot. It writes raw logs, normalized diagnostics,
+tab-separated measurements, dependency metadata, and a fingerprint of tracked working-tree changes beneath
+`.phpbench/bookstack/results/`. Override the round count with `BOOKSTACK_BENCHMARK_RUNS` for an explicit shorter or
+longer investigation.
 
 ## Definitions
 

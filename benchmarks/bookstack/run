@@ -4,10 +4,10 @@ set -euo pipefail
 
 readonly BOOKSTACK_REVISION="c813c1b3628c0b6bd757c12cadaa56f50724117d"
 readonly APOCRYPHA_CONSTRAINT="${BOOKSTACK_BENCHMARK_APOCRYPHA_CONSTRAINT:-@dev}"
-readonly EXPECTED_AUTODETECT_DIAGNOSTICS="${BOOKSTACK_BENCHMARK_EXPECTED_DIAGNOSTICS:-7}"
 readonly MEASURED_RUNS="${BOOKSTACK_BENCHMARK_RUNS:-6}"
 SCRIPT_DIRECTORY="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIRECTORY
+readonly EXPECTED_DIAGNOSTICS_FILE="$SCRIPT_DIRECTORY/expected-diagnostics.txt"
 PROJECT_DIRECTORY="$(cd "$SCRIPT_DIRECTORY/../.." && pwd)"
 readonly PROJECT_DIRECTORY
 readonly WORK_DIRECTORY="${BOOKSTACK_BENCHMARK_DIR:-$PROJECT_DIRECTORY/.phpbench/bookstack}"
@@ -23,8 +23,14 @@ if [[ ! "$MEASURED_RUNS" =~ ^[1-9][0-9]*$ ]]; then
     exit 2
 fi
 
-if [[ ! "$EXPECTED_AUTODETECT_DIAGNOSTICS" =~ ^[0-9]+$ ]]; then
-    echo "BOOKSTACK_BENCHMARK_EXPECTED_DIAGNOSTICS must be a nonnegative integer." >&2
+if [[ ! -s "$EXPECTED_DIAGNOSTICS_FILE" ]]; then
+    echo "Expected BookStack diagnostics are missing from $EXPECTED_DIAGNOSTICS_FILE." >&2
+    exit 2
+fi
+EXPECTED_AUTODETECT_DIAGNOSTICS="$(awk 'NF { count++ } END { print count + 0 }' "$EXPECTED_DIAGNOSTICS_FILE")"
+readonly EXPECTED_AUTODETECT_DIAGNOSTICS
+if ! LC_ALL=C sort --check "$EXPECTED_DIAGNOSTICS_FILE"; then
+    echo "Expected BookStack diagnostics must be sorted in C locale order." >&2
     exit 2
 fi
 
@@ -50,6 +56,8 @@ if [[ ! -f "$SUBJECT_DIRECTORY/composer.json" ]]; then
     mkdir -p "$SUBJECT_DIRECTORY"
     tar -xzf "$ARCHIVE" --strip-components=1 -C "$SUBJECT_DIRECTORY"
 fi
+SUBJECT_PHYSICAL_DIRECTORY="$(cd "$SUBJECT_DIRECTORY" && pwd -P)"
+readonly SUBJECT_PHYSICAL_DIRECTORY
 
 mkdir -p "$CONFIG_DIRECTORY"
 cp "$SCRIPT_DIRECTORY/config/phpstan-inert.neon" "$CONFIG_DIRECTORY/phpstan-inert.neon"
@@ -115,6 +123,7 @@ run_scenario() {
     local stem="$phase-$round-$position-$scenario"
     local log_file="$RESULTS_DIRECTORY/$stem.log"
     local metrics_file="$RESULTS_DIRECTORY/$stem.time"
+    local diagnostics_file="$RESULTS_DIRECTORY/$stem.diagnostics"
     local exit_code
     local diagnostics
     local elapsed_seconds
@@ -129,16 +138,36 @@ run_scenario() {
                 --configuration "$config" \
                 --memory-limit=2G \
                 --debug \
+                --verbose \
                 --error-format=raw \
                 --no-ansi
     ) > "$log_file" 2>&1
     exit_code=$?
     set -e
 
-    diagnostics="$(
-        awk '/at a Yumemi Apocrypha unit boundary\./ { count++ } END { print count + 0 }' "$log_file"
-    )"
+    awk \
+        -v logical_prefix="$SUBJECT_DIRECTORY/" \
+        -v physical_prefix="$SUBJECT_PHYSICAL_DIRECTORY/" '
+        {
+            diagnostic = ""
+            if (index($0, physical_prefix) == 1) {
+                diagnostic = substr($0, length(physical_prefix) + 1)
+            } else if (index($0, logical_prefix) == 1) {
+                diagnostic = substr($0, length(logical_prefix) + 1)
+            }
+
+            if (diagnostic ~ /:[1-9][0-9]*:/) {
+                print diagnostic
+            }
+        }
+    ' "$log_file" | LC_ALL=C sort > "$diagnostics_file"
+    diagnostics="$(awk 'END { print NR + 0 }' "$diagnostics_file")"
     IFS=$'\t' read -r elapsed_seconds peak_rss_kib < "$metrics_file"
+
+    if [[ "$scenario" == autodetect ]] && ! diff -u "$EXPECTED_DIAGNOSTICS_FILE" "$diagnostics_file"; then
+        echo "Unexpected autodetect diagnostic contract; see $diagnostics_file." >&2
+        exit 1
+    fi
 
     if [[ "$exit_code" -ne "$expected_exit" ]] || [[ "$diagnostics" -ne "$expected_diagnostics" ]]; then
         echo "Unexpected $scenario result: exit $exit_code, $diagnostics diagnostics; expected exit" \
@@ -178,6 +207,9 @@ done
         printf "bookstack_revision\t%s\n" "$BOOKSTACK_REVISION"
         printf "apocrypha_revision\t%s\n" "$(git -C "$PROJECT_DIRECTORY" rev-parse HEAD)"
         printf "apocrypha_dirty_paths\t%s\n" "$(git -C "$PROJECT_DIRECTORY" status --porcelain | wc -l)"
+        printf "apocrypha_tracked_diff_sha256\t%s\n" "$(
+            git -C "$PROJECT_DIRECTORY" diff --binary HEAD -- . | sha256sum | cut -d ' ' -f 1
+        )"
         printf "php\t%s\n" "$(php -r 'echo PHP_VERSION;')"
         printf "composer_lock_sha256\t%s\n" "$(sha256sum composer.lock | cut -d ' ' -f 1)"
     } > "$RESULTS_DIRECTORY/metadata.txt"
