@@ -62,6 +62,7 @@ CarbonImmutable::sleep(unit(0.0, 'second'));
 (new WrapperClock($start))->sleep(unit(0, 'second'));
 $start->addDay();
 $start->addMonth();
+$start->addSeconds(10)->subDays(1);
 
 function exerciseCarbonThreeInterface(CarbonInterface $date): void
 {

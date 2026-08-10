@@ -38,7 +38,7 @@ declare(strict_types=1);
 
 namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
 
-use jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityIntegrationMetadata;
+use jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitBoundaryMetadata;
 use PhpParser\Node;
 use PhpParser\Node\Expr\Variable;
 use PhpParser\Node\Stmt\ClassLike;
@@ -47,12 +47,16 @@ use PhpParser\ParserFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
+final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
 {
     /** @return iterable<string, array{non-empty-string, int, non-empty-string}> */
     public static function integrationMajors(): iterable
     {
-        foreach (array_keys(LarastanCompatibilityIntegrationMetadata::all()) as $integration) {
+        foreach (array_keys(PackageIntegrationUnitBoundaryMetadata::all()) as $integration) {
+            if (!str_starts_with($integration, 'illuminate/')) {
+                continue;
+            }
+
             foreach ([11, 12, 13] as $major) {
                 yield sprintf('%s %d', $integration, $major) => [$integration, $major, $major . '.0.0'];
             }
@@ -81,14 +85,14 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
         self::assertSame(
             $this->stubBoundaries($integration, $major, $version),
             $this->metadataBoundaries($integration, $major, $version),
-            sprintf('Larastan metadata drifted from %s stubs for Laravel %s.', $integration, $version),
+            sprintf('Package integration metadata drifted from %s stubs for Laravel %s.', $integration, $version),
         );
     }
 
     public function testEveryReturnBoundaryClassHasANeonRegistration(): void
     {
         $expected = [];
-        foreach (LarastanCompatibilityIntegrationMetadata::all() as $metadata) {
+        foreach (PackageIntegrationUnitBoundaryMetadata::all() as $metadata) {
             foreach ($metadata['returns'] as $boundary) {
                 $expected[] = $boundary['class'];
             }
@@ -99,7 +103,7 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
         $neon = (string) file_get_contents(__DIR__ . '/../../apocrypha.neon');
         self::assertSame(
             count($expected),
-            preg_match_all('/^ {12}class: (Illuminate\\\\[^\r\n]+)$/m', $neon, $matches),
+            preg_match_all('/^ {12}class: ((?:Carbon|Illuminate)\\\\[^\r\n]+)$/m', $neon, $matches),
         );
         $actual = array_values(array_unique($matches[1]));
         sort($actual);
@@ -113,6 +117,48 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
             count($expected),
             substr_count($neon, '- phpstan.broker.dynamicStaticMethodReturnTypeExtension'),
         );
+    }
+
+    /** @return iterable<string, array{int, non-empty-string, int, int, non-empty-string, non-empty-string}> */
+    public static function carbonProfiles(): iterable
+    {
+        yield 'Carbon 2' => [2, '2.73.0', 10, 8, 'addRealSeconds', 'addUTCSeconds'];
+        yield 'Carbon 3 Real' => [3, '3.1.1', 15, 7, 'addRealSeconds', 'addUTCSeconds'];
+        yield 'Carbon 3 UTC' => [3, '3.13.2', 15, 12, 'addUTCSeconds', 'addRealSeconds'];
+    }
+
+    #[DataProvider('carbonProfiles')]
+    public function testCarbonMetadataSelectsOnlyTheInstalledProfile(
+        int $major,
+        string $version,
+        int $argumentCount,
+        int $returnCount,
+        string $includedAdjustment,
+        string $excludedAdjustment,
+    ): void {
+        $metadata = PackageIntegrationUnitBoundaryMetadata::all()['nesbot/carbon'];
+        $arguments = array_values(array_filter(
+            $metadata['arguments'],
+            static fn (array $boundary): bool => PackageIntegrationUnitBoundaryMetadata::supportsVersion(
+                $boundary,
+                $major,
+                $version,
+            ),
+        ));
+        $returns = array_values(array_filter(
+            $metadata['returns'],
+            static fn (array $boundary): bool => PackageIntegrationUnitBoundaryMetadata::supportsVersion(
+                $boundary,
+                $major,
+                $version,
+            ),
+        ));
+        $argumentMethods = array_column($arguments, 'method');
+
+        self::assertCount($argumentCount, $arguments);
+        self::assertCount($returnCount, $returns);
+        self::assertContains($includedAdjustment, $argumentMethods);
+        self::assertNotContains($excludedAdjustment, $argumentMethods);
     }
 
     /**
@@ -206,12 +252,16 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
      */
     private function metadataBoundaries(string $integration, int $major, string $version): array
     {
-        $metadata = LarastanCompatibilityIntegrationMetadata::all()[$integration];
+        $metadata = PackageIntegrationUnitBoundaryMetadata::all()[$integration];
         $boundaries = ['arguments' => [], 'properties' => [], 'returns' => []];
 
         foreach ($boundaries as $kind => $_) {
             foreach ($metadata[$kind] as $boundary) {
-                if (!LarastanCompatibilityIntegrationMetadata::supportsVersion($boundary, $major, $version)) {
+                if (($boundary['adapterOnly'] ?? false) === true) {
+                    continue;
+                }
+
+                if (!PackageIntegrationUnitBoundaryMetadata::supportsVersion($boundary, $major, $version)) {
                     continue;
                 }
 
@@ -220,6 +270,7 @@ final class LarastanCompatibilityIntegrationMetadataTest extends TestCase
                     $boundary['minimumVersions'],
                     $boundary['beforeVersions'],
                     $boundary['strategy'],
+                    $boundary['adapterOnly'],
                 );
                 $boundary['type'] = $this->normalizeType($boundary['type']);
                 $boundaries[$kind][] = $boundary;

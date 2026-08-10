@@ -22,6 +22,11 @@ extension installer with `--dev`.
 With `phpstan/extension-installer`, Composer registers both PHPStan extensions automatically. Apocrypha remains inert
 until at least one integration is selected or autodetection is enabled.
 
+If the project already includes Larastan or another PHPStan extension manually, remove that extension's manual include
+when adopting `phpstan/extension-installer`. The installer discovers all participating packages, not only Apocrypha;
+leaving an old include in place loads the same extension twice. Alternatively, keep the existing manual registration and
+follow [Manual Registration](#manual-registration) instead of installing the extension installer.
+
 If Larastan 3 is also installed, selected Illuminate integrations need no additional configuration. Apocrypha leaves
 Larastan's declarations in place and supplies the same unit-bearing boundaries through PHPStan rules and type
 extensions. This changes analysis only: Laravel still receives ordinary PHP scalars, and neither library wraps or

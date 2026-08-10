@@ -163,7 +163,7 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([], $extension->getFiles());
         self::assertSame(12, $extension->getSelectedMajor('illuminate/cache'));
         self::assertSame('12.4.0', $extension->getSelectedVersion('illuminate/cache'));
-        self::assertTrue($extension->usesLarastanAdapter('illuminate/cache'));
+        self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/cache'));
         self::assertSame(['illuminate/cache', 'larastan/larastan'], $installedPackages);
         self::assertSame(['illuminate/cache', 'larastan/larastan'], $versionedPackages);
     }
@@ -812,7 +812,29 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
 
         self::assertSame([], $extension->getFiles());
         self::assertSame(12, $extension->getSelectedMajor('illuminate/cache'));
-        self::assertTrue($extension->usesLarastanAdapter('illuminate/cache'));
+        self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/cache'));
+    }
+
+    public function testCarbonAlwaysUsesTheAdapterInsteadOfPartialStubs(): void
+    {
+        $resolved = [];
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['nesbot/carbon'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'nesbot/carbon',
+            static function (string $package) use (&$resolved): string {
+                $resolved[] = $package;
+
+                return '3.13.2';
+            },
+        );
+
+        self::assertSame([], $extension->getFiles());
+        self::assertSame(['nesbot/carbon'], $resolved);
+        self::assertTrue($extension->usesUnitBoundaryAdapter('nesbot/carbon'));
+        self::assertFalse($extension->usesUnitBoundaryAdapter('illuminate/cache'));
     }
 
     public function testIlluminateStubsRemainSelectedWithoutLarastan(): void
@@ -834,7 +856,7 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([
             realpath(__DIR__ . '/../../stubs/illuminate/cache.stub'),
         ], $extension->getFiles());
-        self::assertFalse($extension->usesLarastanAdapter('illuminate/cache'));
+        self::assertFalse($extension->usesUnitBoundaryAdapter('illuminate/cache'));
     }
 
     public function testLarastanOnlyReplacesSelectedIlluminateStubs(): void
@@ -855,8 +877,8 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         );
 
         self::assertSame([realpath(__DIR__ . '/../../apocrypha.neon')], $extension->getFiles());
-        self::assertTrue($extension->usesLarastanAdapter('illuminate/cache'));
-        self::assertFalse($extension->usesLarastanAdapter('vendor/one'));
+        self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/cache'));
+        self::assertFalse($extension->usesUnitBoundaryAdapter('vendor/one'));
     }
 
     public function testUnsupportedLarastanDoesNotAffectNonIlluminateIntegrations(): void

@@ -1,6 +1,6 @@
 # Automatically registered PHPStan entry point for an installed Composer package.
-# The relative include resolves to the sibling Yumemi package in Composer's vendor directory.
+# Resolve from PHPStan's package root so Composer path-repository symlinks do not redirect the parent traversal.
 
 includes:
-    - ../yumemi/yumemi-tags.neon
+    - %rootDir%/../../jbboehr/yumemi/yumemi-tags.neon
     - apocrypha.neon

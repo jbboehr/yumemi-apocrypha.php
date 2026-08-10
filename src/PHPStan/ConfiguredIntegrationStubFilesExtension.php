@@ -385,7 +385,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         }
 
         foreach ($selectedMajors as $integration => $major) {
-            if ($this->usesLarastanAdapter($integration)) {
+            if ($this->usesUnitBoundaryAdapter($integration)) {
                 continue;
             }
 
@@ -448,14 +448,22 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     }
 
     /**
-     * Reports whether an Illuminate integration must use metadata instead of package stubs.
+     * Reports whether an integration must use metadata instead of package stubs.
      *
      * @logion [SFA 15:50] Two choirs may keep the same vigil, yet the appointed verse shall be sung by one voice, lest
      *     concord be mistaken for the doubling of authority.
      */
-    public function usesLarastanAdapter(string $integration): bool
+    public function usesUnitBoundaryAdapter(string $integration): bool
     {
-        if (!str_starts_with($integration, 'illuminate/') || $this->getSelectedMajor($integration) === null) {
+        if ($this->getSelectedMajor($integration) === null) {
+            return false;
+        }
+
+        if ($integration === 'nesbot/carbon') {
+            return true;
+        }
+
+        if (!str_starts_with($integration, 'illuminate/')) {
             return false;
         }
 

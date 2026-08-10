@@ -4,6 +4,13 @@ This report records an application-scale installation and analysis of Yumemi Apo
 the isolated consumer matrix by exercising package discovery, PHPStan extension registration, Larastan coexistence,
 application wrappers, Laravel facades and helpers, and unrelated methods on classes affected by package stubs.
 
+## Resolution Status
+
+The follow-up implementation replaced Carbon's partial stubs with version-aware metadata extensions, made the Yumemi tag
+include safe under symlinked Composer path repositories, added Larastan coverage for the Cache facade and zero-argument
+`cache()` helper, documented extension-registration migration, and documented the application-wrapper limitation. The
+isolated consumers cover those corrections; repeating this application-scale test remains a separate maintenance task.
+
 ## Subject and Result
 
 | Item                  | Value                                                                                                                                  |

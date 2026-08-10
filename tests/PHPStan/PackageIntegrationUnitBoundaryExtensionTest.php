@@ -38,12 +38,12 @@ declare(strict_types=1);
 
 namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
 
-use jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitBoundaryExtension;
+use jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitBoundaryExtension;
 use PHPStan\Rules\Rule;
 use PHPStan\Testing\RuleTestCase;
 
-/** @extends RuleTestCase<LarastanCompatibilityUnitBoundaryExtension> */
-final class LarastanCompatibilityUnitBoundaryExtensionTest extends RuleTestCase
+/** @extends RuleTestCase<PackageIntegrationUnitBoundaryExtension> */
+final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
 {
     public static function getAdditionalConfigFiles(): array
     {
@@ -52,8 +52,8 @@ final class LarastanCompatibilityUnitBoundaryExtensionTest extends RuleTestCase
 
     protected function getRule(): Rule
     {
-        $rule = self::getContainer()->getService('larastanCompatibilityUnitBoundaryExtension');
-        self::assertInstanceOf(LarastanCompatibilityUnitBoundaryExtension::class, $rule);
+        $rule = self::getContainer()->getService('packageIntegrationUnitBoundaryExtension');
+        self::assertInstanceOf(PackageIntegrationUnitBoundaryExtension::class, $rule);
 
         return $rule;
     }

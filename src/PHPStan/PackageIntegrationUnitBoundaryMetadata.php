@@ -39,7 +39,7 @@ declare(strict_types=1);
 namespace jbboehr\Yumemi\Apocrypha\PHPStan;
 
 /**
- * Stores the unit boundaries reproduced when Larastan owns Illuminate declarations.
+ * Stores unit boundaries reproduced without replacing upstream package declarations.
  *
  * @phpstan-type ArgumentBoundary array{
  *     class: non-empty-string,
@@ -50,7 +50,8 @@ namespace jbboehr\Yumemi\Apocrypha\PHPStan;
  *     type: non-empty-string,
  *     majors?: non-empty-list<int>,
  *     minimumVersions?: non-empty-array<int, non-empty-string>,
- *     beforeVersions?: non-empty-array<int, non-empty-string>
+ *     beforeVersions?: non-empty-array<int, non-empty-string>,
+ *     adapterOnly?: true
  * }
  * @phpstan-type PropertyBoundary array{
  *     class: non-empty-string,
@@ -68,7 +69,8 @@ namespace jbboehr\Yumemi\Apocrypha\PHPStan;
  *     strategy?: 'benchmark-measure'|'benchmark-value',
  *     majors?: non-empty-list<int>,
  *     minimumVersions?: non-empty-array<int, non-empty-string>,
- *     beforeVersions?: non-empty-array<int, non-empty-string>
+ *     beforeVersions?: non-empty-array<int, non-empty-string>,
+ *     adapterOnly?: true
  * }
  * @phpstan-type IntegrationBoundaries array{
  *     arguments: list<ArgumentBoundary>,
@@ -81,7 +83,7 @@ namespace jbboehr\Yumemi\Apocrypha\PHPStan;
  *
  * @internal
  */
-final class LarastanCompatibilityIntegrationMetadata
+final class PackageIntegrationUnitBoundaryMetadata
 {
     /**
      * @var array<non-empty-string, IntegrationBoundaries>
@@ -119,6 +121,13 @@ final class LarastanCompatibilityIntegrationMetadata
                 ['class' => 'Illuminate\\Cache\\RateLimiting\\Limit', 'kind' => 'static', 'method' => 'perMinutes', 'position' => 0, 'name' => 'decayMinutes', 'type' => "unit_int<'minute'>"],
                 ['class' => 'Illuminate\\Cache\\RateLimiting\\Limit', 'kind' => 'static', 'method' => 'perHour', 'position' => 1, 'name' => 'decayHours', 'type' => "unit_int<'hour'>"],
                 ['class' => 'Illuminate\\Cache\\RateLimiting\\Limit', 'kind' => 'static', 'method' => 'perDay', 'position' => 1, 'name' => 'decayDays', 'type' => "unit_int<'day'>"],
+                ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'put', 'position' => 2, 'name' => 'ttl', 'type' => "unit_int<'second'>|\\DateTimeInterface|\\DateInterval|null", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'add', 'position' => 2, 'name' => 'ttl', 'type' => "unit_int<'second'>|\\DateTimeInterface|\\DateInterval|null", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'remember', 'position' => 1, 'name' => 'ttl', 'type' => "unit_int<'second'>|\\Closure|\\DateTimeInterface|\\DateInterval|null", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'set', 'position' => 2, 'name' => 'ttl', 'type' => "unit_int<'second'>|\\DateTimeInterface|\\DateInterval|null", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'putMany', 'position' => 1, 'name' => 'ttl', 'type' => "unit_int<'second'>|\\DateTimeInterface|\\DateInterval|null", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'setMultiple', 'position' => 1, 'name' => 'ttl', 'type' => "unit_int<'second'>|\\DateTimeInterface|\\DateInterval|null", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'setDefaultCacheTime', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|null", 'adapterOnly' => true],
             ],
             'properties' => [
                 ['class' => 'Illuminate\\Cache\\RateLimiting\\Limit', 'property' => 'decaySeconds', 'type' => "unit_int<'second'>"],
@@ -126,6 +135,7 @@ final class LarastanCompatibilityIntegrationMetadata
             'returns' => [
                 ['class' => 'Illuminate\\Cache\\Repository', 'kind' => 'method', 'method' => 'getDefaultCacheTime', 'type' => "unit_int<'second'>|null"],
                 ['class' => 'Illuminate\\Cache\\RateLimiter', 'kind' => 'method', 'method' => 'availableIn', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'getDefaultCacheTime', 'type' => "unit_int<'second'>|null", 'adapterOnly' => true],
             ],
         ],
         'illuminate/cookie' => [
@@ -212,6 +222,68 @@ final class LarastanCompatibilityIntegrationMetadata
             'returns' => [
                 ['class' => 'Illuminate\\Support\\Benchmark', 'kind' => 'static', 'method' => 'measure', 'type' => "(TBenchmarkables is \\Closure ? unit_float<'millisecond'> : array<unit_float<'millisecond'>>)", 'strategy' => 'benchmark-measure'],
                 ['class' => 'Illuminate\\Support\\Benchmark', 'kind' => 'static', 'method' => 'value', 'type' => "array{0: TReturn, 1: unit_float<'millisecond'>}", 'strategy' => 'benchmark-value'],
+            ],
+        ],
+        'nesbot/carbon' => [
+            'arguments' => [
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealMicroseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'microsecond'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealMicroseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'microsecond'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealMilliseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'millisecond'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealMilliseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'millisecond'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealSeconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'second'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealSeconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'second'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealMinutes', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'minute'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealMinutes', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'minute'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealHours', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'hour'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealHours', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'hour'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealMicroseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'microsecond'>|unit_float<'microsecond'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealMicroseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'microsecond'>|unit_float<'microsecond'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealMilliseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'millisecond'>|unit_float<'millisecond'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealMilliseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'millisecond'>|unit_float<'millisecond'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealSeconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealSeconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealMinutes', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'minute'>|unit_float<'minute'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealMinutes', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'minute'>|unit_float<'minute'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addRealHours', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'hour'>|unit_float<'hour'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subRealHours', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'hour'>|unit_float<'hour'>", 'majors' => [3], 'beforeVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addUTCMicroseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'microsecond'>|unit_float<'microsecond'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subUTCMicroseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'microsecond'>|unit_float<'microsecond'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addUTCMilliseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'millisecond'>|unit_float<'millisecond'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subUTCMilliseconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'millisecond'>|unit_float<'millisecond'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addUTCSeconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subUTCSeconds', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addUTCMinutes', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'minute'>|unit_float<'minute'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subUTCMinutes', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'minute'>|unit_float<'minute'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'addUTCHours', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'hour'>|unit_float<'hour'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'subUTCHours', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'hour'>|unit_float<'hour'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'static', 'method' => 'sleep', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3]],
+                ['class' => 'Carbon\\Carbon', 'kind' => 'static', 'method' => 'sleep', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3]],
+                ['class' => 'Carbon\\CarbonImmutable', 'kind' => 'static', 'method' => 'sleep', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3]],
+                ['class' => 'Carbon\\FactoryImmutable', 'kind' => 'method', 'method' => 'sleep', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3]],
+                ['class' => 'Carbon\\WrapperClock', 'kind' => 'method', 'method' => 'sleep', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|unit_float<'second'>", 'majors' => [3]],
+            ],
+            'properties' => [],
+            'returns' => [
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInRealMicroseconds', 'type' => "unit_int<'microsecond'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInRealMilliseconds', 'type' => "unit_int<'millisecond'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInRealSeconds', 'type' => "unit_int<'second'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInRealMinutes', 'type' => "unit_int<'minute'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInRealHours', 'type' => "unit_int<'hour'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'floatDiffInRealSeconds', 'type' => "unit_float<'second'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'floatDiffInRealMinutes', 'type' => "unit_float<'minute'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'floatDiffInRealHours', 'type' => "unit_float<'hour'>", 'majors' => [2]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInMicroseconds', 'type' => "unit_float<'microsecond'>", 'majors' => [3]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInMilliseconds', 'type' => "unit_float<'millisecond'>", 'majors' => [3]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInSeconds', 'type' => "unit_float<'second'>", 'majors' => [3]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInMinutes', 'type' => "unit_float<'minute'>", 'majors' => [3]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInHours', 'type' => "unit_float<'hour'>", 'majors' => [3]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'secondsSinceMidnight', 'type' => "unit_float<'second'>", 'majors' => [3]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'secondsUntilEndOfDay', 'type' => "unit_float<'second'>", 'majors' => [3]],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInUTCMicroseconds', 'type' => "unit_float<'microsecond'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInUTCMilliseconds', 'type' => "unit_float<'millisecond'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInUTCSeconds', 'type' => "unit_float<'second'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInUTCMinutes', 'type' => "unit_float<'minute'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
+                ['class' => 'Carbon\\CarbonInterface', 'kind' => 'method', 'method' => 'diffInUTCHours', 'type' => "unit_float<'hour'>", 'majors' => [3], 'minimumVersions' => [3 => '3.2.0']],
             ],
         ],
     ];

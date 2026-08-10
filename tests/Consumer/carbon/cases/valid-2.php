@@ -63,6 +63,7 @@ $start->addRealHours(unit(5, 'hour'));
 $start->subRealHours();
 $start->addRealDay();
 $start->addMonth();
+$start->addRealSeconds(unit(10, 'second'))->subDays(1);
 
 function exerciseCarbonTwoInterface(CarbonInterface $date): void
 {
@@ -70,4 +71,4 @@ function exerciseCarbonTwoInterface(CarbonInterface $date): void
     $date->addRealSeconds(unit(2, 'second'));
 }
 
-assertType(CarbonInterface::class, $end->addRealSeconds(unit(2, 'second')));
+assertType(CarbonImmutable::class, $end->addRealSeconds(unit(2, 'second')));

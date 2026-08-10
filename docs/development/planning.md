@@ -1,8 +1,8 @@
 # Planning
 
 Yumemi Apocrypha is the separately versioned home for curated unit-aware integrations with third-party PHP packages. Its
-primary maintenance obligation is to keep every enabled stub structurally compatible with the upstream versions it
-claims to support and semantically accurate about the represented units.
+primary maintenance obligation is to keep every enabled stub or metadata adapter structurally compatible with the
+upstream versions it claims to support and semantically accurate about the represented units.
 
 ## Current Scope
 
@@ -12,7 +12,8 @@ claims to support and semantically accurate about the represented units.
   releases below a package-specific minimum.
 - `nesbot/carbon` covers fixed-duration differences, adjustments, and waits from Carbon 2.62.1 through Carbon 3. Its
   three version profiles preserve Carbon 2's integer APIs, Carbon 3.0 through 3.1's `Real` compatibility aliases, and
-  Carbon 3.2 and later's `UTC` aliases without presenting calendar-relative operations as fixed durations.
+  Carbon 3.2 and later's `UTC` aliases without presenting calendar-relative operations as fixed durations. A
+  metadata-driven adapter preserves Carbon's complete upstream API and concrete receiver types.
 - `james-heinrich/getid3` covers a bounded open result shape for byte counts, durations, bitrates, sample rates, and
   frame rates from getID3 1.9.22 and later 1.x releases and 2.0.0-beta6 and later 2.x releases.
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
@@ -34,15 +35,16 @@ claims to support and semantically accurate about the represented units.
   distinguishes request delays before and after 7.11.0; getID3 uses minimum and major selection for its global 1.x and
   namespaced 2.x APIs; Illuminate Process and Guzzle also use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
-  a representative Composer archive, and Laravel 11 through 13 replacement metadata for every Illuminate integration.
-  Every Illuminate subpackage and the combined framework fixture run both with and without Larastan. HttpFoundation and
-  Stopwatch run both with and without `phpstan/phpstan-symfony` 2 across every supported Symfony major.
+  default symlinked path installs, a representative Composer archive, and Laravel 11 through 13 replacement metadata for
+  every Illuminate integration. Every Illuminate subpackage and the combined framework fixture run both with and without
+  Larastan. HttpFoundation and Stopwatch run both with and without `phpstan/phpstan-symfony` 2 across every supported
+  Symfony major.
 - Akashi inventories every fenced PHP example in the README and public documentation. An explicit manifest assigns each
   current example to its real isolated consumer, and coverage tests reject unlisted documents, unmarked or unclassified
   examples, stale manifest entries, and routes that are not wired into the consumer harness. Akashi preserves each
   authored fixture exactly while leaving package installation and PHPStan verification in that consumer.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
-  stubs and their selection policy.
+  stubs, metadata adapters, and their selection policy.
 
 ## Maintenance Policy
 
@@ -57,17 +59,8 @@ metadata adapter rather than loading both.
 
 ## Maintenance Backlog
 
-- Resolve the release-blocking Carbon API-preservation failure found by the
-  [BookStack application smoke test](bookstack-application-smoke-test-2026-08-09.md). A partial `CarbonInterface` stub
-  can hide unrelated valid methods after a branded call; replace it with metadata-driven extensions or another design
-  that preserves the complete upstream surface, then add a chained unrelated-method regression case.
-- Make the package entry point safe for Composer's default symlinked path repositories and add a symlink-mode consumer
-  test. The existing mirror and archive cases do not expose the current parent-relative Yumemi include failure.
-- Document the migration from a manually included Larastan extension to automatic Composer extension discovery. Both
-  registration mechanisms work, but enabling the installer without removing the manual Larastan include loads it twice.
-- Extend the Larastan compatibility adapter to cover supported boundaries reached through facades and global helpers.
-  The BookStack probe found that direct cache repository calls are enforced while `Cache::put()` and `cache()->put()`
-  are not.
+- Repeat the [BookStack application smoke test](bookstack-application-smoke-test-2026-08-09.md) after the Carbon,
+  symlinked-install, and Laravel cache entry-point fixes, and retain the new upstream revision and dependency versions.
 - Add scheduled CI that resolves and tests the latest compatible upstream releases. The consumer matrix currently
   exercises those releases when CI runs, but push- and pull-request-only triggers cannot detect upstream drift while the
   repository is otherwise idle.

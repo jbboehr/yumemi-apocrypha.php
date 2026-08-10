@@ -55,7 +55,7 @@ use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\TypeTraverser;
 
 /**
- * Restores unit-bearing return types while preserving Larastan's unrelated precision.
+ * Adds unit-bearing return types while preserving upstream and extension precision.
  *
  * @phpstan-type ReturnMatch array{
  *     class: non-empty-string,
@@ -65,7 +65,8 @@ use PHPStan\Type\TypeTraverser;
  *     strategy?: 'benchmark-measure'|'benchmark-value',
  *     majors?: non-empty-list<int>,
  *     minimumVersions?: non-empty-array<int, non-empty-string>,
- *     beforeVersions?: non-empty-array<int, non-empty-string>
+ *     beforeVersions?: non-empty-array<int, non-empty-string>,
+ *     adapterOnly?: true
  * }
  *
  * @logion [AWC 42:15] The western court planted cypress beside the nameless graves, and generations afterward the road
@@ -73,7 +74,7 @@ use PHPStan\Type\TypeTraverser;
  *
  * @internal
  */
-final class LarastanCompatibilityUnitReturnTypeExtension implements
+final class PackageIntegrationUnitReturnTypeExtension implements
     DynamicMethodReturnTypeExtension,
     DynamicStaticMethodReturnTypeExtension
 {
@@ -214,7 +215,7 @@ final class LarastanCompatibilityUnitReturnTypeExtension implements
      */
     private function boundary(string $kind, string $method): ?array
     {
-        if (!$this->selection->usesLarastanAdapter($this->integration)) {
+        if (!$this->selection->usesUnitBoundaryAdapter($this->integration)) {
             return null;
         }
 
@@ -224,12 +225,12 @@ final class LarastanCompatibilityUnitReturnTypeExtension implements
             return null;
         }
 
-        foreach (LarastanCompatibilityIntegrationMetadata::all()[$this->integration]['returns'] ?? [] as $boundary) {
+        foreach (PackageIntegrationUnitBoundaryMetadata::all()[$this->integration]['returns'] ?? [] as $boundary) {
             if (
                 $boundary['class'] === $this->class
                 && $boundary['kind'] === $kind
                 && strcasecmp($boundary['method'], $method) === 0
-                && LarastanCompatibilityIntegrationMetadata::supportsVersion($boundary, $major, $version)
+                && PackageIntegrationUnitBoundaryMetadata::supportsVersion($boundary, $major, $version)
             ) {
                 return $boundary;
             }

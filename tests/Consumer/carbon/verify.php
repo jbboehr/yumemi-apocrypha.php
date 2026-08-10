@@ -155,7 +155,8 @@ $prefix = $profile === '3-real' ? 'Real' : 'UTC';
 $date = CarbonImmutable::parse('2026-01-01 00:00:00');
 foreach (['Microseconds', 'Milliseconds', 'Seconds', 'Minutes', 'Hours'] as $unit) {
     $added = $date->{'add'.$prefix.$unit}(2);
-    $difference = $date->{'diffIn'.$prefix.$unit}($added);
+    $differenceMethod = $profile === '3-real' ? 'diffIn'.$unit : 'diffInUTC'.$unit;
+    $difference = $date->{$differenceMethod}($added);
 
     if ($difference !== 2.0) {
         throw new RuntimeException(sprintf('Carbon %s %s methods did not preserve their fixed unit.', $prefix, $unit));

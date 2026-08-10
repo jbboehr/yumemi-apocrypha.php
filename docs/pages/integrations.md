@@ -68,12 +68,10 @@ Here `//!` marks the expected PHPStan diagnostic exercised by the documentation 
 Carbon 2.62.1 through 2.x uses integer-returning `diffInReal*()` methods, float-returning `floatDiffInReal*()` methods,
 and integer `addReal*()`/`subReal*()` adjustments. Carbon 3 uses float-returning `diffIn*()` methods and accepts either
 integer or float branded values for fixed-time adjustments. Carbon 3.0 and 3.1 expose the compatibility aliases
-`addReal*()`, `subReal*()`, and `diffInReal*()`; Carbon 3.2 and later use `addUTC*()`, `subUTC*()`, and `diffInUTC*()`.
-Apocrypha selects the matching version profile from the installed release.
-
-The current development Carbon profiles are not yet application-ready. Their partial `CarbonInterface` declarations can
-hide unrelated valid Carbon methods after a branded call. Keep the Carbon integration disabled until the profile is
-replaced with an API-preserving implementation.
+`addReal*()` and `subReal*()`; Carbon 3.2 and later use `addUTC*()`, `subUTC*()`, and `diffInUTC*()`. Apocrypha selects
+the matching version profile from the installed release and applies it through PHPStan argument and return extensions.
+Carbon's own declarations remain authoritative, so branded calls retain the concrete receiver type and unrelated Carbon
+methods remain available.
 
 The Carbon 2 integration starts at 2.62.1, the first release in the supported signature line that runs on Apocrypha's
 PHP 8.2 baseline. Earlier Carbon 2 releases may advertise PHP 8 compatibility but fail against PHP 8.2's `DateTime`
@@ -206,6 +204,9 @@ function recordCacheAttempt(RateLimiter $limiter): void
 
 Plain integers are rejected at annotated boundaries. Existing `DateTimeInterface`, `DateInterval`, closure, and nullable
 alternatives remain valid where Laravel accepts them, as do calls that omit an optional duration.
+
+With Larastan, the same boundaries are enforced through direct repository calls, the `Cache` facade, and method calls on
+the repository returned by the zero-argument `cache()` helper.
 
 ## Illuminate Cookie
 
@@ -413,11 +414,14 @@ Yumemi's native brands do not represent coordinate origins.
 
 ## Limitations
 
-- Most stubs cover signatures shared by all verified majors. A release-specific stub is selected where a supported
-  signature differs, as with Carbon's three profiles and Illuminate Process on Laravel 13.
+- Most stubs cover signatures shared by all verified majors. A release-specific stub or metadata profile is selected
+  where a supported signature differs, as with Carbon's three profiles and Illuminate Process on Laravel 13.
 - Native branded arguments are not converted. Dimensionally compatible but differently scaled units remain invalid.
 - Dynamic or unsupported unit expressions lose Yumemi's precise brand according to the core extension's normal rules.
-- Larastan-mode argument and property violations use the PHPStan diagnostic identifier `apocrypha.unit`. An unpacked
+- Application wrappers can erase a third-party option's key-specific type when they merge generic arrays before the
+  package boundary. Give the wrapper parameter the appropriate Yumemi native type, or construct a branded value before
+  placing it in the options array; Apocrypha cannot soundly recover the original scalar after that information is lost.
+- Metadata-adapter argument and property violations use the PHPStan diagnostic identifier `apocrypha.unit`. An unpacked
   argument is checked when PHPStan can resolve it to a finite constant array; Apocrypha does not guess positions after
   an unknown unpack.
 - Enabling Apocrypha enables Yumemi's parser-based optional-tag promotion, with the associated PHPStan upgrade and

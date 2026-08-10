@@ -20,15 +20,24 @@ services:
             strictAutoDetect: %yumemiApocrypha.strictAutoDetect%
         tags:
             - phpstan.stubFilesExtension
-    larastanCompatibilityUnitBoundaryExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitBoundaryExtension
+    packageIntegrationUnitBoundaryExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitBoundaryExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
         tags:
             - phpstan.rules.rule
             - phpstan.broker.expressionTypeResolverExtension
-    larastanCompatibilityCacheRepositoryReturnTypeExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+    packageIntegrationCarbonReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: nesbot/carbon
+            class: Carbon\CarbonInterface
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    packageIntegrationCacheRepositoryReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
             integration: illuminate/cache
@@ -36,8 +45,8 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
-    larastanCompatibilityCacheRateLimiterReturnTypeExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+    packageIntegrationCacheRateLimiterReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
             integration: illuminate/cache
@@ -45,8 +54,17 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
-    larastanCompatibilityFilesystemContractReturnTypeExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+    packageIntegrationCacheFacadeReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/cache
+            class: Illuminate\Support\Facades\Cache
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    packageIntegrationFilesystemContractReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
             integration: illuminate/filesystem
@@ -54,8 +72,8 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
-    larastanCompatibilityFilesystemReturnTypeExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+    packageIntegrationFilesystemReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
             integration: illuminate/filesystem
@@ -63,8 +81,8 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
-    larastanCompatibilityFilesystemAdapterReturnTypeExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+    packageIntegrationFilesystemAdapterReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
             integration: illuminate/filesystem
@@ -72,8 +90,8 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
-    larastanCompatibilityLockableFileReturnTypeExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+    packageIntegrationLockableFileReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
             integration: illuminate/filesystem
@@ -81,8 +99,8 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
-    larastanCompatibilityHttpFileReturnTypeExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+    packageIntegrationHttpFileReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
             integration: illuminate/http
@@ -90,8 +108,8 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
-    larastanCompatibilityBenchmarkReturnTypeExtension:
-        class: jbboehr\Yumemi\Apocrypha\PHPStan\LarastanCompatibilityUnitReturnTypeExtension
+    packageIntegrationBenchmarkReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:
             selection: @configuredIntegrationStubFilesExtension
             integration: illuminate/support

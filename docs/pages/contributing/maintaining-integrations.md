@@ -70,6 +70,11 @@ guardrail, not a substitute for real consumer coverage: verify positional and na
 reads and writes, return precision, and both direct-package and `laravel/framework` installs. Unknown unpack positions
 must not produce a speculative `apocrypha.unit` diagnostic.
 
+Carbon always uses the metadata adapter because a partial `CarbonInterface` stub can replace unrelated upstream methods.
+Keep its retained profile stubs as reviewable semantic references, but never enable them alongside the adapter. Every
+profile must chain a branded fixed-duration call into an unrelated upstream method and assert the concrete receiver
+type.
+
 Symfony compatibility currently keeps Apocrypha's stubs enabled because `phpstan/phpstan-symfony` 2 does not register
 the same declarations for supported HttpFoundation and Stopwatch releases. Exercise every supported Symfony major in
 both modes so a change in its version-conditional stub loader cannot pass unnoticed.
@@ -77,6 +82,9 @@ both modes so a change in its version-conditional stub loader cannot pass unnoti
 At least one supported matrix entry uses a Composer archive. Each archive-mode run also verifies the corresponding Git
 archive. Both payload checks must confirm that runtime source, NEON entry points, legal notices, and stubs are present
 while tests, local state, and development tooling are excluded.
+
+Source-mode consumers use Composer's default symlinked path-repository layout; archive-mode consumers use a mirrored
+path. Keep both modes because package-relative NEON includes can behave differently after symlink resolution.
 
 Every fenced PHP example in `README.md` and `docs/pages/**` must have a `yumemi-example` marker and an entry in the
 public-documentation verification manifest. Examples that use third-party APIs belong to the corresponding isolated
@@ -92,7 +100,7 @@ adapter.
    only part of a major is compatible, and select major-specific files when verified signatures differ.
 2. Add its stub beneath `stubs/<vendor>/` with ordinary fallback PHPDoc and structurally matching `@yumemi-*` tags.
 3. Add parser tests for promoted parameter, return, property, callback, collection, and union forms used by the stub.
-4. For an Illuminate integration, mirror every promoted tag in `LarastanCompatibilityIntegrationMetadata`, register
+4. For an extension-backed integration, mirror every promoted tag in `PackageIntegrationUnitBoundaryMetadata`, register
    every class with a return boundary in `apocrypha.neon`, and exercise the consumer in both standalone and Larastan
    modes.
 5. Add an isolated Composer consumer with upstream reflection, accepted calls, rejected calls, and autodetection. Use

@@ -12,7 +12,8 @@ package. `V` means a branded value is accepted or an inferred return is asserted
 `cases/invalid*.php` rejects a plain scalar, a differently scaled compatible unit, or a different dimension. `I-family`
 means the boundary is exercised directly by `V`, while rejection is tested on another boundary with the identical
 promoted type. Every integration runs explicit and autodetected registration; every Illuminate integration also runs
-through the Larastan adapter, whose catalog is mechanically compared with the selected canonical stub.
+through the package-boundary adapter, whose core catalog is mechanically compared with the selected canonical stub.
+Carbon always uses the same adapter so its partial verification stubs cannot replace Carbon's complete declarations.
 
 The audit preserves upstream scalar alternatives and nullability, keeps dynamic result and option arrays open, and does
 not narrow plain upstream integers from implementation behavior alone. It distinguishes relative durations from Unix
@@ -38,10 +39,10 @@ for signature changes.
 
 ## Carbon
 
-> **Application-audit finding:** the [BookStack smoke test](bookstack-application-smoke-test-2026-08-09.md) showed that
-> the partial Carbon 3 `CarbonInterface` stub can hide unrelated valid methods after a branded call. The S/V/I checks
-> below establish the selected boundaries and release profiles, but do not establish preservation of Carbon's complete
-> API. Treat the Carbon integration as not release-ready until that regression is fixed and covered.
+> **Application-audit resolution:** the [BookStack smoke test](bookstack-application-smoke-test-2026-08-09.md) showed
+> that a partial Carbon 3 `CarbonInterface` stub could hide unrelated valid methods after a branded call. Carbon now
+> always uses the metadata adapter, leaving upstream declarations authoritative. The consumer chains a branded
+> adjustment into an unrelated calendar method and verifies that concrete `CarbonImmutable` precision is preserved.
 
 Evidence: Carbon's
 [`Difference` trait](https://github.com/briannesbitt/Carbon/blob/3.13.2/src/Carbon/Traits/Difference.php),
@@ -56,10 +57,10 @@ corresponding files at every profile boundary.
 | Carbon 2 `addReal*` and `subReal*` fixed-time adjustments                                                                | integer unit matching the suffix                                   | S/V/I        |
 | Carbon 3 `diffInMicroseconds` through `diffInHours`, `secondsSinceMidnight`, `secondsUntilEndOfDay`                      | float unit matching the method                                     | S/V/I-family |
 | Carbon 3 `sleep()` on `CarbonInterface`, `Carbon`, `CarbonImmutable`, `FactoryImmutable`, and `WrapperClock`             | integer or float seconds                                           | S/V/I        |
-| Carbon 3.0–3.1 `diffInReal*`, `addReal*`, `subReal*`; 3.2+ `diffInUTC*`, `addUTC*`, `subUTC*`                            | float returns and integer-or-float adjustments matching the suffix | S/V/I        |
+| Carbon 3.0–3.1 `addReal*`, `subReal*`; 3.2+ `diffInUTC*`, `addUTC*`, `subUTC*`                                           | float returns and integer-or-float adjustments matching the suffix | S/V/I        |
 
 Calendar-relative days, weeks, months, and years, timezone offsets, and timestamps remain unbranded. The profile tests
-also confirm that the inactive `Real` or `UTC` family is not manufactured by a stub.
+also confirm that the inactive `Real` or `UTC` family is not manufactured by the adapter.
 
 ## Guzzle
 

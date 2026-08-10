@@ -50,4 +50,4 @@ $end = Carbon::parse('2026-01-01 00:00:05');
 
 $start->addRealSeconds(5);
 $start->addRealSeconds(unit(5, 'minute'));
-recordEarlyCarbonHours($start->diffInRealSeconds($end));
+recordEarlyCarbonHours($start->diffInSeconds($end));

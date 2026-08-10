@@ -36,34 +36,12 @@
 
 declare(strict_types=1);
 
-use Carbon\Carbon;
-use Carbon\CarbonImmutable;
-use Carbon\CarbonInterface;
+namespace ApocryphaCacheConsumer;
 
-use function jbboehr\Yumemi\unit;
-use function PHPStan\Testing\assertType;
+use Illuminate\Support\Facades\Cache;
 
-$start = Carbon::parse('2026-01-01 00:00:00.000000');
-$end = CarbonImmutable::parse('2026-01-01 01:02:03.004005');
-
-assertType("unit_float<'1/1000000 * second'>", $start->diffInUTCMicroseconds($end));
-assertType("unit_float<'1/1000 * second'>", $start->diffInUTCMilliseconds($end));
-assertType("unit_float<'second'>", $start->diffInUTCSeconds($end));
-assertType("unit_float<'minute'>", $start->diffInUTCMinutes($end));
-assertType("unit_float<'hour'>", $start->diffInUTCHours($end));
-
-$start->addUTCMicroseconds(unit(0.5, 'microsecond'));
-$start->subUTCMilliseconds(unit(5, 'millisecond'));
-$start->addUTCSeconds(unit(5.5, 'second'));
-$start->subUTCMinutes(unit(5, 'minute'));
-$start->addUTCHours(unit(0.5, 'hour'));
-$start->subUTCHours();
-$start->addUTCDay();
-
-function exerciseCurrentCarbonThreeInterface(CarbonInterface $date): void
+function rejectInvalidLarastanCacheEntryPointUnits(): void
 {
-    assertType("unit_float<'second'>", $date->diffInUTCSeconds(CarbonImmutable::now()));
-    $date->addUTCSeconds(unit(2, 'second'));
+    Cache::put('facade', 'value', 60);
+    cache()->put('helper', 'value', 60);
 }
-
-assertType(CarbonImmutable::class, $end->addUTCSeconds(unit(2, 'second')));

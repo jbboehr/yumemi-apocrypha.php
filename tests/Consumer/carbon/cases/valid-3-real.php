@@ -46,12 +46,6 @@ use function PHPStan\Testing\assertType;
 $start = Carbon::parse('2026-01-01 00:00:00.000000');
 $end = CarbonImmutable::parse('2026-01-01 01:02:03.004005');
 
-assertType("unit_float<'1/1000000 * second'>", $start->diffInRealMicroseconds($end));
-assertType("unit_float<'1/1000 * second'>", $start->diffInRealMilliseconds($end));
-assertType("unit_float<'second'>", $start->diffInRealSeconds($end));
-assertType("unit_float<'minute'>", $start->diffInRealMinutes($end));
-assertType("unit_float<'hour'>", $start->diffInRealHours($end));
-
 $start->addRealMicroseconds(unit(0.5, 'microsecond'));
 $start->subRealMilliseconds(unit(5, 'millisecond'));
 $start->addRealSeconds(unit(5.5, 'second'));
@@ -62,8 +56,7 @@ $start->addRealDay();
 
 function exerciseEarlyCarbonThreeInterface(CarbonInterface $date): void
 {
-    assertType("unit_float<'second'>", $date->diffInRealSeconds(CarbonImmutable::now()));
     $date->addRealSeconds(unit(2, 'second'));
 }
 
-assertType(CarbonInterface::class, $end->addRealSeconds(unit(2, 'second')));
+assertType(CarbonImmutable::class, $end->addRealSeconds(unit(2, 'second')));

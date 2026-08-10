@@ -43,6 +43,7 @@ use PhpParser\Node\Arg;
 use PhpParser\Node\Expr;
 use PhpParser\Node\Expr\Assign;
 use PhpParser\Node\Expr\AssignOp;
+use PhpParser\Node\Expr\FuncCall;
 use PhpParser\Node\Expr\MethodCall;
 use PhpParser\Node\Expr\New_;
 use PhpParser\Node\Expr\PostDec;
@@ -55,6 +56,7 @@ use PhpParser\Node\Identifier;
 use PhpParser\Node\Name;
 use PHPStan\Analyser\Scope;
 use PHPStan\PhpDoc\TypeStringResolver;
+use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Rules\IdentifierRuleError;
 use PHPStan\Rules\Rule;
 use PHPStan\Rules\RuleErrorBuilder;
@@ -67,7 +69,7 @@ use PHPStan\Type\TypeCombinator;
 use PHPStan\Type\VerbosityLevel;
 
 /**
- * Enforces Larastan-mode argument and property boundaries without replacing upstream declarations.
+ * Enforces package argument and property boundaries without replacing upstream declarations.
  *
  * @phpstan-type MappedArgument array{type: Type, node: Arg}
  * @phpstan-type MappedArguments array{
@@ -91,7 +93,7 @@ use PHPStan\Type\VerbosityLevel;
  *
  * @internal
  */
-final class LarastanCompatibilityUnitBoundaryExtension implements Rule, ExpressionTypeResolverExtension
+final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionTypeResolverExtension
 {
     /**
      * @logion [AWC 12:17] The mariners returned the shattered lens unto the daughters of its maker, who received it
@@ -197,7 +199,12 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
 
             $kind = 'method';
             $method = $call->name->toString();
-            $receiver = $scope->getType($call->var);
+            $receiver = $call->var instanceof FuncCall
+                && $call->var->name instanceof Name
+                && strcasecmp($scope->resolveName($call->var->name), 'cache') === 0
+                && $call->var->getArgs() === []
+                    ? new ObjectType('Illuminate\\Cache\\Repository')
+                    : $scope->getType($call->var);
         } elseif ($call instanceof StaticCall) {
             if (!$call->name instanceof Identifier) {
                 return [];
@@ -224,8 +231,8 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
         $errors = [];
         $checked = [];
 
-        foreach (LarastanCompatibilityIntegrationMetadata::all() as $integration => $metadata) {
-            if (!$this->selection->usesLarastanAdapter($integration)) {
+        foreach (PackageIntegrationUnitBoundaryMetadata::all() as $integration => $metadata) {
+            if (!$this->selection->usesUnitBoundaryAdapter($integration)) {
                 continue;
             }
 
@@ -249,7 +256,7 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
                 if (
                     $boundary['kind'] !== $kind
                     || strcasecmp($boundary['method'], $method) !== 0
-                    || !LarastanCompatibilityIntegrationMetadata::supportsVersion($boundary, $major, $version)
+                    || !PackageIntegrationUnitBoundaryMetadata::supportsVersion($boundary, $major, $version)
                     || !$this->matchesReceiver($receiver, $boundary['class'])
                 ) {
                     continue;
@@ -277,6 +284,17 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
                     continue;
                 }
 
+                if (!$this->upstreamAccepts(
+                    $receiver,
+                    $method,
+                    $call->getArgs(),
+                    $boundary['position'],
+                    $argument['type'],
+                    $scope,
+                )) {
+                    continue;
+                }
+
                 $errors[] = $this->error(
                     $kind === 'constructor'
                         ? sprintf('Parameter $%s of class %s constructor', $boundary['name'], $boundary['class'])
@@ -289,6 +307,43 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
         }
 
         return $errors;
+    }
+
+    /**
+     * Leaves a native signature violation to PHPStan instead of emitting a second unit diagnostic.
+     *
+     * @param array<Arg> $arguments
+     *
+     * @logion [SFA 73:41] The physician of the border hospice named each wound once, and the afflicted departed in
+     *     peace; for truth repeated without need burdeneth the hearer but addeth nothing unto mercy.
+     */
+    private function upstreamAccepts(
+        Type $receiver,
+        string $method,
+        array $arguments,
+        int $position,
+        Type $actual,
+        Scope $scope,
+    ): bool {
+        $reflection = $scope->getMethodReflection($receiver, $method);
+        if ($reflection === null) {
+            return true;
+        }
+
+        $parameters = ParametersAcceptorSelector::selectFromArgs(
+            $scope,
+            $arguments,
+            $reflection->getVariants(),
+        )->getParameters();
+        if (!isset($parameters[$position])) {
+            return true;
+        }
+
+        return $this->ruleLevelHelper->accepts(
+            $parameters[$position]->getType(),
+            $actual,
+            $scope->isDeclareStrictTypes(),
+        )->result;
     }
 
     /**
@@ -463,8 +518,8 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
      */
     private function propertyBoundary(Type $receiver, string $property): ?array
     {
-        foreach (LarastanCompatibilityIntegrationMetadata::all() as $integration => $metadata) {
-            if (!$this->selection->usesLarastanAdapter($integration)) {
+        foreach (PackageIntegrationUnitBoundaryMetadata::all() as $integration => $metadata) {
+            if (!$this->selection->usesUnitBoundaryAdapter($integration)) {
                 continue;
             }
 
@@ -477,7 +532,7 @@ final class LarastanCompatibilityUnitBoundaryExtension implements Rule, Expressi
             foreach ($metadata['properties'] as $boundary) {
                 if (
                     $boundary['property'] !== $property
-                    || !LarastanCompatibilityIntegrationMetadata::supportsVersion($boundary, $major, $version)
+                    || !PackageIntegrationUnitBoundaryMetadata::supportsVersion($boundary, $major, $version)
                     || !$this->matchesReceiver($receiver, $boundary['class'])
                 ) {
                     continue;

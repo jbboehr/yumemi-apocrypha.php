@@ -72,9 +72,9 @@ assert_archive_payload() {
         src/Exception/InvalidConfigurationException.php
         src/Exception/LogicException.php
         src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
-        src/PHPStan/LarastanCompatibilityIntegrationMetadata.php
-        src/PHPStan/LarastanCompatibilityUnitBoundaryExtension.php
-        src/PHPStan/LarastanCompatibilityUnitReturnTypeExtension.php
+        src/PHPStan/PackageIntegrationUnitBoundaryExtension.php
+        src/PHPStan/PackageIntegrationUnitBoundaryMetadata.php
+        src/PHPStan/PackageIntegrationUnitReturnTypeExtension.php
         stubs/getid3/getid3-1.stub
         stubs/getid3/getid3-2.stub
         stubs/carbon/carbon-2.stub
@@ -189,11 +189,11 @@ echo json_encode([
     "type" => "path",
     "url" => $argv[1],
     "options" => [
-        "symlink" => false,
+        "symlink" => $argv[2] === "source",
         "versions" => ["jbboehr/yumemi-apocrypha" => "dev-consumer"],
     ],
 ], JSON_THROW_ON_ERROR);
-' "$package_dir")
+' "$package_dir" "$PACKAGE_MODE")
 readonly repository_json
 
 yumemi_repository_json=''
@@ -209,11 +209,11 @@ echo json_encode([
     "type" => "path",
     "url" => $argv[1],
     "options" => [
-        "symlink" => false,
+        "symlink" => $argv[2] === "source",
         "versions" => ["jbboehr/yumemi" => "dev-master"],
     ],
 ], JSON_THROW_ON_ERROR);
-' "$YUMEMI_PACKAGE_DIR")
+' "$YUMEMI_PACKAGE_DIR" "$PACKAGE_MODE")
 fi
 readonly yumemi_repository_json
 
@@ -428,7 +428,7 @@ run_carbon() {
         expected_profile_diagnostics=(
             "addRealSeconds() expects unit_int<'second'>, int given"
             "addRealSeconds() expects unit_int<'second'>, 5&unit_int<'minute'> given"
-            "addRealSeconds() expects unit_int<'second'>, unit_float<'second'> given"
+            "addRealSeconds() expects int, unit_float<'second'> given"
             "recordCarbonTwoHours expects unit_int<'hour'>, unit_int<'second'> given"
         )
         run_phpstan_case "$project_dir" phpstan.neon valid-2.php
@@ -505,6 +505,17 @@ run_illuminate_cache() {
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+    if [[ $COMPATIBILITY_MODE == larastan ]]; then
+        local larastan_entry_point_diagnostics=(
+            "Illuminate\\Support\\Facades\\Cache::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, int given"
+            "Illuminate\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, int given"
+        )
+        run_phpstan_case "$project_dir" phpstan.neon valid-larastan.php
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-larastan.php
+        run_phpstan_case "$project_dir" phpstan.neon invalid-larastan.php "${larastan_entry_point_diagnostics[@]}"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-larastan.php \
+            "${larastan_entry_point_diagnostics[@]}"
+    fi
     run_documentation_phpstan_case illuminate-cache "$project_dir" phpstan.neon "$documentation_case" illuminate-cache-invalid
     run_documentation_phpstan_case illuminate-cache "$project_dir" phpstan.neon "$getting_started_case" getting-started-invalid
     run_documentation_phpstan_case illuminate-cache "$project_dir" phpstan.neon "$readme_case" readme-cache-invalid
@@ -621,9 +632,7 @@ run_simple_illuminate_integration() {
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     if [[ $FIXTURE_SUITE == illuminate-support && $COMPATIBILITY_MODE == larastan ]]; then
-        expected_diagnostics+=(
-            "Parameter #1 \$duration of static method Illuminate\\Support\\Sleep::usleep() expects int, unit_float<'1/1000000 * second'> given"
-        )
+        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
     fi
 
     if [[ $FIXTURE_SUITE == illuminate-queue ]]; then
