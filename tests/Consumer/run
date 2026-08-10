@@ -14,6 +14,7 @@ readonly PACKAGE_MODE=${1:-source}
 readonly FIXTURE_SUITE=${2:-illuminate-cache}
 readonly PACKAGE_MAJOR=${3:-12}
 readonly COMPATIBILITY_MODE=${4:-plain}
+readonly CONSUMER_VENDOR_DIR=${CONSUMER_VENDOR_DIR:-vendor}
 readonly YUMEMI_PACKAGE_DIR=${YUMEMI_PACKAGE_DIR:-$PROJECT_ROOT/..}
 
 if [[ ! -x $AKASHI ]]; then
@@ -23,6 +24,16 @@ fi
 
 if [[ $COMPATIBILITY_MODE != plain && $COMPATIBILITY_MODE != larastan && $COMPATIBILITY_MODE != phpstan-symfony ]]; then
     printf 'Compatibility mode must be plain, larastan, or phpstan-symfony; received %s.\n' "$COMPATIBILITY_MODE" >&2
+    exit 2
+fi
+
+if [[ $CONSUMER_VENDOR_DIR == /* ]]; then
+    printf 'The consumer vendor directory must be relative; received %s.\n' "$CONSUMER_VENDOR_DIR" >&2
+    exit 2
+fi
+
+if [[ $CONSUMER_VENDOR_DIR != vendor && $FIXTURE_SUITE != guzzle && $FIXTURE_SUITE != manual ]]; then
+    printf 'Nondefault consumer vendor-directory coverage is limited to the guzzle and manual fixtures.\n' >&2
     exit 2
 fi
 
@@ -216,6 +227,7 @@ echo json_encode([
 ' "$YUMEMI_PACKAGE_DIR" "$PACKAGE_MODE")
 fi
 readonly yumemi_repository_json
+export COMPOSER_VENDOR_DIR=$CONSUMER_VENDOR_DIR
 
 enable_larastan() {
     local project_dir=$1
@@ -301,7 +313,7 @@ run_phpstan_case() {
     local stderr_file
     shift 3
     local expected_diagnostics=("$@")
-    local phpstan=(vendor/bin/phpstan analyse --no-progress --configuration="$configuration")
+    local phpstan=("$project_dir/$CONSUMER_VENDOR_DIR/bin/phpstan" analyse --no-progress --configuration="$configuration")
 
     if [[ $case_file == valid*.php ]]; then
         (
@@ -339,7 +351,13 @@ run_phpstan_without_apocrypha_diagnostic() {
     local configuration=$2
     local case_file=$3
     local output
-    local phpstan=(vendor/bin/phpstan analyse --no-progress --error-format=json --configuration="$configuration")
+    local phpstan=(
+        "$project_dir/$CONSUMER_VENDOR_DIR/bin/phpstan"
+        analyse
+        --no-progress
+        --error-format=json
+        --configuration="$configuration"
+    )
 
     output=$(
         cd -- "$project_dir"
@@ -360,7 +378,7 @@ assert_stub_paths_use_consumer_install() {
     # The single-quoted argument is a PHP program, not a shell expression.
     # shellcheck disable=SC2016
     php -r '
-require $argv[1]."/vendor/autoload.php";
+require $argv[1].DIRECTORY_SEPARATOR.$argv[3].DIRECTORY_SEPARATOR."autoload.php";
 
 $extension = new jbboehr\Yumemi\Apocrypha\PHPStan\ConfiguredIntegrationStubFilesExtension(
     [$argv[2]],
@@ -373,7 +391,7 @@ if ($files === []) {
     exit(1);
 }
 
-$expectedPrefix = $argv[1].DIRECTORY_SEPARATOR."vendor".DIRECTORY_SEPARATOR
+$expectedPrefix = $argv[1].DIRECTORY_SEPARATOR.$argv[3].DIRECTORY_SEPARATOR
     ."jbboehr".DIRECTORY_SEPARATOR."yumemi-apocrypha".DIRECTORY_SEPARATOR;
 
 foreach ($files as $file) {
@@ -392,7 +410,7 @@ foreach ($files as $file) {
         exit(1);
     }
 }
-' "$project_dir" "$integration"
+' "$project_dir" "$integration" "$CONSUMER_VENDOR_DIR"
 }
 
 run_carbon() {
@@ -938,7 +956,7 @@ run_guzzle() {
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     assert_stub_paths_use_consumer_install "$project_dir" guzzlehttp/guzzle
-    php "$project_dir/verify.php"
+    php "$project_dir/verify.php" "$project_dir/$CONSUMER_VENDOR_DIR/autoload.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     local package_major=${PACKAGE_MAJOR%%.*}

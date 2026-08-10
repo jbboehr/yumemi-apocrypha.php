@@ -36,7 +36,8 @@
 
 declare(strict_types=1);
 
-require __DIR__ . '/vendor/autoload.php';
+$autoload = $argv[1] ?? __DIR__ . '/vendor/autoload.php';
+require $autoload;
 
 $version = Composer\InstalledVersions::getPrettyVersion('guzzlehttp/guzzle')
     ?? Composer\InstalledVersions::getVersion('guzzlehttp/guzzle');

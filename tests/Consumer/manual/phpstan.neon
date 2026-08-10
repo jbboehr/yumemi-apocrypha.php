@@ -1,6 +1,6 @@
 includes:
-    - vendor/jbboehr/yumemi/extension.neon
-    - vendor/jbboehr/yumemi-apocrypha/extension.neon
+    - %currentWorkingDirectory%/%env.COMPOSER_VENDOR_DIR%/jbboehr/yumemi/extension.neon
+    - %currentWorkingDirectory%/%env.COMPOSER_VENDOR_DIR%/jbboehr/yumemi-apocrypha/extension.neon
 
 parameters:
     level: max

@@ -260,7 +260,9 @@ jobs:
               run: tests/Consumer/run ${{ matrix.package-mode }} getid3 ${{ matrix.getid3-version }}
 
     guzzle:
-        name: Guzzle ${{ matrix.guzzle-version }} / PHP ${{ matrix.php-version }}
+        name:
+            Guzzle ${{ matrix.guzzle-version }} / ${{ matrix.package-mode }} / ${{ matrix.vendor-directory }} / PHP ${{
+            matrix.php-version }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
@@ -269,15 +271,23 @@ jobs:
                     - guzzle-version: "7"
                       package-mode: source
                       php-version: "8.2"
+                      vendor-directory: vendor
                     - guzzle-version: "8"
                       package-mode: archive
                       php-version: "8.2"
+                      vendor-directory: vendor
                     - guzzle-version: "7.10.0"
                       package-mode: source
                       php-version: "8.2"
+                      vendor-directory: vendor
                     - guzzle-version: "7.11.0"
                       package-mode: source
                       php-version: "8.2"
+                      vendor-directory: vendor
+                    - guzzle-version: "8"
+                      package-mode: source
+                      php-version: "8.2"
+                      vendor-directory: dependencies
         steps:
             - name: Checkout Apocrypha
               uses: actions/checkout@v7
@@ -315,6 +325,7 @@ jobs:
 
             - name: Test integration
               env:
+                  CONSUMER_VENDOR_DIR: ${{ matrix.vendor-directory }}
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
               run: tests/Consumer/run ${{ matrix.package-mode }} guzzle ${{ matrix.guzzle-version }}
 
@@ -395,6 +406,13 @@ jobs:
             - name: Test manual registration
               if: matrix.illuminate-version == '12' && matrix.compatibility-mode == 'plain'
               env:
+                  YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
+              run: tests/Consumer/run source manual 12
+
+            - name: Test manual registration with nondefault vendor directory
+              if: matrix.illuminate-version == '12' && matrix.compatibility-mode == 'plain'
+              env:
+                  CONSUMER_VENDOR_DIR: dependencies
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
               run: tests/Consumer/run source manual 12
 

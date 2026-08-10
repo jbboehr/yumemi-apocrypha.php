@@ -38,8 +38,9 @@ upstream versions it claims to support and semantically accurate about the repre
   default symlinked path installs, a representative Composer archive, and Laravel 11 through 13 replacement metadata for
   every Illuminate integration. Every Illuminate subpackage and the combined framework fixture run both with and without
   Larastan. HttpFoundation and Stopwatch run both with and without `phpstan/phpstan-symfony` 2 across every supported
-  Symfony major. Source installs keep selected stub paths beneath the consumer's `vendor/` tree instead of resolving
-  symlinks back to an external checkout.
+  Symfony major. Source installs keep selected stub paths beneath the consumer's dependency tree instead of resolving
+  symlinks back to an external checkout; a Guzzle source consumer and the manual-registration fixture repeat that path
+  resolution with Composer's `vendor-dir` set to `dependencies/`.
 - The repeated [BookStack application smoke test](bookstack-application-smoke-test-2026-08-09.md) verifies an inert
   symlinked install, full autodetection with Larastan, Cache facade and helper entry points, and clean adoption after
   seven cache durations are branded. Carbon preserves unrelated methods, and the complete applicable integration set
@@ -82,8 +83,6 @@ metadata adapter rather than loading both.
 
 - Add a generated PHPStan stress fixture with enough direct calls, facade calls, helpers, named arguments, and unpacked
   arguments to expose nonlinear extension behavior. Verify its diagnostic count as well as its analysis time.
-- Add isolated source-consumer coverage with a nondefault Composer `vendor-dir` so path resolution is exercised outside
-  the conventional `vendor/` layout.
 - Consider Eris only for pure loader and version-profile invariants that can be generated independently of Composer and
   PHPStan. Do not add Probator unless Apocrypha gains its own parser or another grammar whose behavior merits fuzzing.
 

@@ -93,6 +93,8 @@ parameters:
             - illuminate/cache
 ```
 
+If Composer's `vendor-dir` setting uses another directory, replace `vendor` in both include paths with that directory.
+
 Apocrypha's entry point enables Yumemi's opt-in `@yumemi-*` tag promotion. That integration replaces internal PHPStan
 parser services and may conflict with another extension replacing the same services.
 
