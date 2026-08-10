@@ -21,10 +21,31 @@ if [[ ! -x $AKASHI ]]; then
     exit 1
 fi
 
-if [[ $COMPATIBILITY_MODE != plain && $COMPATIBILITY_MODE != larastan ]]; then
-    printf 'Compatibility mode must be plain or larastan; received %s.\n' "$COMPATIBILITY_MODE" >&2
+if [[ $COMPATIBILITY_MODE != plain && $COMPATIBILITY_MODE != larastan && $COMPATIBILITY_MODE != phpstan-symfony ]]; then
+    printf 'Compatibility mode must be plain, larastan, or phpstan-symfony; received %s.\n' "$COMPATIBILITY_MODE" >&2
     exit 2
 fi
+
+case $COMPATIBILITY_MODE in
+    larastan)
+        case $FIXTURE_SUITE in
+            carbon | illuminate-* | laravel-framework) ;;
+            *)
+                printf 'Larastan compatibility mode does not support the %s consumer.\n' "$FIXTURE_SUITE" >&2
+                exit 2
+                ;;
+        esac
+        ;;
+    phpstan-symfony)
+        case $FIXTURE_SUITE in
+            symfony-http-foundation | symfony-stopwatch) ;;
+            *)
+                printf 'phpstan-symfony compatibility mode does not support the %s consumer.\n' "$FIXTURE_SUITE" >&2
+                exit 2
+                ;;
+        esac
+        ;;
+esac
 
 WORK_DIR=$(mktemp -d "${TMPDIR:-/tmp}/yumemi-apocrypha-consumer.XXXXXXXX")
 readonly WORK_DIR
@@ -157,7 +178,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
     git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar HEAD | tar -xf - -C "$git_package_dir"
     assert_archive_payload 'Git archive' "$git_package_dir"
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -214,6 +235,16 @@ enable_larastan() {
         composer --working-dir="$project_dir" require --dev \
             "larastan/larastan:^3.0" \
             "orchestra/testbench:^$testbench_major.0" \
+            --no-update --no-interaction
+    fi
+}
+
+enable_phpstan_symfony() {
+    local project_dir=$1
+
+    if [[ $COMPATIBILITY_MODE == phpstan-symfony ]]; then
+        composer --working-dir="$project_dir" require --dev \
+            'phpstan/phpstan-symfony:^2.0' \
             --no-update --no-interaction
     fi
 }
@@ -724,6 +755,7 @@ run_symfony_stopwatch() {
         composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
     fi
     composer --working-dir="$project_dir" require --dev "symfony/stopwatch:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    enable_phpstan_symfony "$project_dir"
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
@@ -788,6 +820,7 @@ run_symfony_http_foundation() {
     fi
     composer --working-dir="$project_dir" require --dev \
         "symfony/http-foundation:$package_constraint" --no-update --no-interaction
+    enable_phpstan_symfony "$project_dir"
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
@@ -1026,7 +1059,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

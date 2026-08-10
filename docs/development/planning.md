@@ -35,7 +35,8 @@ claims to support and semantically accurate about the represented units.
   namespaced 2.x APIs; Illuminate Process and Guzzle also use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   a representative Composer archive, and Laravel 11 through 13 replacement metadata for every Illuminate integration.
-  Every Illuminate subpackage and the combined framework fixture run both with and without Larastan.
+  Every Illuminate subpackage and the combined framework fixture run both with and without Larastan. HttpFoundation and
+  Stopwatch run both with and without `phpstan/phpstan-symfony` 2 across every supported Symfony major.
 - Akashi inventories every fenced PHP example in the README and public documentation. An explicit manifest assigns each
   current example to its real isolated consumer, and coverage tests reject unlisted documents, unmarked or unclassified
   examples, stale manifest entries, and routes that are not wired into the consumer harness. Akashi preserves each
@@ -49,10 +50,16 @@ The supported-version table is descriptive rather than a promise to support ever
 New majors should normally be added after their reflected signatures and PHPStan behavior pass the complete consumer
 suite. Integration scope remains curated: add APIs only when their physical unit is stable, useful, and unambiguous.
 Larastan compatibility is selected for an entire Illuminate integration rather than as a partial stub overlay, and an
-unverified Larastan major is rejected until its combined behavior passes the same matrix.
+unverified Larastan major is rejected until its combined behavior passes the same matrix. `phpstan/phpstan-symfony` 2
+currently coexists directly with the Symfony stubs because its active declarations do not overlap them. If an extension
+release begins owning any declaration in a selected integration, disable that integration's complete stub set and use a
+metadata adapter rather than loading both.
 
 ## Maintenance Backlog
 
+- Add scheduled CI that resolves and tests the latest compatible upstream releases. The consumer matrix currently
+  exercises those releases when CI runs, but push- and pull-request-only triggers cannot detect upstream drift while the
+  repository is otherwise idle.
 - Keep the [integration semantic audit](integration-semantic-audit.md) current when an integration or verified version
   profile changes. Re-run its source, structure, valid-case, and invalid-case checks before the first public release.
 

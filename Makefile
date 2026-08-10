@@ -30,6 +30,7 @@ ILLUMINATE_SUPPORT_MAJOR ?= 12
 LARAVEL_FRAMEWORK_MAJOR ?= 12
 PHPGEO_MAJOR ?= 6
 SYMFONY_HTTP_FOUNDATION_VERSION ?= 7
+SYMFONY_COMPATIBILITY_MODE ?= plain
 SYMFONY_STOPWATCH_MAJOR ?= 7
 
 all:
@@ -112,16 +113,16 @@ test-consumer-phpgeo-archive:
 	tests/Consumer/run archive phpgeo $(PHPGEO_MAJOR)
 
 test-consumer-symfony-http-foundation:
-	tests/Consumer/run source symfony-http-foundation $(SYMFONY_HTTP_FOUNDATION_VERSION)
+	tests/Consumer/run source symfony-http-foundation $(SYMFONY_HTTP_FOUNDATION_VERSION) $(SYMFONY_COMPATIBILITY_MODE)
 
 test-consumer-symfony-http-foundation-archive:
-	tests/Consumer/run archive symfony-http-foundation $(SYMFONY_HTTP_FOUNDATION_VERSION)
+	tests/Consumer/run archive symfony-http-foundation $(SYMFONY_HTTP_FOUNDATION_VERSION) $(SYMFONY_COMPATIBILITY_MODE)
 
 test-consumer-symfony-stopwatch:
-	tests/Consumer/run source symfony-stopwatch $(SYMFONY_STOPWATCH_MAJOR)
+	tests/Consumer/run source symfony-stopwatch $(SYMFONY_STOPWATCH_MAJOR) $(SYMFONY_COMPATIBILITY_MODE)
 
 test-consumer-symfony-stopwatch-archive:
-	tests/Consumer/run archive symfony-stopwatch $(SYMFONY_STOPWATCH_MAJOR)
+	tests/Consumer/run archive symfony-stopwatch $(SYMFONY_STOPWATCH_MAJOR) $(SYMFONY_COMPATIBILITY_MODE)
 
 test-consumer-manual:
 	tests/Consumer/run source manual 12

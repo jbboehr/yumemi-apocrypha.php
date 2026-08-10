@@ -49,6 +49,10 @@ SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 Set `ILLUMINATE_COMPATIBILITY_MODE=larastan` on any Illuminate or Laravel framework command to exercise the adapter
 instead of the standalone stubs.
 
+Set `SYMFONY_COMPATIBILITY_MODE=phpstan-symfony` on a Symfony HttpFoundation or Stopwatch command to exercise direct
+coexistence with `phpstan/phpstan-symfony` 2. The compatibility profile installs and autodiscovers both extensions, then
+runs the same reflection, valid-case, invalid-case, explicit-selection, and autodetection checks as plain mode.
+
 Laravel 13 requires PHP 8.3 or later, and Symfony Stopwatch 8 requires PHP 8.4.1 or later. Guzzle 7 and 8 both run on
 the repository's PHP 8.2 baseline. The CI matrix selects a compatible PHP version automatically.
 
@@ -65,6 +69,10 @@ their `@yumemi-param`, `@yumemi-return`, and `@yumemi-var` tags, including every
 guardrail, not a substitute for real consumer coverage: verify positional and named calls, finite unpacking, property
 reads and writes, return precision, and both direct-package and `laravel/framework` installs. Unknown unpack positions
 must not produce a speculative `apocrypha.unit` diagnostic.
+
+Symfony compatibility currently keeps Apocrypha's stubs enabled because `phpstan/phpstan-symfony` 2 does not register
+the same declarations for supported HttpFoundation and Stopwatch releases. Exercise every supported Symfony major in
+both modes so a change in its version-conditional stub loader cannot pass unnoticed.
 
 At least one supported matrix entry uses a Composer archive. Each archive-mode run also verifies the corresponding Git
 archive. Both payload checks must confirm that runtime source, NEON entry points, legal notices, and stubs are present
@@ -103,5 +111,10 @@ For Larastan, coexistence is an integration-wide choice rather than a declaratio
 nonoverlapping stub can collide with a class Larastan adds in a later minor release. When a selected Illuminate
 integration and supported Larastan are both installed, disable all Apocrypha stubs for that integration and use the
 metadata adapter. Reject an unknown Larastan major until the complete matrix has been verified.
+
+For `phpstan/phpstan-symfony`, direct coexistence remains acceptable only while the combined consumer matrix proves that
+its registered declarations do not overlap the selected Apocrypha integration. If an extension release begins owning any
+declaration in that integration, disable the complete integration stub set and reproduce the unit boundaries with a
+metadata adapter; do not retain a partial nonoverlapping stub subset.
 
 [Documentation index](../) · [Repository README](https://github.com/jbboehr/yumemi-apocrypha.php)

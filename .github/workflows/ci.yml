@@ -719,31 +719,52 @@ jobs:
               run: tests/Consumer/run ${{ matrix.package-mode }} phpgeo ${{ matrix.phpgeo-version }}
 
     symfony-http-foundation:
-        name: Symfony HttpFoundation ${{ matrix.http-foundation-version }} / PHP ${{ matrix.php-version }}
+        name:
+            Symfony HttpFoundation ${{ matrix.http-foundation-version }} / ${{ matrix.compatibility-mode }} / PHP ${{
+            matrix.php-version }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
                 include:
                     - http-foundation-version: "6.4.0"
+                      compatibility-mode: plain
                       package-mode: source
                       php-version: "8.2"
                     - http-foundation-version: "6"
+                      compatibility-mode: plain
+                      package-mode: source
+                      php-version: "8.2"
+                    - http-foundation-version: "6"
+                      compatibility-mode: phpstan-symfony
                       package-mode: source
                       php-version: "8.2"
                     - http-foundation-version: "7.2.9"
+                      compatibility-mode: plain
                       package-mode: source
                       php-version: "8.2"
                     - http-foundation-version: "7.3.0"
+                      compatibility-mode: plain
                       package-mode: source
                       php-version: "8.2"
                     - http-foundation-version: "7"
+                      compatibility-mode: plain
                       package-mode: archive
                       php-version: "8.2"
+                    - http-foundation-version: "7"
+                      compatibility-mode: phpstan-symfony
+                      package-mode: source
+                      php-version: "8.2"
                     - http-foundation-version: "8.0.0"
+                      compatibility-mode: plain
                       package-mode: source
                       php-version: "8.4"
                     - http-foundation-version: "8"
+                      compatibility-mode: plain
+                      package-mode: source
+                      php-version: "8.4"
+                    - http-foundation-version: "8"
+                      compatibility-mode: phpstan-symfony
                       package-mode: source
                       php-version: "8.4"
         steps:
@@ -774,7 +795,7 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-symfony-http-foundation-${{
-                      matrix.http-foundation-version }}
+                      matrix.http-foundation-version }}-${{ matrix.compatibility-mode }}
                   restore-keys: |
                       ${{ runner.os }}-php-${{ matrix.php-version }}-symfony-http-foundation-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
@@ -788,22 +809,39 @@ jobs:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
               run:
                   tests/Consumer/run ${{ matrix.package-mode }} symfony-http-foundation ${{
-                  matrix.http-foundation-version }}
+                  matrix.http-foundation-version }} ${{ matrix.compatibility-mode }}
 
     symfony-stopwatch:
-        name: Symfony Stopwatch ${{ matrix.stopwatch-version }} / PHP ${{ matrix.php-version }}
+        name:
+            Symfony Stopwatch ${{ matrix.stopwatch-version }} / ${{ matrix.compatibility-mode }} / PHP ${{
+            matrix.php-version }}
         runs-on: ubuntu-latest
         strategy:
             fail-fast: false
             matrix:
                 include:
                     - stopwatch-version: "6"
+                      compatibility-mode: plain
+                      package-mode: source
+                      php-version: "8.2"
+                    - stopwatch-version: "6"
+                      compatibility-mode: phpstan-symfony
                       package-mode: source
                       php-version: "8.2"
                     - stopwatch-version: "7"
+                      compatibility-mode: plain
                       package-mode: archive
                       php-version: "8.2"
+                    - stopwatch-version: "7"
+                      compatibility-mode: phpstan-symfony
+                      package-mode: source
+                      php-version: "8.2"
                     - stopwatch-version: "8"
+                      compatibility-mode: plain
+                      package-mode: source
+                      php-version: "8.4"
+                    - stopwatch-version: "8"
+                      compatibility-mode: phpstan-symfony
                       package-mode: source
                       php-version: "8.4"
         steps:
@@ -832,7 +870,9 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-symfony-stopwatch-${{ matrix.stopwatch-version }}
+                  key:
+                      ${{ runner.os }}-symfony-stopwatch-${{ matrix.stopwatch-version }}-${{ matrix.compatibility-mode
+                      }}
                   restore-keys: |
                       ${{ runner.os }}-symfony-stopwatch-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
@@ -844,4 +884,6 @@ jobs:
             - name: Test integration
               env:
                   YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
-              run: tests/Consumer/run ${{ matrix.package-mode }} symfony-stopwatch ${{ matrix.stopwatch-version }}
+              run:
+                  tests/Consumer/run ${{ matrix.package-mode }} symfony-stopwatch ${{ matrix.stopwatch-version }} ${{
+                  matrix.compatibility-mode }}
