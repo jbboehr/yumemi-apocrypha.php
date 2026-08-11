@@ -1,5 +1,6 @@
 :root {
     --content-max-width: 900px;
+    --yumemi-heliogenesis-gutter: clamp(1.5rem, 3vw, 3rem);
     --yumemi-heading: var(--fg);
     --yumemi-rule: var(--quote-border);
     --yumemi-section: var(--sidebar-active);
@@ -153,6 +154,51 @@ main a:hover {
     top: 0 !important;
 }
 
+#mdbook-sidebar[data-heliogenesis-chrome] {
+    z-index: calc(var(--heliogenesis-layer, 30) + 1);
+}
+
+:root:not([data-heliogenesis-state]) :is([data-heliogenesis-world], [data-heliogenesis-chrome]),
+[data-heliogenesis-state="idle"] :is([data-heliogenesis-world], [data-heliogenesis-chrome]) {
+    transition-duration: 0s;
+}
+
+:where([data-heliogenesis-state="dawning"], [data-heliogenesis-state="radiant"])
+    #mdbook-menu-bar[data-heliogenesis-chrome] {
+    background: var(--heliogenesis-chrome-event);
+}
+
+:where([data-heliogenesis-state="receding"]) #mdbook-menu-bar[data-heliogenesis-chrome] {
+    background: var(--bg);
+}
+
+#mdbook-content > main {
+    box-sizing: border-box;
+    max-width: calc(var(--content-max-width) + 2 * var(--yumemi-heliogenesis-gutter));
+    padding-right: var(--yumemi-heliogenesis-gutter);
+    padding-bottom: var(--yumemi-heliogenesis-gutter);
+    padding-left: var(--yumemi-heliogenesis-gutter);
+    color: var(--fg);
+    background: var(--bg);
+}
+
+#mdbook-content > main > img[alt^="Iudex Mensurarum"]:first-child {
+    width: calc(100% + 2 * var(--yumemi-heliogenesis-gutter));
+    max-width: none;
+    margin-right: calc(-1 * var(--yumemi-heliogenesis-gutter));
+    margin-left: calc(-1 * var(--yumemi-heliogenesis-gutter));
+}
+
+#yumemi-second-sun {
+    flex: 0 0 40px;
+    margin: 5px 4px;
+}
+
+#mdbook-menu-bar .right-buttons {
+    display: flex;
+    align-items: center;
+}
+
 main img[alt^="Iudex Mensurarum"] {
     display: block;
     width: 100%;
@@ -170,6 +216,22 @@ main img[alt^="Iudex Mensurarum"] {
 }
 
 @media (min-width: 1081px) {
+    #mdbook-menu-bar .menu-title {
+        position: fixed;
+        top: 0;
+        left: 50%;
+        width: auto;
+        transform: translateX(-50%);
+    }
+
+    html.sidebar-visible #mdbook-menu-bar .menu-title {
+        left: calc(50% + var(--sidebar-width) / 2);
+    }
+
+    #mdbook-menu-bar .right-buttons {
+        margin-left: auto;
+    }
+
     .nav-wide-wrapper {
         position: fixed;
         top: 0;
@@ -177,7 +239,7 @@ main img[alt^="Iudex Mensurarum"] {
         z-index: 102;
         display: flex;
         align-items: center;
-        width: 180px;
+        width: 32rem;
         height: var(--menu-bar-height);
         transform: translateX(-50%);
         pointer-events: none;

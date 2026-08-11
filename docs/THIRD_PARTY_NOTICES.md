@@ -1,7 +1,16 @@
 # Third-Party Notices
 
-Yumemi Apocrypha includes independently authored declarations describing APIs from the following third-party projects.
-Applicable notices and upstream licensing information are collected below.
+Yumemi Apocrypha includes independently authored declarations describing APIs from third-party projects and
+redistributes browser assets used by its documentation. Applicable notices and upstream licensing information are
+collected below.
+
+## Documentation browser assets
+
+The documentation includes Heliogenesis from Doctrine of the Second Sun and its pinned Three.js runtime. Their source,
+revision, and licenses are recorded in the colocated
+[Heliogenesis provenance notice](pages/assets/heliogenesis/NOTICE.txt),
+[Doctrine license](pages/assets/heliogenesis/DOCTRINE-LICENSE.txt), and
+[Three.js license](pages/assets/heliogenesis/vendor/THREE-LICENSE.txt).
 
 ## Carbon
 

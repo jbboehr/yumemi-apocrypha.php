@@ -78,6 +78,7 @@
         src = gitignore.lib.gitignoreSource ./.;
         treefmt = treefmt-nix.lib.evalModule pkgs {
           projectRootFile = "flake.nix";
+          settings.global.excludes = [ "docs/pages/assets/heliogenesis/**" ];
           programs.nixfmt = {
             enable = true;
             package = pkgs.nixfmt;

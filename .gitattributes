@@ -1,6 +1,9 @@
 * text=auto
 
 composer.lock linguist-generated
+docs/pages/assets/heliogenesis/heliogenesis-* linguist-vendored
+docs/pages/assets/heliogenesis/heliogenesis.* linguist-vendored
+docs/pages/assets/heliogenesis/vendor/** linguist-vendored
 .claude export-ignore
 .codex export-ignore
 .dvc export-ignore

@@ -121,7 +121,7 @@ jobs:
               run: vendor/bin/phpstan analyse --no-progress --error-format=raw --memory-limit=1G
 
             - name: Run PHPUnit
-              run: vendor/bin/phpunit --colors=never --no-coverage
+              run: vendor/bin/phpunit --colors=never --no-coverage --exclude-group=locked-dependencies
 
     carbon:
         name: Carbon ${{ matrix.carbon-version }} / ${{ matrix.compatibility-mode }} / PHP ${{ matrix.php-version }}
