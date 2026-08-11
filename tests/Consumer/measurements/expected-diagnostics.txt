@@ -1,0 +1,8 @@
+Length::meters() expects unit_float<'meter'>, float given
+Length::meters() expects unit_float<'meter'>, 1.0&unit_float<'international_foot'> given
+Length::feet() expects unit_float<'international_foot'>, 1.0&unit_float<'meter'> given
+Length::kilometers() expects unit_float<'1000 * meter'>, 1.0&unit_float<'meter'> given
+Length::meters() expects unit_float<'meter'>, 1.0&unit_float<'second'> given
+Duration::seconds() expects unit_float<'second'>, float given
+Duration::seconds() expects unit_float<'second'>, 1.0&unit_float<'minute'> given
+Duration::hours() expects unit_float<'hour'>, 1.0&unit_float<'second'> given

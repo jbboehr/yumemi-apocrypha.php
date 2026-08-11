@@ -27,6 +27,7 @@ The package is under active development and has no tagged release. It currently 
 | `illuminate/support`      | 11, 12, 13                          |
 | `laravel/framework`       | 11, 12, 13                          |
 | `mjaschen/phpgeo`         | 4, 5, 6                             |
+| `nmarfurt/measurements`   | 1.4+ in 1.x                         |
 | `symfony/http-foundation` | 6.4+ in 6.x; 7.x; 8.x               |
 | `symfony/stopwatch`       | 6, 7, 8                             |
 

@@ -42,6 +42,7 @@ GUZZLE_MAJOR=8 make test-consumer-guzzle
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
 LARAVEL_FRAMEWORK_MAJOR=12 make test-consumer-laravel-framework
+MEASUREMENTS_VERSION=1 make test-consumer-measurements
 PHPGEO_MAJOR=6 make test-consumer-phpgeo
 SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 ```
@@ -74,6 +75,10 @@ Carbon always uses the metadata adapter because a partial `CarbonInterface` stub
 Keep its retained profile stubs as reviewable semantic references, but never enable them alongside the adapter. Every
 profile must chain a branded fixed-duration call into an unrelated upstream method and assert the concrete receiver
 type.
+
+Measurements also always uses the metadata adapter because a partial `Length` or `Duration` stub would replace the
+complete upstream magic-factory list. Keep `stubs/measurements/measurements.stub` as a reviewable semantic reference,
+never enable it alongside the adapter, and keep `usesUnitBoundaryAdapter()` true for `nmarfurt/measurements`.
 
 Symfony compatibility currently keeps Apocrypha's stubs enabled because `phpstan/phpstan-symfony` 2 does not register
 the same declarations for supported HttpFoundation and Stopwatch releases. Exercise every supported Symfony major in

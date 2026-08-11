@@ -25,6 +25,10 @@ upstream versions it claims to support and semantically accurate about the repre
   rule and type-extension adapter, with parity enforced against the canonical stubs.
 - `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
   phpgeo 4 through 6 while leaving coordinate origins unbranded.
+- `nmarfurt/measurements` covers the complete fixed-unit magic-factory surfaces of `Length` and `Duration` from 1.4.0
+  onward through a metadata adapter that preserves upstream magic methods. Constructors, stored-value access,
+  arithmetic, conversion, other quantity classes, and absolute-temperature points remain unbranded because their scalar
+  meaning depends on object state or cannot be represented by native quantity brands.
 - `symfony/http-foundation` covers response cache durations, cookie max-age and session lifetimes, configured upload
   byte limits, Symfony 7.3 and later SSE retry delays, and Symfony 8 IP anonymization byte counts. Absolute expiration
   timestamps remain unbranded.
@@ -126,13 +130,11 @@ factories, accessors, conversion helpers, and serialization boundaries. Reconsid
 receiver class or fixed method name determines the scalar unit. Continue to deprioritize libraries that expose only one
 native unit, even when that unit appears frequently.
 
-The object-backed candidates divide into four practical groups:
+`nmarfurt/measurements` graduated into the current integration set with complete `Length` and `Duration` magic-factory
+coverage. A metadata adapter preserves the upstream class PHPDoc so future magic factories are not hidden; a retained
+reference stub records the verified branded surface. The remaining object-backed candidates divide into three practical
+groups:
 
-- `nmarfurt/measurements` is the strongest renewed candidate. Magic factories such as `Length::meters()`,
-  `Length::feet()`, `Temperature::celsius()`, `Temperature::fahrenheit()`, `Duration::seconds()`, and
-  `Duration::hours()` give fixed, adjacent-unit scalar inputs. Its existing `@method` declarations may permit a bounded
-  stub without general object-state propagation. Constructors, `value()`, and scalar arithmetic remain dependent on the
-  selected `Unit` object and must not receive fixed annotations.
 - `php-unit-conversion/php-unit-conversion` has meaningful ecosystem reach and concrete classes such as `Meter`, `Foot`,
   `Celsius`, `Fahrenheit`, `Second`, and `MilliSecond`. The inherited `getValue()` unit is determined by the receiver
   class and is suitable for a receiver-aware return extension. Constructor and `setValue()` inputs depend on the

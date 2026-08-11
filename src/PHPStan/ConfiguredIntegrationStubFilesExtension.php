@@ -183,6 +183,13 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 ],
             ],
         ],
+        'nmarfurt/measurements' => [
+            'majors' => [1],
+            'minimumVersions' => [
+                1 => '1.4.0',
+            ],
+            'files' => [__DIR__ . '/../../stubs/measurements/measurements.stub'],
+        ],
         'symfony/http-foundation' => [
             'majors' => [6, 7, 8],
             'minimumVersions' => [
@@ -520,7 +527,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             return false;
         }
 
-        if ($integration === 'nesbot/carbon') {
+        if ($integration === 'nesbot/carbon' || $integration === 'nmarfurt/measurements') {
             return true;
         }
 

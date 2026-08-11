@@ -63,6 +63,7 @@ final class IntegrationSelectionBench
         'james-heinrich/getid3' => '2.0.0-beta6',
         'mjaschen/phpgeo' => '6.0.0',
         'nesbot/carbon' => '3.2.0',
+        'nmarfurt/measurements' => '1.4.0',
         'symfony/http-foundation' => '8.0.0',
         'symfony/stopwatch' => '8.0.0',
     ];
@@ -80,6 +81,7 @@ final class IntegrationSelectionBench
         'james-heinrich/getid3',
         'mjaschen/phpgeo',
         'nesbot/carbon',
+        'nmarfurt/measurements',
         'symfony/http-foundation',
         'symfony/stopwatch',
     ];

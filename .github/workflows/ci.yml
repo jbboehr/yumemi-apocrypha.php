@@ -684,6 +684,57 @@ jobs:
                   tests/Consumer/run ${{ matrix.package-mode }} laravel-framework ${{ matrix.laravel-version }} ${{
                   matrix.compatibility-mode }}
 
+    measurements:
+        name: Measurements ${{ matrix.measurements-version }} / ${{ matrix.package-mode }} / PHP 8.2
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                include:
+                    - measurements-version: "1.4.0"
+                      package-mode: source
+                    - measurements-version: "1"
+                      package-mode: archive
+        steps:
+            - name: Checkout Apocrypha
+              uses: actions/checkout@v7
+
+            - name: Checkout Yumemi
+              uses: actions/checkout@v7
+              with:
+                  path: tmp/yumemi
+                  repository: jbboehr/yumemi.php
+
+            - name: Install PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  coverage: none
+                  extensions: gmp
+                  php-version: "8.2"
+                  tools: composer:v2
+
+            - name: Get Composer cache directory
+              id: composer-cache
+              run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
+
+            - name: Cache Composer packages
+              uses: actions/cache@v6
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-php-8.2-measurements-${{ matrix.measurements-version }}
+                  restore-keys: |
+                      ${{ runner.os }}-php-8.2-measurements-
+                      ${{ runner.os }}-php-8.2-composer-
+                      ${{ runner.os }}-php-composer-
+
+            - name: Install Apocrypha test tooling
+              run: composer install --prefer-dist --no-interaction --no-progress
+
+            - name: Test integration
+              env:
+                  YUMEMI_PACKAGE_DIR: ${{ github.workspace }}/tmp/yumemi
+              run: tests/Consumer/run ${{ matrix.package-mode }} measurements ${{ matrix.measurements-version }}
+
     phpgeo:
         name: phpgeo ${{ matrix.phpgeo-version }} / PHP ${{ matrix.php-version }}
         runs-on: ubuntu-latest

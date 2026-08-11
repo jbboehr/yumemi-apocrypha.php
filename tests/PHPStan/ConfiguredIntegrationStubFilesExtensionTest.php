@@ -965,6 +965,42 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertFalse($extension->usesUnitBoundaryAdapter('illuminate/cache'));
     }
 
+    public function testMeasurementsAlwaysUsesTheAdapterInsteadOfItsReferenceStub(): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['nmarfurt/measurements'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'nmarfurt/measurements',
+            static fn (): string => 'v1.4.0',
+        );
+
+        self::assertSame([], $extension->getFiles());
+        self::assertSame(1, $extension->getSelectedMajor('nmarfurt/measurements'));
+        self::assertTrue($extension->usesUnitBoundaryAdapter('nmarfurt/measurements'));
+    }
+
+    public function testMeasurementsRejectsVersionsBeforeOneFour(): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['nmarfurt/measurements'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'nmarfurt/measurements',
+            static fn (): string => '1.3.0',
+        );
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage(
+            'Yumemi Apocrypha integration "nmarfurt/measurements" supports versions 1 (>= 1.4.0); '
+                . 'installed version is 1.3.0.',
+        );
+
+        $extension->getFiles();
+    }
+
     public function testIlluminateStubsRemainSelectedWithoutLarastan(): void
     {
         $extension = new ConfiguredIntegrationStubFilesExtension(

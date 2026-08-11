@@ -92,6 +92,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-http',
         ],
+        'measurements-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'measurements',
+        ],
         'phpgeo-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'phpgeo',

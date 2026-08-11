@@ -1,7 +1,7 @@
 # Integration Semantic Audit
 
 This ledger records the source evidence and consumer coverage behind every branded third-party boundary. It was last
-reviewed on 2026-08-09. The public supported-version matrix remains in
+reviewed on 2026-08-10. The public supported-version matrix remains in
 [`docs/pages/integrations.md`](../pages/integrations.md); this document is the maintainer-facing evidence behind it.
 
 ## Method
@@ -30,6 +30,7 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 | Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.55.0`, `12.0.0`, `12.65.0`, `13.0.0`, `13.24.0`            |
 | Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                |
 | Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                        |
+| Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                 |
 | phpgeo                        | 4–6                                                                    | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                              |
 | Symfony HttpFoundation        | 6.4+ base; 7.3+ SSE; 8+ IP byte counts                                 | `6.4.0`, `6.4.43`, `7.0.0`, `7.2.9`, `7.3.0`, `7.4.16`, `8.0.0`, `8.1.4` |
 | Symfony Stopwatch             | 6–8                                                                    | `6.0.0`, `6.4.24`, `7.0.0`, `7.4.8`, `8.0.0`, `8.1.0`                    |
@@ -165,6 +166,25 @@ Evidence: Laravel's
 
 Worker memory is compared after division by 1024 twice, which establishes the binary-megabyte scale. Attempt counts, job
 counts, and retry counts remain unbranded.
+
+## Measurements
+
+Evidence: Measurements [`Length`](https://github.com/marfurt/measurements/blob/v1.4.0/src/Quantities/Length.php),
+[`Duration`](https://github.com/marfurt/measurements/blob/v1.4.0/src/Quantities/Duration.php), and
+[`Measurement::__callStatic()`](https://github.com/marfurt/measurements/blob/v1.4.0/src/Measurement.php), together with
+the corresponding `UnitLength` and `UnitDuration` factory implementations.
+
+| Boundaries                                                           | Promoted type                   | Coverage |
+| -------------------------------------------------------------------- | ------------------------------- | -------- |
+| All 21 `Length` magic factories, from `megameters` through `parsecs` | float unit named by the factory | S/V/I    |
+| `Duration::seconds`, `minutes`, and `hours` magic factories          | float second, minute, or hour   | S/V/I    |
+
+The active metadata adapter leaves the upstream class PHPDoc authoritative, preventing a partial stub from hiding
+unrelated or newly added magic factories. A retained reference stub reproduces every verified `@method` declaration on
+the two selected classes for review. Constructors, `value()`, scalar arithmetic, and conversion remain unbranded because
+their unit depends on object state. Other quantity classes remain untouched. Absolute-temperature factories are excluded
+because their inputs are coordinate points and Yumemi's native scalar brands currently represent only multiplicative
+quantities.
 
 ## phpgeo
 

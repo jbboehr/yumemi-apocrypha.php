@@ -16,6 +16,7 @@ reviewed.
 | getID3                 | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-09 |
 | Illuminate packages    | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
 | Laravel framework      | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
+| Measurements           | 1.4+ in 1.x                         | `v1.4.0`                                                                         | 2026-08-10 |
 | phpgeo                 | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                      | 2026-08-09 |
 | Symfony HttpFoundation | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4` | 2026-08-09 |
 | Symfony Stopwatch      | 6, 7, 8                             | `v6.0.0`, `v6.4.24`, `v7.0.0`, `v7.4.8`, `v8.0.0`, `v8.1.0`                      | 2026-08-09 |
@@ -295,6 +296,42 @@ The memory limit is measured in binary megabytes by Laravel's worker implementat
 `stopWhenEmptyFor` was added independently to Laravel 11.53.0, 12.60.0, and 13.10.0. Apocrypha selects the complete
 worker profile at each release boundary so earlier releases in every supported major retain their original constructor
 and property surface.
+
+## Measurements
+
+Enable `nmarfurt/measurements` to require the unit named by each `Length` and `Duration` magic factory. The scalar
+passed to a factory remains an ordinary PHP float at runtime; Apocrypha adds the unit requirement only to PHPStan's view
+of the existing call.
+
+| Factory family | Covered units                                                                                 |
+| -------------- | --------------------------------------------------------------------------------------------- |
+| Metric length  | Megameter through picometer                                                                   |
+| Other length   | Inch, foot, yard, mile, light-year, nautical mile, fathom, furlong, astronomical unit, parsec |
+| Duration       | Second, minute, hour                                                                          |
+
+<!-- yumemi-example: measurements-invalid -->
+
+```php
+<?php
+
+use Measurements\Quantities\Length;
+
+use function jbboehr\Yumemi\unit;
+
+$aisle = Length::meters(unit(4.48, 'meter'));
+
+//! Measurements\Quantities\Length::meters() expects unit_float<'meter'>, 14.7&unit_float<'international_foot'> given at a Yumemi Apocrypha unit boundary.
+Length::meters(unit(14.7, 'foot'));
+```
+
+The active integration is metadata-driven, so the returned `Length` or `Duration` object retains the upstream package's
+complete magic-factory, conversion, and arithmetic API. Apocrypha does not infer a native scalar unit from an object's
+state, so constructors, `value()`, `addValue()`, `convertTo()`, and similar state-dependent methods remain unchanged.
+Other quantity classes are also left untouched.
+
+Absolute-temperature factories remain plain floats. Celsius and Fahrenheit values are coordinate points rather than
+multiplicative temperature differences, and Yumemi's current branded native scalar types cannot preserve that
+distinction. Support starts at Measurements 1.4.0, the first release whose Composer constraint includes PHP 8.
 
 ## phpgeo
 

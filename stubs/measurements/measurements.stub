@@ -1,0 +1,39 @@
+<?php
+
+namespace Measurements\Quantities;
+
+/**
+ * @method static Length megameters(unit_float<'megameter'> $value)
+ * @method static Length kilometers(unit_float<'kilometer'> $value)
+ * @method static Length hectometers(unit_float<'hectometer'> $value)
+ * @method static Length decameters(unit_float<'dekameter'> $value)
+ * @method static Length meters(unit_float<'meter'> $value)
+ * @method static Length decimeters(unit_float<'decimeter'> $value)
+ * @method static Length centimeters(unit_float<'centimeter'> $value)
+ * @method static Length millimeters(unit_float<'millimeter'> $value)
+ * @method static Length micrometers(unit_float<'micrometer'> $value)
+ * @method static Length nanometers(unit_float<'nanometer'> $value)
+ * @method static Length picometers(unit_float<'picometer'> $value)
+ * @method static Length inches(unit_float<'inch'> $value)
+ * @method static Length feet(unit_float<'foot'> $value)
+ * @method static Length yards(unit_float<'yard'> $value)
+ * @method static Length miles(unit_float<'mile'> $value)
+ * @method static Length lightyears(unit_float<'light_year'> $value)
+ * @method static Length nauticalMiles(unit_float<'nautical_mile'> $value)
+ * @method static Length fathoms(unit_float<'fathom'> $value)
+ * @method static Length furlongs(unit_float<'furlong'> $value)
+ * @method static Length astronomicalUnits(unit_float<'astronomical_unit'> $value)
+ * @method static Length parsecs(unit_float<'parsec'> $value)
+ */
+class Length
+{
+}
+
+/**
+ * @method static Duration seconds(unit_float<'second'> $value)
+ * @method static Duration minutes(unit_float<'minute'> $value)
+ * @method static Duration hours(unit_float<'hour'> $value)
+ */
+class Duration
+{
+}

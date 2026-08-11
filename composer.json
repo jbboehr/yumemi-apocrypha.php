@@ -143,6 +143,8 @@
         "test:consumer:illuminate-support": "make test-consumer-illuminate-support",
         "test:consumer:laravel-framework": "make test-consumer-laravel-framework",
         "test:consumer:laravel-framework:archive": "make test-consumer-laravel-framework-archive",
+        "test:consumer:measurements": "make test-consumer-measurements",
+        "test:consumer:measurements:archive": "make test-consumer-measurements-archive",
         "test:consumer:phpgeo": "make test-consumer-phpgeo",
         "test:consumer:phpgeo:archive": "make test-consumer-phpgeo-archive",
         "test:consumer:symfony-http-foundation": "make test-consumer-symfony-http-foundation",

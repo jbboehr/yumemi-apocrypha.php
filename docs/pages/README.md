@@ -8,7 +8,8 @@ Yumemi's core package.
 
 The current integrations cover selected getID3 1.x and 2.x media measurements, Guzzle request and transfer boundaries,
 unit-bearing Illuminate APIs for verified Laravel releases, phpgeo distance and bearing calculations, and duration and
-memory results from verified Symfony Stopwatch releases.
+memory results from verified Symfony Stopwatch releases. It also checks fixed-unit length and duration factories in
+`nmarfurt/measurements`.
 
 ## Start Here
 
