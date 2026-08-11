@@ -20,6 +20,7 @@ benchmarks export-ignore
 composer.lock export-ignore
 docs/book.toml export-ignore
 docs/development export-ignore
+docs/development/images/logia/*-hq* export-ignore
 docs/pages/images/logia export-ignore
 docs/pages/images/logia/** export-ignore
 docs/theme export-ignore

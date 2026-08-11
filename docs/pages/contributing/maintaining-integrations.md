@@ -1,5 +1,16 @@
 # Maintaining Integrations
 
+<figure class="logion" data-logion="AWC 12:17">
+<div class="logion-text">
+<blockquote>
+<p>The mariners returned the shattered lens unto the daughters of its maker, who received it without reproach and
+preserved the star last witnessed therein.</p>
+</blockquote>
+<p class="logion-citation">— <cite>Acts of the Western Court 12:17</cite></p>
+</div>
+<img src="../images/logia/AWC-12_17.webp" alt="Mariners returning a shattered celestial lens to two custodians at a midnight observatory harbor" width="960" height="540" loading="eager" fetchpriority="high">
+</figure>
+
 Verify every integration against the real upstream package with isolated PHPStan consumer tests. A synthetic stub test
 alone does not establish compatibility.
 

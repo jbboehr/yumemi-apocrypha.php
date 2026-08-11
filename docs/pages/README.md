@@ -1,5 +1,7 @@
 {{#title Yumemi Apocrypha - Curated PHPStan unit integrations}}
 
+<img src="images/yumemi-banner.png" alt="Iudex Mensurarum Mysticarum Yumemi Apocrypha" width="2172" height="724" loading="eager" fetchpriority="high">
+
 # Yumemi Apocrypha
 
 Yumemi Apocrypha extends [Yumemi](https://github.com/jbboehr/yumemi.php)'s PHPStan unit checking to verified third-party

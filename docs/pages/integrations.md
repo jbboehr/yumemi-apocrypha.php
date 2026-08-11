@@ -1,5 +1,18 @@
 # Integrations
 
+<figure class="logion" data-logion="SFA 15:50">
+<div class="logion-text">
+<blockquote>
+<p>Three moons drew contrary tides from one sea, and the islanders feared that the waters would tear the shore apart.
+Yet each tide carried a different gift—salt, silver weed, and warm rain—and withdrew before the next arrived. Give
+praise for the hidden proportion that restraineth abundance; for when the moons aligned, the sea stood upright, and a
+green island rose within it.</p>
+</blockquote>
+<p class="logion-citation">— <cite>Scholia of the Fifth Archive 15:50</cite></p>
+</div>
+<img src="images/logia/SFA-15_50.webp" alt="Three moons and ordered gift-bearing tides surrounding a green island at rose-gold dawn" width="960" height="540" loading="eager" fetchpriority="high">
+</figure>
+
 Apocrypha deliberately covers a small set of stable, useful, and unambiguous unit-bearing boundaries. The table below is
 a record of verified behavior, not a promise to support every future or historical package major indefinitely.
 

@@ -1,5 +1,16 @@
 # Getting Started
 
+<figure class="logion" data-logion="OSD 69:22">
+<div class="logion-text">
+<blockquote>
+<p>At the feast of first thunder, leave the highest stair bare; the rain shall write there the name that pride omitted.
+Read it kneeling.</p>
+</blockquote>
+<p class="logion-citation">— <cite>Ordinances of the Synthetic Dawn 69:22</cite></p>
+</div>
+<img src="images/logia/OSD-69_22.webp" alt="A kneeling witness below a rain-lit ceremonial stair beneath ordered lightning" width="960" height="540" loading="eager" fetchpriority="high">
+</figure>
+
 Install Apocrypha as a development dependency, select the upstream package whose unit-bearing boundaries PHPStan should
 check, and confirm that an incorrectly scaled value is rejected.
 
