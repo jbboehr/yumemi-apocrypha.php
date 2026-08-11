@@ -110,6 +110,7 @@
         }
     },
     "scripts": {
+        "analyse": "phpstan analyse --no-progress --error-format=raw --memory-limit=1G",
         "benchmark": "phpbench run --report=aggregate",
         "benchmark:bookstack": [
             "Composer\\Config::disableProcessTimeout",
@@ -117,6 +118,20 @@
         ],
         "benchmark:perf": "phpbench run --config=phpbench-perfidious.json --report=perfidious",
         "benchmark:smoke": "phpbench run --iterations=1 --revs=1 --warmup=1 --progress=none",
+        "check": [
+            "@composer:validate",
+            "@check:whitespace",
+            "@cs",
+            "@analyse",
+            "@test"
+        ],
+        "check:full": [
+            "@check",
+            "@docs:check",
+            "@benchmark:smoke"
+        ],
+        "check:whitespace": "git diff --check",
+        "composer:validate": "composer validate --strict",
         "coverage:branch": "make coverage-branch",
         "cs": "php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff",
         "cs:fix": "php-cs-fixer fix --config=.php-cs-fixer.dist.php",
@@ -126,6 +141,7 @@
         "infection": "infection --no-progress",
         "infection:ci": "infection --no-progress --min-msi=90 --min-covered-msi=90",
         "survey:candidates": "php tools/stub-candidate-survey.php",
+        "test": "phpunit --colors=never --no-coverage",
         "test:consumer:carbon": "make test-consumer-carbon",
         "test:consumer:carbon:archive": "make test-consumer-carbon-archive",
         "test:consumer:getid3": "make test-consumer-getid3",
