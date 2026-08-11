@@ -45,6 +45,10 @@ upstream versions it claims to support and semantically accurate about the repre
   Symfony major. Source installs keep selected stub paths beneath the consumer's dependency tree instead of resolving
   symlinks back to an external checkout; a Guzzle source consumer and the manual-registration fixture repeat that path
   resolution with Composer's `vendor-dir` set to `dependencies/`.
+- A standalone package-archive checker applies the same required-file and path-whitelist contract to Composer and Git
+  archives, rejects symbolic links and unsafe or unexpected paths, and keeps local state, doctrine images, tests, and
+  development tooling out of distribution artifacts. The core Composer, PHPStan, PHPUnit, and archive checks also run in
+  an advisory PHP 8.2 portability workflow on macOS and Windows; the complete consumer matrix remains on Linux.
 - The repeated [BookStack application smoke test](bookstack-application-smoke-test-2026-08-09.md) verifies an inert
   symlinked install, full autodetection with Larastan, Cache facade and helper entry points, and clean adoption after
   seven cache durations are branded. Carbon preserves unrelated methods, and the complete applicable integration set
@@ -75,18 +79,60 @@ currently coexists directly with the Symfony stubs because its active declaratio
 release begins owning any declaration in a selected integration, disable that integration's complete stub set and use a
 metadata adapter rather than loading both.
 
+## Release Gates
+
+### Before 0.1
+
+- Tag a compatible Yumemi release first, replace Apocrypha's runtime `dev-master` constraint with a bounded tagged
+  constraint, and prove that a clean project with stable minimum stability can install the resulting package without a
+  root development-version exception. Exercise extension-installer and manual registration, an ordinary package
+  integration, and Laravel with Larastan from the built artifact.
+- Rerun the complete integration semantic audit against the advertised minima, every signature cutover, and the latest
+  compatible release of every supported major. Require the Linux matrix to pass and inspect the first real macOS and
+  Windows portability runs for package defects before tagging.
+- Decide the provisional public surface deliberately: the `yumemiApocrypha` configuration structure, integration names,
+  the `apocrypha.unit` diagnostic identifier, public exception types, and branded boundary-selection behavior. In
+  particular, confirm whether `LogicException` belongs in the public exception family.
+- When the release is imminent, populate the changelog from observable behavior and prepare release-facing installation
+  and compatibility wording. Keep the documentation truthful before publication; do not claim that a tag exists until it
+  does.
+
+The first public release does not depend on adding more integrations, adopting Eris, completing the generated stress
+fixture, splitting mutation CI, or making advisory portability jobs blocking.
+
+### Before 1.0
+
+- Depend on a stable compatible Yumemi 1.x line so Apocrypha's branded-type foundation is covered by a corresponding
+  compatibility promise.
+- Publish a compatibility policy for configuration and integration names, diagnostic identifiers versus message text,
+  supported upstream-major removal, newly autodetected packages, and boundary additions that may introduce diagnostics
+  into previously clean analysis.
+- Accumulate application-scale evidence beyond the isolated fixtures, including Laravel with Larastan, Symfony with
+  phpstan-symfony, and an ordinary Composer/PHPStan project. Use observed failures to refine the contract rather than an
+  arbitrary download or integration-count threshold.
+- Make scheduled upstream-drift testing operational across the lowest and latest supported Yumemi and PHPStan lines.
+  Require a history of green macOS and Windows core checks, then make portability failures release-blocking once the
+  workflow is reliable.
+- Complete the generated PHPStan stress fixture and establish diagnostic-count, wall-time, and peak-memory regression
+  expectations. Re-audit every public exception, configuration key, integration identifier, diagnostic identifier, and
+  documented selection rule while breaking changes can still be made in the 0.x line.
+
+Integration breadth is not a 1.0 gate. The distinction between 0.1 and 1.0 is demonstrated maintenance capacity and a
+stable, documented compatibility contract for the integrations already shipped.
+
 ## Maintenance Backlog
 
 - Add scheduled CI that resolves and tests the latest compatible upstream releases. The consumer matrix currently
   exercises those releases when CI runs, but push- and pull-request-only triggers cannot detect upstream drift while the
-  repository is otherwise idle.
+  repository is otherwise idle. This is strongly preferred before 0.1 and required before 1.0.
 - Keep the [integration semantic audit](integration-semantic-audit.md) current when an integration or verified version
   profile changes. Re-run its source, structure, valid-case, and invalid-case checks before the first public release.
 
 ## Performance and Robustness Backlog
 
 - Add a generated PHPStan stress fixture with enough direct calls, facade calls, helpers, named arguments, and unpacked
-  arguments to expose nonlinear extension behavior. Verify its diagnostic count as well as its analysis time.
+  arguments to expose nonlinear extension behavior. Verify its diagnostic count as well as its analysis time and peak
+  memory; complete this before 1.0.
 - Consider Eris only for pure loader and version-profile invariants that can be generated independently of Composer and
   PHPStan. Do not add Probator unless Apocrypha gains its own parser or another grammar whose behavior merits fuzzing.
 
