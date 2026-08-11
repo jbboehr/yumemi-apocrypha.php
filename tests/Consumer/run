@@ -10,6 +10,8 @@ AKASHI=$PROJECT_ROOT/vendor/bin/akashi
 readonly AKASHI
 DOCUMENTATION_EXAMPLE_RESOLVER=$PROJECT_ROOT/tests/Documentation/resolve-consumer-example.php
 readonly DOCUMENTATION_EXAMPLE_RESOLVER
+PACKAGE_CHECKER=$PROJECT_ROOT/tools/check-package.php
+readonly PACKAGE_CHECKER
 readonly PACKAGE_MODE=${1:-source}
 readonly FIXTURE_SUITE=${2:-illuminate-cache}
 readonly PACKAGE_MAJOR=${3:-12}
@@ -64,114 +66,10 @@ trap 'rm -rf -- "$WORK_DIR"' EXIT
 
 package_dir=$PROJECT_ROOT
 
-assert_archive_payload() {
-    local archive_name=$1
-    local archive_package_dir=$2
-    local path
-    local -a required_paths=(
-        CHANGELOG.md
-        LICENSE.md
-        README.md
-        apocrypha.neon
-        composer.json
-        docs/LICENSE_EXCEPTION.md
-        docs/THIRD_PARTY_NOTICES.md
-        docs/pages/README.md
-        docs/pages/images/yumemi-banner.png
-        extension.neon
-        src/Exception/ExceptionInterface.php
-        src/Exception/InvalidConfigurationException.php
-        src/Exception/LogicException.php
-        src/PHPStan/ConfiguredIntegrationStubFilesExtension.php
-        src/PHPStan/PackageIntegrationUnitBoundaryExtension.php
-        src/PHPStan/PackageIntegrationUnitBoundaryMetadata.php
-        src/PHPStan/PackageIntegrationUnitReturnTypeExtension.php
-        stubs/getid3/getid3-1.stub
-        stubs/getid3/getid3-2.stub
-        stubs/carbon/carbon-2.stub
-        stubs/carbon/carbon-3-real.stub
-        stubs/carbon/carbon-3-utc.stub
-        stubs/guzzle/guzzle-7-pre-7.11.stub
-        stubs/guzzle/guzzle-7.stub
-        stubs/guzzle/guzzle-8.stub
-        stubs/guzzle/guzzle.stub
-        stubs/illuminate/cache.stub
-        stubs/illuminate/cookie.stub
-        stubs/illuminate/filesystem.stub
-        stubs/illuminate/http-11.stub
-        stubs/illuminate/http.stub
-        stubs/illuminate/process.stub
-        stubs/illuminate/process-13.stub
-        stubs/illuminate/queue.stub
-        stubs/illuminate/queue-worker-11.stub
-        stubs/illuminate/queue-worker-12.stub
-        stubs/illuminate/support.stub
-        stubs/measurements/measurements.stub
-        stubs/phpgeo/phpgeo.stub
-        stubs/symfony/http-foundation-ip.stub
-        stubs/symfony/http-foundation-sse.stub
-        stubs/symfony/http-foundation.stub
-        stubs/symfony/stopwatch.stub
-    )
-    for path in "${required_paths[@]}"; do
-        if [[ ! -e $archive_package_dir/$path ]]; then
-            printf '%s is missing required path %s.\n' "$archive_name" "$path" >&2
-            exit 1
-        fi
-    done
-
-    local -a excluded_paths=(
-        .claude
-        .codex
-        .direnv
-        .dvc
-        .editorconfig
-        .envrc
-        .gitattributes
-        .github
-        .gitignore
-        .php-cs-fixer.cache
-        .php-cs-fixer.dist.php
-        .phpunit.cache
-        .pre-commit-cache
-        .pre-commit-config.yaml
-        AGENTS.md
-        Makefile
-        build
-        clover.xml
-        composer.lock
-        coverage
-        docs/book.toml
-        docs/development
-        docs/pages/images/logia
-        docs/theme
-        flake.lock
-        flake.nix
-        infection-summary.log
-        infection.json5.dist
-        infection.log
-        phpstan.neon.dist
-        phpunit.branch.xml.dist
-        phpunit.xml.dist
-        secrets
-        tests
-        tmp
-        tools
-        vendor
-    )
-    for path in "${excluded_paths[@]}"; do
-        if [[ -e $archive_package_dir/$path ]]; then
-            printf '%s contains excluded path %s.\n' "$archive_name" "$path" >&2
-            exit 1
-        fi
-    done
-}
-
 if [[ $PACKAGE_MODE == archive ]]; then
     archive_dir=$WORK_DIR/archive
     package_dir=$WORK_DIR/package
-    git_package_dir=$WORK_DIR/git-package
-    mkdir -p -- "$archive_dir" "$package_dir" "$git_package_dir"
+    mkdir -p -- "$archive_dir" "$package_dir"
 
     composer --working-dir="$PROJECT_ROOT" archive --format=tar --dir="$archive_dir" --no-interaction
 
@@ -181,11 +79,12 @@ if [[ $PACKAGE_MODE == archive ]]; then
         exit 1
     fi
 
+    php "$PACKAGE_CHECKER" "${archives[0]}"
     tar -xf "${archives[0]}" -C "$package_dir"
-    assert_archive_payload 'Composer archive' "$package_dir"
 
-    git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar HEAD | tar -xf - -C "$git_package_dir"
-    assert_archive_payload 'Git archive' "$git_package_dir"
+    git_archive=$archive_dir/git-package.tar
+    git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar --output="$git_archive" HEAD
+    php "$PACKAGE_CHECKER" "$git_archive"
 elif [[ $PACKAGE_MODE != source ]]; then
     printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
     exit 2

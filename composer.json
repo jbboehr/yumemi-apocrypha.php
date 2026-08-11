@@ -44,6 +44,7 @@
             "/coverage",
             "/docs/book.toml",
             "/docs/development",
+            "/docs/pages/images/logia",
             "/docs/theme",
             "/flake.lock",
             "/flake.nix",
@@ -57,7 +58,7 @@
             "/result*",
             "/secrets",
             "/tests",
-            "/tmp",
+            "/tmp*",
             "/tools",
             "/vendor"
         ]
@@ -93,7 +94,8 @@
         "phpstan/phpstan-deprecation-rules": "^2.0",
         "phpstan/phpstan-phpunit": "^2.0.13",
         "phpstan/phpstan-strict-rules": "^2.0",
-        "phpunit/phpunit": "^11.5"
+        "phpunit/phpunit": "^11.5",
+        "symfony/process": "^7.4"
     },
     "autoload-dev": {
         "psr-4": {
@@ -128,7 +130,8 @@
         "check:full": [
             "@check",
             "@docs:check",
-            "@benchmark:smoke"
+            "@benchmark:smoke",
+            "@package:check"
         ],
         "check:whitespace": "git diff --check",
         "composer:validate": "composer validate --strict",
@@ -140,6 +143,7 @@
         "docs:serve": "make docs-serve",
         "infection": "infection --no-progress",
         "infection:ci": "infection --no-progress --min-msi=90 --min-covered-msi=90",
+        "package:check": "php tools/check-package.php",
         "survey:candidates": "php tools/stub-candidate-survey.php",
         "test": "phpunit --colors=never --no-coverage",
         "test:consumer:carbon": "make test-consumer-carbon",

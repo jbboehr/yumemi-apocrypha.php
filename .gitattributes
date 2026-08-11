@@ -34,5 +34,5 @@ phpunit.branch.xml.dist export-ignore
 phpunit.xml.dist export-ignore
 secrets export-ignore
 tests export-ignore
-tmp export-ignore
+tmp* export-ignore
 tools export-ignore
