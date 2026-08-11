@@ -26,12 +26,11 @@ packages. Continue to select the precise component integration names, such as `i
 replacement version supplies the verified major for explicit selection and autodetection. Broad or ambiguous replacement
 constraints are not treated as verified versions.
 
-Larastan 3 (currently verified at `v3.10.0`) is tested with every Illuminate integration and with the complete Laravel
-framework across the same Laravel 11 through 13 matrix. When Larastan is present, Apocrypha keeps Larastan's richer
-framework declarations and enforces the selected integration's units through PHPStan rules and type extensions. The
-switch is automatic and applies to the complete integration: Apocrypha never loads a partial Illuminate stub over
-Larastan. An installed Larastan major other than 3 is rejected while an Illuminate integration is selected, rather than
-risk stale or conflicting analysis.
+Larastan 3 (verified at `v3.10.0`) is tested with every Illuminate integration and the complete Laravel framework across
+Laravel 11 through 13. When Larastan is present, Apocrypha preserves its framework declarations and adds unit semantics
+through PHPStan rules and type extensions. This automatic switch covers the complete integration; Apocrypha never loads
+a partial Illuminate stub over Larastan. An installed Larastan major other than 3 is rejected while an Illuminate
+integration is selected.
 
 ## Carbon
 
@@ -156,8 +155,6 @@ if (isset($metadata['bitrate'])) {
     recordMediaDuration($metadata['bitrate']);
 }
 ```
-
-Here `//!` marks the expected PHPStan diagnostic exercised by the documentation test; it is not Yumemi syntax.
 
 getID3 2.x uses the namespaced `JamesHeinrich\GetID3\GetID3` class shown above. Applications on getID3 1.x use the
 global `getID3` class; Apocrypha selects the corresponding stub from the installed package version.
@@ -360,7 +357,7 @@ use function jbboehr\Yumemi\unit;
 function projectSurveyPoint(BearingSpherical $bearing, Coordinate $origin): void
 {
     $bearing->calculateDestination($origin, unit(45.0, 'degree'), unit(500.0, 'meter'));
-    //! calculateDestination() expects unit_float<'arc_degree'>, unit_float<'radian'> given
+    //! calculateDestination() expects unit_float<'arc_degree'>, 0.5&unit_float<'radian'> given
     $bearing->calculateDestination(
         $origin,
         unit(0.5, 'radian'),

@@ -8,5 +8,5 @@ array{progress: Closure(int, int, int, int): void} given
 Closure(int): 100 given
 Closure(int): 1 given
 TransferStats constructor expects unit_float<'second'>|null, float given
-TransferStats constructor expects unit_float<'second'>|null, unit_float<'1/1000 * second'> given
+TransferStats constructor expects unit_float<'second'>|null, 250.0&unit_float<'1/1000 * second'> given
 recordGuzzleMilliseconds expects unit_float<'1/1000 * second'>, unit_float<'second'> given

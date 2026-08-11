@@ -1,13 +1,13 @@
 # Maintaining Integrations
 
-Every integration must be checked against the real upstream package and covered by isolated PHPStan consumer tests.
-Editing a stub until a synthetic test passes does not establish compatibility.
+Verify every integration against the real upstream package with isolated PHPStan consumer tests. A synthetic stub test
+alone does not establish compatibility.
 
-## Before Changing A Stub
+## Before Changing An Integration
 
 Identify the upstream package, every major claimed by the loader, and the exact unit represented by each affected
 parameter, return, or property. Prefer APIs whose physical interpretation is stable and unambiguous. Do not expand
-coverage merely because a parameter name resembles a duration or size.
+coverage solely because a parameter name resembles a duration or size.
 
 ## Verify Upstream Signatures
 

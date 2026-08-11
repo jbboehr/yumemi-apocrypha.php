@@ -33,7 +33,7 @@
             { id: "limitations", title: "Limitations" },
         ],
         "contributing/maintaining-integrations.html": [
-            { id: "before-changing-a-stub", title: "Before Changing A Stub" },
+            { id: "before-changing-an-integration", title: "Before Changing An Integration" },
             { id: "verify-upstream-signatures", title: "Verify Upstream Signatures" },
             { id: "verify-package-behavior", title: "Verify Package Behavior" },
             { id: "add-an-integration", title: "Add An Integration" },

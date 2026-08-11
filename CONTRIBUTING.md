@@ -1,9 +1,7 @@
 # Contributing
 
-Thank you for considering a contribution to this project.
-
-Bug reports, feature suggestions, documentation improvements, tests, and code changes are welcome. For substantial
-changes, consider opening an issue first so that the proposed design can be discussed.
+Bug reports, feature suggestions, documentation improvements, tests, and code changes are welcome. Open an issue before
+a substantial change when design discussion would help.
 
 ## Pull requests
 

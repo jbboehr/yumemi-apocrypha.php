@@ -5,39 +5,35 @@ check, and confirm that an incorrectly scaled value is rejected.
 
 ## Installation
 
-Yumemi and PHPStan are required by Apocrypha. While neither project has a tagged release, install both development
-branches explicitly:
+Yumemi and Apocrypha do not yet have tagged releases. Install their development branches with PHPStan's extension
+installer:
 
 ```shell
 composer require --dev jbboehr/yumemi:dev-master jbboehr/yumemi-apocrypha:dev-master \
     phpstan/extension-installer
 ```
 
-This is appropriate when an application uses Yumemi only during analysis. If application code calls Yumemi runtime
-functions or classes, install `jbboehr/yumemi:dev-master` as a normal dependency first, then install Apocrypha and the
-extension installer with `--dev`.
+Use this command when the application references Yumemi only during analysis. If runtime code calls Yumemi functions or
+classes, install `jbboehr/yumemi:dev-master` as a normal dependency first. Then install Apocrypha and the extension
+installer with `--dev`.
 
 ## Automatic Registration
 
 With `phpstan/extension-installer`, Composer registers both PHPStan extensions automatically. Apocrypha remains inert
 until at least one integration is selected or autodetection is enabled.
 
-Composer may ask whether it may execute the extension installer. For a non-interactive installation, approve that
-specific plugin before running the install command:
+For a non-interactive installation, whitelist the extension-installer plugin before installing:
 
 ```shell
 composer config --no-plugins allow-plugins.phpstan/extension-installer true
 ```
 
-If the project already includes Larastan or another PHPStan extension manually, remove that extension's manual include
-when adopting `phpstan/extension-installer`. The installer discovers all participating packages, not only Apocrypha;
-leaving an old include in place loads the same extension twice. Alternatively, keep the existing manual registration and
-follow [Manual Registration](#manual-registration) instead of installing the extension installer.
+`phpstan/extension-installer` discovers every participating extension. Remove any manual include for an extension it
+discovers, or that extension loads twice. To keep existing manual includes, skip the installer and follow
+[Manual Registration](#manual-registration).
 
-If Larastan 3 is also installed, selected Illuminate integrations need no additional configuration. Apocrypha leaves
-Larastan's declarations in place and supplies the same unit-bearing boundaries through PHPStan rules and type
-extensions. This changes analysis only: Laravel still receives ordinary PHP scalars, and neither library wraps or
-converts a value at runtime.
+With Larastan 3 installed, selected Illuminate integrations need no additional configuration. Apocrypha preserves
+Larastan's declarations and adds unit-bearing boundaries through PHPStan rules and type extensions.
 
 ## Select Integrations
 

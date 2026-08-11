@@ -11,7 +11,7 @@
 
 Curated PHPStan unit annotations for third-party PHP packages, built on [Yumemi](https://github.com/jbboehr/yumemi.php).
 
-The package is under active development and has no tagged release. It currently covers selected unit-bearing APIs in:
+No tagged release exists. The current supported integration matrix is:
 
 | Composer package          | Supported versions                  |
 | ------------------------- | ----------------------------------- |
@@ -31,8 +31,8 @@ The package is under active development and has no tagged release. It currently 
 | `symfony/http-foundation` | 6.4+ in 6.x; 7.x; 8.x               |
 | `symfony/stopwatch`       | 6, 7, 8                             |
 
-`laravel/framework` supplies the listed Illuminate packages through Composer replacements. Configuration continues to
-use the precise `illuminate/*` integration names; applications do not need to install those components separately.
+`laravel/framework` supplies the listed Illuminate packages through Composer replacements. Select the precise
+`illuminate/*` integration name; no separate component installation is required.
 
 ```shell
 composer require --dev jbboehr/yumemi:dev-master jbboehr/yumemi-apocrypha:dev-master \
