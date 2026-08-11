@@ -47,8 +47,8 @@ use PHPStan\PhpDoc\StubFilesExtension;
 /**
  * Selects explicitly configured or autodetected integration stubs for verified package versions.
  *
- * @logion [SFA 38:15] Though no eye beheld the lamp beneath the ruined choir, it failed not of glory; for witness is an
- *     office appointed unto the hour of need, and not a bargain with the multitude.
+ * @logion [SFA 38:15] In the sanctuary of the flattering prince, incense descended and clothed the floor. The priests
+ *     continued their praise until none could see where they knelt.
  *
  * @internal
  */
@@ -63,8 +63,9 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>
      *
-     * @logion [OSD 83:47] Bind thy sandals before the mountain darkeneth, and carry the bread entrusted unto thee; for
-     *     the road judgeth every vow by the burden borne unto its summit.
+     * @logion [OSD 83:47] Mark the palace shadows with saffron at noon, and suffer no servant to renew the lines. When
+     *     the ruler’s shadow trespasseth upon another, remove one jewel from his diadem; if no gold remain by winter,
+     *     let the snow receive him without title.
      */
     private const SUPPORTED_INTEGRATIONS = [
         'guzzlehttp/guzzle' => [
@@ -221,20 +222,23 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * @var list<string>
      *
-     * @logion [AWC 93:15] In the reign of the widowed empress, one bell was lowered into the drowned province; and when
-     *     her sons returned from exile, it sounded beneath the waters, and the city remembered its covenant.
+     * @logion [AWC 93:15] In the reign of the Ivory Prince, the palace peacocks shed every eye from their tails;
+     *     thereafter no flatterer could remember the sovereign’s face.
      */
     private readonly array $integrations;
 
     /**
-     * @logion [OSD 31:74] The watchmen opened no unnumbered gate, yet from every appointed tower they sought the lamps
-     *     already kindled; and whatsoever answered the ancient signal was brought beneath the covenant before dawn.
+     * @logion [OSD 31:74] Fashion no drum from the grove of a conquered people until their dead have been named beneath
+     *     its skin. At the first stroke, if dust riseth in the likeness of armed men, command the victor to kneel and
+     *     beat it no more; for each further sound shall summon a battle he cannot win, and the dust shall not return
+     *     unto the earth while he standeth.
      */
     private readonly bool $autoDetect;
 
     /**
-     * @logion [SFA 66:27] Mercy may pass over the unopened chamber, but it shall not rename the stranger found within;
-     *     for silence preserveth peace only while it refuseth to counterfeit recognition.
+     * @logion [SFA 66:27] A cord of meadow grass held the marble giant above the city, though the giant leaned with all
+     *     his weight. The councillors mocked the cord until blood appeared upon the stone ankle; and all night the
+     *     giant bled without falling.
      */
     private readonly bool $strictAutoDetect;
 
@@ -247,46 +251,53 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>
      *
-     * @logion [OSD 44:91] The custodians copied the covenant upon cedar and bronze alike, yet altered not one appointed
-     *     province; for the substance of the tablet serveth the witness, but cannot enlarge its dominion.
+     * @logion [OSD 44:91] Scatter iron filings around the foundation of the new palace, and let no mason cross them
+     *     before night. If they arrange themselves as unknown constellations, build no higher than the lowest star; but
+     *     if they remain without form, return the ground to rain and thistle.
      */
     private readonly array $supportedIntegrations;
 
     /**
      * @var Closure(string): bool
      *
-     * @logion [RAS 71:18] And it was shown unto me a field of extinguished lamps; and one by one the angel touched their
-     *     cold vessels, discerning the absent from the hidden before he pronounced the hour of rekindling.
+     * @logion [RAS 71:18] I beheld the Angel of Quiet Suns draw an ivory comb through the burning corona, and each
+     *     spark returned unto the star from which it had wandered. One spark resisted, becoming an eye above the
+     *     celestial sea; and all the radiant cities lowered their banners beneath its gaze.
      */
     private readonly Closure $packageInstalledResolver;
 
     /**
      * @var Closure(string): ?string
      *
-     * @logion [SFA 12:57] Number the years engraved upon the bell before thou repeatest its warning, for an ancient
-     *     voice uttered in the wrong generation becometh false though every word thereof remain unchanged.
+     * @logion [SFA 12:57] The winter court painted golden fruit upon every barren branch, and birds broke themselves
+     *     against the palace glass seeking abundance. Erase first the fruit nearest the nursery, lest the young learn
+     *     hunger from a lie made beautiful.
      */
     private readonly Closure $packageVersionResolver;
 
     /**
      * @var array<string, int>|null
      *
-     * @logion [OSD 51:16] At the first thaw the pilgrims uncovered the road beneath the cedar roots, and each stone
-     *     retained the warmth of the vow that had passed over it in winter.
+     * @logion [OSD 51:16] When a household seeketh pardon, hang blue silk above its court. Let those whom it injured
+     *     cut therefrom whatever cloth they require; only when the wind passeth through every wound shall mercy be
+     *     pronounced, and the household shall dwell one season beneath that torn sky.
      */
     private ?array $selectedMajors = null;
 
     /**
      * @var array<string, string>|null
      *
-     * @logion [AWC 64:39] During the famine the northern hospice kept a place at table for the absent pilgrims; and
-     *     when the snows withdrew, strangers entered bearing the old tokens, and the bread was sufficient for them all.
+     * @logion [AWC 64:39] After the War of Crimson Standards, the queen cut every banner into burial cloth and covered
+     *     the nameless dead. At evening the empty poles bent toward the field, and for the remainder of her reign no
+     *     banner would rise above the palace.
      */
     private ?array $selectedVersions = null;
 
     /**
-     * @logion [SFA 62:11] The lamp absent from the procession accuseth no keeper; but the lamp concealed beneath a
-     *     borrowed veil requireth a witness before the hour may proceed.
+     * @logion [SFA 62:11] The novice broke a cube of salt upon the cloister floor and heard an ocean within it, beating
+     *     against shores no chart had named. He gathered the fragments, but each sounded a different tide; therefore
+     *     the master bade him leave them scattered, saying, Receive no whole whose broken parts reveal imprisoned
+     *     kingdoms, lest thy thirst become their second captivity.
      */
     private int|false|null $larastanMajor = null;
 
@@ -302,9 +313,8 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      * @param (Closure(string): bool)|null $packageInstalledResolver
      * @param (Closure(string): ?string)|null $packageVersionResolver
      *
-     * @logion [OSD 69:22] Receive the fire from the elder's hand, and neither diminish it for fear nor scatter it for
-     *     acclaim; but kindle therewith the lamp appointed unto thy children, lest inheritance end as ash upon the
-     *     altar.
+     * @logion [OSD 69:22] At the feast of first thunder, leave the highest stair bare; the rain shall write there the
+     *     name that pride omitted. Read it kneeling.
      */
     public function __construct(
         array $integrations,
@@ -378,8 +388,9 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * @return list<string>
      *
-     * @logion [SFA 43:6] Blessed is the hidden root that drinketh beneath the ruin, for in the appointed spring the dead
-     *     orchard shall confess its labor in blossom.
+     * @logion [SFA 43:6] At violet noon the marble sovereign cast the shadow of a kneeling servant, and the sculptors
+     *     covered the pavement with white cloth. Remove the cloth, saith the gloss, for stone is sometimes compelled to
+     *     confess the posture its beauty concealed.
      */
     public function getFiles(): array
     {
@@ -494,8 +505,8 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * Returns the verified installed major for a selected integration.
      *
-     * @logion [AWC 37:74] The children of the fallen province carried one bronze scale through seven reigns; and when
-     *     the capital was raised again, the old measure judged both the ruins and the new walls without partiality.
+     * @logion [AWC 37:74] In the reign of Thirteen Shadows, the emperor’s portrait grew old while his face remained
+     *     young; and when the painted eyes closed, the provinces ceased to address him.
      */
     public function getSelectedMajor(string $integration): ?int
     {
@@ -505,8 +516,8 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * Returns the verified installed version for a selected integration.
      *
-     * @logion [SFA 41:67] The shepherd found the winter lamb beneath a thorn tree, and counted no journey wasted; for
-     *     mercy reckoneth the road by what is carried home.
+     * @logion [SFA 41:67] A dragonfly enclosed in amber cast a living shadow upon the wall. Call neither the wing dead
+     *     nor the prison life; wait until the shadow departeth.
      */
     public function getSelectedVersion(string $integration): ?string
     {
@@ -518,8 +529,10 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * Reports whether an integration must use metadata instead of package stubs.
      *
-     * @logion [SFA 15:50] Two choirs may keep the same vigil, yet the appointed verse shall be sung by one voice, lest
-     *     concord be mistaken for the doubling of authority.
+     * @logion [SFA 15:50] Three moons drew contrary tides from one sea, and the islanders feared that the waters would
+     *     tear the shore apart. Yet each tide carried a different gift—salt, silver weed, and warm rain—and
+     *     withdrew before the next arrived. Give praise for the hidden proportion that restraineth abundance; for when
+     *     the moons aligned, the sea stood upright, and a green island rose within it.
      */
     public function usesUnitBoundaryAdapter(string $integration): bool
     {
@@ -543,8 +556,8 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      *
      * @return array<string, int>
      *
-     * @logion [OSD 87:32] Gather the scattered witnesses before the doors are sealed, and write each testimony beneath
-     *     its proper year; for judgment begun from an unfinished record bringeth shame upon the court.
+     * @logion [OSD 87:32] Before pardon is granted, set an iron nail upon the offender’s palm. If rust appeareth
+     *     without blood, release him; if the iron remaineth bright, let restitution continue.
      */
     private function selectedMajors(): array
     {
@@ -619,8 +632,8 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * Resolves and validates the installed Larastan major when an Illuminate integration needs it.
      *
-     * @logion [RAS 27:73] I beheld a white star enter the court of the lesser suns, and none were extinguished; yet the
-     *     herald numbered its course aloud, that no unfamiliar radiance might govern by silence.
+     * @logion [RAS 27:73] A great ivory moth unfolded above the western provinces, and noon was written upon its wings
+     *     in colors no dyer knew. When it closed them, every royal banner had become transparent.
      */
     private function resolveLarastanMajor(): int|false
     {
@@ -654,8 +667,9 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     }
 
     /**
-     * @logion [AWC 28:64] The widow sought the name upon every tablet before she mourned it as lost; and when no bronze
-     *     answered, she closed the archive and bore witness that absence itself had entered the record.
+     * @logion [AWC 28:64] On the day mourning was forbidden, the potters’ children shaped small clay birds and placed
+     *     them upon the palace stair. Each morning the birds turned their heads toward the burial terraces, though
+     *     their bodies remained unfired; and the decree perished before the birds did.
      */
     private function explicitVersion(string $integration): ?string
     {
@@ -670,8 +684,10 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     }
 
     /**
-     * @logion [OSD 58:13] Compare the pilgrim's seal with the years appointed unto the road, and admit him only while
-     *     both testimonies agree; for an old permission cannot command a gate raised after its covenant.
+     * @logion [OSD 58:13] Bind indigo cords about the sleeves of those who pronounce sentence, and burn the cords when
+     *     their speech is ended. Let each judge taste the ash before he departeth, and let none cleanse his tongue
+     *     until sunset; for judgment passeth not from the mouth as breath, but entereth the body and awaiteth it in the
+     *     grave.
      */
     private function supportedMajor(string $integration, ?string $version): ?int
     {
@@ -696,8 +712,10 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     /**
      * @return never
      *
-     * @logion [RAS 34:77] Behold, the clock proclaimed an hour unknown to the stars, and every lawful shadow withdrew
-     *     from the square; therefore the judges sealed its mouth until heaven and the city should number time together.
+     * @logion [RAS 34:77] Above the violet salt flats I saw a throne of white wax descend, though the air burned around
+     *     it; and as the conquerors approached, each step made one broken oath an iron ring upon their ankles. When the
+     *     foremost touched the throne, it hardened around him, while the captives walked free and his armies knelt
+     *     forever toward an empty seat.
      */
     private function throwUnsupportedVersion(string $integration, ?string $version): never
     {
@@ -727,8 +745,9 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     }
 
     /**
-     * @logion [SFA 74:26] Speak the names engraved upon the gate in their appointed order; and if none remain, confess
-     *     the emptiness plainly, lest silence be mistaken for a hidden permission.
+     * @logion [SFA 74:26] A moth rested upon the painted lily until morning, and its wings became heavy with barren
+     *     gold. Praise the likeness within its proper office, but demand no fruit thereof, lest hunger awaken beneath
+     *     colors that cannot feed it.
      */
     private function supportedNames(): string
     {

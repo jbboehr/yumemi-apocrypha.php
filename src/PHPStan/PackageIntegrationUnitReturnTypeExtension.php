@@ -69,8 +69,9 @@ use PHPStan\Type\TypeTraverser;
  *     adapterOnly?: true
  * }
  *
- * @logion [AWC 42:15] The western court planted cypress beside the nameless graves, and generations afterward the road
- *     was known by their shade, though no decree had survived the war.
+ * @logion [AWC 42:15] The western court paved the poor quarter with marble confiscated from its baths, declaring the
+ *     people enriched. At midsummer every slab rose upright like a grave marker, and the courtiers could no longer
+ *     cross the square; the poor passed between them and read no names.
  *
  * @internal
  */
@@ -79,30 +80,34 @@ final class PackageIntegrationUnitReturnTypeExtension implements
     DynamicStaticMethodReturnTypeExtension
 {
     /**
-     * @logion [SFA 24:46] The pilgrim need not possess the horizon; it sufficeth that the road remain true beneath his
-     *     feet and the evening star refuse deception.
+     * @logion [SFA 24:46] Place the black pearl beneath the claimant’s tongue and ask him whom his splendor hath
+     *     burdened. If the pearl remain dark, hear him further; but if it become white, remove his robes, for innocence
+     *     purchased by forgetfulness is the palest garment of deceit.
      */
     private readonly ConfiguredIntegrationStubFilesExtension $selection;
 
     /**
-     * @logion [OSD 12:73] Preserve the inscription upon the weathered stone, and add no flourish unto the missing line;
-     *     for reverence confesseth the limit of its witness.
+     * @logion [OSD 12:73] Set four lacquer basins beneath the open sky and forbid the celebrants to stir them. One
+     *     shall receive the moon as silver, one as blood, one as a face veiled in reeds, and one shall remain black.
+     *     Give thanks for none until dawn revealeth which water nourished the roots below; then pour the barren beauty
+     *     upon the marble, where no seed may mistake it for rain.
      */
     private readonly TypeStringResolver $typeStringResolver;
 
     /**
      * @var non-empty-string
      *
-     * @logion [RAS 25:77] A voice issued from the violet cloud and named the coast before it rose from the sea; then
-     *     every lighthouse turned toward the land not yet visible.
+     * @logion [RAS 25:77] I saw the desert pour upward into heaven, grain after grain, until each dune became a silent
+     *     city above us; then our rulers feared the empty earth.
      */
     private readonly string $integration;
 
     /**
      * @var class-string
      *
-     * @logion [SFA 88:32] The chamber is not made holy by its walls alone, but by the promise kept therein when no
-     *     visitor standeth before the door.
+     * @logion [SFA 88:32] No man sat upon the cedar throne for thirteen years, yet its cushion flowered with thorns
+     *     whenever the ministers delayed judgment for comfort. They called the seat vacant, but each thorn bore the
+     *     warmth of a living hand.
      */
     private readonly string $class;
 
@@ -110,8 +115,8 @@ final class PackageIntegrationUnitReturnTypeExtension implements
      * @param non-empty-string $integration
      * @param class-string $class
      *
-     * @logion [OSD 26:79] Receive the lesser instrument from the elder choir and sound only the note entrusted unto it;
-     *     thus shall the full procession remain rich without confusion.
+     * @logion [OSD 26:79] Cut the first pomegranate before naming the feast. If its seeds be pale, carry every platter
+     *     unto the hungry and let the crimson cloth remain empty.
      */
     public function __construct(
         ConfiguredIntegrationStubFilesExtension $selection,
@@ -128,8 +133,9 @@ final class PackageIntegrationUnitReturnTypeExtension implements
     /**
      * @return class-string
      *
-     * @logion [SFA 56:12] The name carved beneath the foundation remaineth after banners and magistrates have passed;
-     *     by it the returning children know where their first stone was laid.
+     * @logion [SFA 56:12] A shell placed in the dry court murmured of the western sea throughout the dynasty’s exile.
+     *     The courtiers praised its memory, but the eldest servant poured water into it; then it fell silent, having
+     *     received the thing itself.
      */
     public function getClass(): string
     {
@@ -137,8 +143,10 @@ final class PackageIntegrationUnitReturnTypeExtension implements
     }
 
     /**
-     * @logion [OSD 4:40] Let the cantor answer only when his verse arriveth, lest zeal outrun the hymn and the assembly
-     *     mistake haste for devotion.
+     * @logion [OSD 4:40] Fold the petitions into white herons and set them upon the still pool beneath the painted
+     *     moon. Hear first the plea that drifteth against the reflected light, though its paper be coarse and its
+     *     writing without ornament. Burn none that remain at the bank; leave them until rain removeth every flattering
+     *     word, and receive what endureth in plain ink.
      */
     public function isMethodSupported(MethodReflection $methodReflection): bool
     {
@@ -146,8 +154,10 @@ final class PackageIntegrationUnitReturnTypeExtension implements
     }
 
     /**
-     * @logion [AWC 67:52] When the mountain road returned from beneath the landslide, the exiles walked upon the same
-     *     stones and found their fathers' offerings undisturbed in the clefts.
+     * @logion [AWC 67:52] The childless regent carved the likeness of his face upon each stair of the palace, declaring
+     *     that his reign should ascend forever. During the coronation procession the steps sank one by one into the
+     *     earth, yet the throne remained above, unreachable and bright beneath the sun. For three generations the court
+     *     continued below it, judging from the dust while birds nested in the vacant gold.
      */
     public function getTypeFromMethodCall(
         MethodReflection $methodReflection,
@@ -169,8 +179,9 @@ final class PackageIntegrationUnitReturnTypeExtension implements
     }
 
     /**
-     * @logion [RAS 94:88] Three stars stood motionless above the drowned basilica, and the fourth continued its course;
-     *     then the watchers understood which light had been appointed to summon them.
+     * @logion [RAS 94:88] At noon the mountains cast violet shadows upward, and the rulers climbed into them, believing
+     *     height had chosen them. Then the shadows became rivers and poured through the sky, carrying the thrones into
+     *     the western waste; the valleys drank first, and their children awoke speaking with the authority of snow.
      */
     public function isStaticMethodSupported(MethodReflection $methodReflection): bool
     {
@@ -178,8 +189,10 @@ final class PackageIntegrationUnitReturnTypeExtension implements
     }
 
     /**
-     * @logion [OSD 59:53] Pour the restored wine into the ancestral cup, but conceal not the gold newly joined unto its
-     *     fracture; for fidelity may strengthen what it receiveth without pretending the wound was never made.
+     * @logion [OSD 59:53] Carry the counterfeit coins into the white salt plain and bury them shallowly beneath the
+     *     noon heat. Set no guard over them. When rain cometh, return with empty bowls; for false wealth fleeth not
+     *     from the thief but from the earth that refuseth its impression. If one coin remain, melt it without profit
+     *     and pour the metal into the mouth of the idol whose face it bore.
      */
     public function getTypeFromStaticMethodCall(
         MethodReflection $methodReflection,
@@ -210,8 +223,9 @@ final class PackageIntegrationUnitReturnTypeExtension implements
      *
      * @return ReturnMatch|null
      *
-     * @logion [SFA 95:53] A season shall be known by the fruit it ripeneth, not by the calendar proclaimed in distant
-     *     halls; nevertheless the wise preserve both witness and number.
+     * @logion [SFA 95:53] Sap issued from the cedar council table whenever famine was concealed beneath polished
+     *     speech. The ministers covered it with purple cloth, yet the sweetness drew ants in black processions across
+     *     every decree; thus the smallest mouths entered where the hungry were forbidden.
      */
     private function boundary(string $kind, string $method): ?array
     {
@@ -240,8 +254,9 @@ final class PackageIntegrationUnitReturnTypeExtension implements
     }
 
     /**
-     * @logion [RAS 79:85] Behold, the artificers awakened the ancient lens, and it divided the pale noon into colors no
-     *     living eye had named; yet every ray bowed toward the same invisible sun.
+     * @logion [RAS 79:85] I beheld the towers cast their shadows upward into the rose-colored void, and an angel
+     *     gathered the darkness into a single cord. He laid it around the city’s highest spire; when the citizens
+     *     praised its height, the cord tightened, and the heavens descended one measure.
      */
     private function benchmarkMeasureType(
         MethodReflection $methodReflection,
@@ -264,8 +279,9 @@ final class PackageIntegrationUnitReturnTypeExtension implements
     }
 
     /**
-     * @logion [AWC 14:31] The widow placed the new bell beside the cracked one and rang them at dawn; the first carried
-     *     her grief, and the second bore it beyond the valley as praise.
+     * @logion [AWC 14:31] At the tyrant’s burial, the court carried frozen peonies before his bier, though none had
+     *     bloomed that year. The petals refused the tomb and drifted across the prison roofs; wherever one settled, an
+     *     iron fetter opened, and the empty bier descended alone.
      */
     private function benchmarkValueType(
         MethodReflection $methodReflection,

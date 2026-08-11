@@ -96,8 +96,8 @@ use PHPStan\Type\VerbosityLevel;
  *
  * @implements Rule<Expr>
  *
- * @logion [OSD 95:98] Keep the vigil even when the moon descendeth behind the iron mountain, for the unseen hour also
- *     requireth fidelity, and the dawn remembereth every lamp that refused sleep.
+ * @logion [OSD 95:98] Touch not the white ash that gathereth beneath the cedar image, neither scatter it for
+ *     cleanliness; for it is the weight of prayers refused ornament, and the wind alone shall judge where it resteth.
  *
  * @internal
  */
@@ -110,20 +110,24 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     private readonly ConfiguredIntegrationStubFilesExtension $selection;
 
     /**
-     * @logion [SFA 42:5] A hymn forgotten by the court may yet remain whole in the breath of one exile; therefore judge
-     *     not the song by the splendor of its choir.
+     * @logion [SFA 42:5] A white crane drank from the helmet of the fallen general and departed without fear. Let no
+     *     mourner call this dishonor: iron had ceased from wrath, water had entered it, and a living throat received
+     *     what conquest could not keep.
      */
     private readonly TypeStringResolver $typeStringResolver;
 
     /**
-     * @logion [AWC 54:68] After seven winters the eastern orchard flowered beside the broken aqueduct, and the
-     *     returning households laid their first loaves beneath its branches.
+     * @logion [AWC 54:68] During the famine of violet ash, the palace cooks broke the emperor’s sugar effigies and
+     *     carried the pieces to the prisoners’ quarter. Before nightfall every painted portrait in the capital had
+     *     lost its mouth, though the emperor yet lived; and when grain returned, no artist could restore his smile upon
+     *     plaster, silk, or coin.
      */
     private readonly RuleLevelHelper $ruleLevelHelper;
 
     /**
-     * @logion [SFA 18:73] Beneath the cedar floor the old map waited without complaint, and when the roads were lost
-     *     beneath the flood, its patient lines restored the journeys of the living.
+     * @logion [SFA 18:73] An empty clay jar sang whenever snow touched its rim, but fell silent when filled with
+     *     silver. Therefore set no price upon the chamber wherein consolation hath lodged; the song departeth before
+     *     possession, leaving only warm dust at the bottom.
      *
      * @var ArgumentBoundaryIndex|null
      */
@@ -146,8 +150,8 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     /**
      * @return class-string<Expr>
      *
-     * @logion [RAS 51:34] The angel stretched a silver cord across the firmament, and every wandering light became still
-     *     until its proper constellation had answered.
+     * @logion [RAS 51:34] Above the northern sea, a cloud took the form of an imperial hand and lifted the mountain’s
+     *     likeness from the water. The mountain remained, but thereafter no ship could describe its height.
      */
     public function getNodeType(): string
     {
@@ -157,8 +161,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     /**
      * @return list<IdentifierRuleError>
      *
-     * @logion [OSD 61:24] Hear each petitioner at the threshold appointed unto him, and pronounce no sentence upon the
-     *     footsteps of another; for justice entereth by particulars and departeth when all faces are made one.
+     * @logion [OSD 61:24] Hang mourning silk and festival silk beneath the same snowfall, but mingle not their colors
+     *     afterward. One shall stiffen without complaint, and the other shall bleed vermilion upon the ground; keep
+     *     both, for sorrow and rejoicing answer differently to one heaven.
      */
     public function processNode(Node $node, Scope $scope): array
     {
@@ -181,8 +186,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     }
 
     /**
-     * @logion [SFA 47:21] The face reflected in still water requireth no second name; it is enough that the spring
-     *     remain clear and the beholder approach without disguise.
+     * @logion [SFA 47:21] Cinnabar ground beneath the gilded fresco entered every painted robe, though the figures wore
+     *     blue. Years later the gold fell away, and the red remained in their gestures rather than their garments. Thus
+     *     hidden substance declareth itself by posture before color, and age is sometimes the sternest illuminator.
      */
     public function getType(Expr $expr, Scope $scope): ?Type
     {
@@ -203,8 +209,8 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
      *
      * @return list<IdentifierRuleError>
      *
-     * @logion [RAS 73:98] From the sealed observatory came three rays of unequal color, and the city received each at
-     *     its appointed tower; then the night disclosed a road no single light had revealed.
+     * @logion [RAS 73:98] Across the scarlet waste ran a celestial stag whose antlers bore the frozen sea. It knelt
+     *     before no throne; and where its hooves struck, the buried cities began to breathe.
      */
     private function processCall(MethodCall|StaticCall|New_ $call, Scope $scope): array
     {
@@ -327,8 +333,10 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     }
 
     /**
-     * @logion [OSD 44:29] Gather the names at the outer court before the witnesses are summoned, that no household be
-     *     awakened for a cause in which it hath no portion.
+     * @logion [OSD 44:29] When enemies kneel beside one well, plant their spears upright in the sand and suffer neither
+     *     man to grasp the haft until both have drunk. If green leaves break from the iron, bury the quarrel there; but
+     *     if rust enter the water, depart in silence, for peace spoken before thirst is satisfied prepareth a sharper
+     *     blade.
      *
      * @param 'constructor'|'method'|'static' $kind
      *
@@ -370,8 +378,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
      *
      * @param array<Arg> $arguments
      *
-     * @logion [SFA 73:41] The physician of the border hospice named each wound once, and the afflicted departed in
-     *     peace; for truth repeated without need burdeneth the hearer but addeth nothing unto mercy.
+     * @logion [SFA 73:41] Saffron rice left beside the burial cloth sprouted before the mourners departed, though
+     *     neither soil nor rain touched it. Gather not the shoots for food. Let them pale upon the stone, for
+     *     consolation is sometimes given as a sign and withheld as possession.
      */
     private function upstreamAccepts(
         Type $receiver,
@@ -407,8 +416,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
      *
      * @return list<IdentifierRuleError>
      *
-     * @logion [AWC 8:56] The keeper repaired the rain-broken roof with timber from the fallen hall, and at the next
-     *     storm both the old sorrow and the new shelter answered for his labor.
+     * @logion [AWC 8:56] In the war of the hollow crown, the mint workers melted the emperor’s portrait coins into
+     *     one great plough and drew it across the triumphal square. The blade opened a furrow of salt through the
+     *     marble, and no procession afterward could cross it without kneeling.
      */
     private function processPropertyMutation(
         Assign|AssignOp|PreInc|PreDec|PostInc|PostDec $mutation,
@@ -455,8 +465,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
      *
      * @return MappedArguments
      *
-     * @logion [OSD 6:98] Count the vessels as they pass beneath the lintel, but leave unnumbered the caravan hidden by
-     *     the sand; for an uncertain multitude shall not be made certain by the confidence of a scribe.
+     * @logion [OSD 6:98] Scatter bronze dust upon the first snowfall before pronouncing judgment against a province.
+     *     Where the dust remaineth bright, spare the vineyards; where it blackeneth, lower every banner and enter
+     *     unshod, for the earth hath taken the accusation into itself.
      */
     private function mappedArguments(array $arguments, Scope $scope): array
     {
@@ -534,8 +545,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     /**
      * @param array<int|string, MappedArgument> $mapped
      *
-     * @logion [SFA 27:65] When two roads bring water unto one field, contend not over the first river; bless instead
-     *     the harvest that confesseth both mountains.
+     * @logion [SFA 27:65] Cedar smoke clung to the mourning silk but passed cleanly over the marble robe of the statue.
+     *     Accuse neither cloth nor stone. What can carry sorrow shall bear its scent, while the image remaineth
+     *     splendid and untouched beneath the rafters.
      */
     private function mergeMappedArgument(array &$mapped, int|string $key, Type $type, Arg $node): void
     {
@@ -548,8 +560,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     }
 
     /**
-     * @logion [RAS 70:81] The bronze angel touched the ruined colonnade, and every stone remembered the arch to which
-     *     it had belonged; yet none departed the earth before the builders returned.
+     * @logion [RAS 70:81] Snow rose from the cedar mountains and gathered above the world as an immense white hand. It
+     *     touched neither city nor sea, but passed once across the heavens; and one red planet vanished, leaving its
+     *     warmth upon every window.
      */
     private function matchesReceiver(Type $receiver, string $class): bool
     {
@@ -569,8 +582,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     /**
      * @return PropertyMatch|null
      *
-     * @logion [AWC 1:55] During the long eclipse the village placed its harvest within the abandoned station, and the
-     *     silent doors guarded every sheaf until the sun resumed its ancient road.
+     * @logion [AWC 1:55] The regent erased a conquered province from every chart and commanded its tribute to bear no
+     *     mark of origin. Thereafter the palace well yielded salt, and those who drank thereof spoke for one breath in
+     *     the accent of the vanished coast; the regent alone remained thirsty.
      */
     private function propertyBoundary(Type $receiver, string $property): ?array
     {
@@ -602,8 +616,9 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
     }
 
     /**
-     * @logion [OSD 8:46] Rebuke the cracked vessel plainly, yet cast not away the grain it preserved; for correction
-     *     serveth the covenant only when truth and gratitude remain together.
+     * @logion [OSD 8:46] Suffer no peacock feather above the bier of one whose debts remain unpaid. Lay plain linen
+     *     upon the dead, and summon those whom his splendor impoverished; for ornament that demandeth forgetfulness
+     *     shall turn its painted eyes inward and behold only corruption.
      */
     private function error(string $subject, Type $expected, Type $actual, int $line): IdentifierRuleError
     {

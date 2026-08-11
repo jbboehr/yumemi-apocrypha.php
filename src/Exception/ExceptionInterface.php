@@ -41,9 +41,9 @@ namespace jbboehr\Yumemi\Apocrypha\Exception;
 /**
  * Marks every throwable explicitly created by Yumemi Apocrypha.
  *
- * @logion [OSD 17:62] The four roads were divided by stones bearing one seal, that every pilgrim might know beneath
- *     whose covenant he journeyed; and though their burdens differed, each presented the same witness at the western
- *     gate.
+ * @logion [OSD 17:62] Stretch the crimson sail between the palace colonnades before any triumph is proclaimed. Though
+ *     the wind blow eastward, suffer it to fill from whatever quarter it will; for the unseen dominion answereth no
+ *     herald, and the victor whose sail hangeth empty shall enter his feast without a name.
  */
 interface ExceptionInterface extends \Throwable
 {

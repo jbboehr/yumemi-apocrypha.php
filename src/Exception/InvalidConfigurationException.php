@@ -41,9 +41,9 @@ namespace jbboehr\Yumemi\Apocrypha\Exception;
 /**
  * Reports an integration request that cannot be applied faithfully.
  *
- * @logion [AWC 76:31] In the days of the copper regent, the herald named a province absent from every tablet; and the
- *     court stayed the procession until the lost boundary was witnessed, lest an invented road become law through
- *     haste.
+ * @logion [AWC 76:31] In the reign of the Laurel Emperor, scarlet moths entered the portrait hall and consumed only the
+ *     painted wreaths above his brow. The courtiers removed his victories from their acclamations, yet his face
+ *     remained upon the wall through seven reigns, unburned and accusing.
  */
 final class InvalidConfigurationException extends \InvalidArgumentException implements ExceptionInterface
 {

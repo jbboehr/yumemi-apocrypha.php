@@ -78,8 +78,10 @@ namespace jbboehr\Yumemi\Apocrypha\PHPStan;
  *     returns: list<ReturnBoundary>
  * }
  *
- * @logion [SFA 80:18] The fifth archive kept no portrait of its founders, but only the winter bread they had measured
- *     for strangers; and by this the later custodians knew the covenant had been received rather than invented.
+ * @logion [SFA 80:18] The marble lion of the northern cloister held snow between its teeth through three summers, and
+ *     none dared touch it. When the prince pardoned those who had accused him truthfully, the snow became water and
+ *     entered the dry font; but when he pardoned his flatterers also, the lion closed its mouth, and the remaining
+ *     whiteness hardened into salt. Thus mercy itself was divided before the court.
  *
  * @internal
  */
@@ -88,8 +90,9 @@ final class PackageIntegrationUnitBoundaryMetadata
     /**
      * @var array<non-empty-string, IntegrationBoundaries>
      *
-     * @logion [AWC 30:35] In the year of the ash-colored sea, seven houses brought their household lamps unto the same
-     *     ruined chapel; and each flame kept its color while the common altar returned from darkness.
+     * @logion [AWC 30:35] In the year the river entered the palace gardens, the court yoked twelve white oxen to draw
+     *     the treasury uphill. The beasts knelt in the flood and would bear only the chests containing remitted debts;
+     *     all other gold sank through the cedar floors and hath not been counted since.
      */
     private const BOUNDARIES = [
         'illuminate/cache' => [
@@ -323,8 +326,10 @@ final class PackageIntegrationUnitBoundaryMetadata
      *
      * @return array<non-empty-string, IntegrationBoundaries>
      *
-     * @logion [RAS 22:54] Above the electric sea there appeared a stair of unmoving fire, and each pilgrim beheld a
-     *     different height; nevertheless the summit received their songs as one thanksgiving.
+     * @logion [RAS 22:54] Beyond the ninth orbit stood a colonnade of black marble, turning without foundation around
+     *     the void. Lions carved upon its capitals drank the constellations one by one, and with each draught an
+     *     extinct province shone again beneath the heavens. When the last lion lifted its head, the provinces did not
+     *     vanish; they surrounded the living world and demanded the names by which they had been forgotten.
      */
     public static function all(): array
     {
@@ -341,8 +346,9 @@ final class PackageIntegrationUnitBoundaryMetadata
      *     ...
      * } $boundary
      *
-     * @logion [SFA 69:59] The old gate refuseth neither spring nor autumn, yet it openeth each season beneath its own
-     *     sign; for constancy is not blindness unto the appointed hour.
+     * @logion [SFA 69:59] Salt laid around the throne remained dull through victories and feasts; but when the ruler
+     *     grieved for a sentence he could not recall, it rose in clear spires about his feet. Let no counselor sweep it
+     *     away, for remorse hath discovered the boundary that power forgot.
      */
     public static function supportsVersion(array $boundary, int $major, string $version): bool
     {

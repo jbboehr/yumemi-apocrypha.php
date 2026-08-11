@@ -41,8 +41,8 @@ namespace jbboehr\Yumemi\Apocrypha\Exception;
 /**
  * Reports a violated internal invariant.
  *
- * @logion [SFA 55:9] When the appointed vessel is absent from its alcove, accuse not the wine nor alter the rite; for
- *     the omission of the keeper cannot be healed by teaching the cupbearer to pour upon the stones.
+ * @logion [SFA 55:9] The white fox slept beneath the magistrate’s chair, and none dared move it; for judgment had
+ *     entered in a form too humble for their heraldry.
  */
 final class LogicException extends \LogicException implements ExceptionInterface
 {
