@@ -188,20 +188,25 @@ an entry.
 
 ## Doctrine of the Second Sun
 
-This repository adopts the literary, coding, generation, exemplar, image, and Ruinenwert guides from Doctrine of the
-Second Sun, pinned as a Composer development dependency beneath `vendor/jbboehr/doctrine-of-the-second-sun/`.
-Specifically, use:
+This repository adopts the literary, coding, generation, exemplar, image, technical-writing, and Ruinenwert guides from
+Doctrine of the Second Sun, pinned as a Composer development dependency beneath
+`vendor/jbboehr/doctrine-of-the-second-sun/`. Specifically, use:
 
 - `DOCTRINE-STYLE-GUIDE.md` for literary style and canonical meaning;
 - `DOCTRINE-CODING-GUIDE.md` for safe source editing;
 - `DOCTRINE-GENERATION-GUIDE.md` for isolated generation, review, selection, and insertion;
 - `DOCTRINE-GOLD-EXEMPLARS.md` as a nonnormative quality ceiling;
-- `DOCTRINE-IMAGE-GUIDE.md` for visual interpretation; and
+- `DOCTRINE-IMAGE-GUIDE.md` for visual interpretation;
+- `MEASURE-OF-WORDS.md` for concise, clear, and exact technical writing; and
 - `RUINENWERT.md` for durable contracts, reproducibility, testable behavior, and replaceable integration boundaries.
 
 This `AGENTS.md` remains authoritative for repository-specific scope, coverage, tag form, citation allocation, asset
 paths, and verification. When its local rules narrow a choice permitted by an installed guide, follow the local rule. Do
 not treat installation as adoption of the package's Code of Sovereignty.
+
+Apply the Measure of Words to technical documentation, design notes, comments and docblocks, commit and review text, and
+other technical artifacts. It does not govern logia or other non-technical prose. Concision must not remove required
+constraints, evidence, exceptions, tradeoffs, or reproducibility details.
 
 Apply Ruinenwert primarily as engineering guidance for preserving useful knowledge and recoverable behavior. Its
 recommendations about stewardship, succession, package transfer, and other governance arrangements are optional

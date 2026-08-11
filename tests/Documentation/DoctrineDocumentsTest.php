@@ -52,6 +52,7 @@ final class DoctrineDocumentsTest extends TestCase
             'DOCTRINE-GENERATION-GUIDE.md',
             'DOCTRINE-GOLD-EXEMPLARS.md',
             'DOCTRINE-IMAGE-GUIDE.md',
+            'MEASURE-OF-WORDS.md',
             'RUINENWERT.md',
         ];
 

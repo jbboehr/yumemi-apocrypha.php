@@ -41,9 +41,10 @@ against the real upstream package rather than only by local synthetic declaratio
 
 ## Doctrine of the Second Sun
 
-This repository adopts the style, coding, generation, gold-exemplar, image, and Ruinenwert guides from Doctrine of the
-Second Sun, pinned through Composer. Run `composer install`, then read the adopted documents beneath
-`vendor/jbboehr/doctrine-of-the-second-sun/`. Ruinenwert is used chiefly for engineering durability: preserving clear
+This repository adopts the style, coding, generation, gold-exemplar, image, Measure of Words, and Ruinenwert guides from
+Doctrine of the Second Sun, pinned through Composer. Run `composer install`, then read the adopted documents beneath
+`vendor/jbboehr/doctrine-of-the-second-sun/`. The Measure of Words governs concise, clear technical writing without
+removing necessary precision or evidence. Ruinenwert is used chiefly for engineering durability: preserving clear
 contracts, reproducible processes, testable behavior, and replaceable integration boundaries. Its governance and
 succession suggestions are optional unless a concrete project need calls for them.
 
