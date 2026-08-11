@@ -314,6 +314,12 @@ and `@template`.
 
 Preserve all existing technical documentation.
 
+The repository-wide doctrine audit recorded in commit `a556008eae1d413fab5cb89a59664ad2baf10f32` subjected every
+in-scope logion then present to the full isolated writer/reviewer workflow. Treat those passages as an approved corpus:
+do not regenerate or revise them merely because their declarations are edited or another doctrine task is underway.
+Regenerate or revise an audited passage only when the repository owner explicitly requests that passage or a doctrine
+pass whose stated scope includes it.
+
 ### Canonical independence
 
 Write each quotation as a passage capable of standing within the canon without its declaration. Do not derive its
