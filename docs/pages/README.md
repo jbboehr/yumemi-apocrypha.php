@@ -13,5 +13,5 @@ package.
 
 - [Getting Started](getting-started.md) installs the package, activates an integration, and verifies a deliberate unit
   mistake.
-- [Integrations](integrations.md) lists the exact annotated APIs, units, versions, and limitations.
+- [Integrations](integrations.md) lists the covered API areas, exact units, versions, and limitations.
 - [Maintaining Integrations](contributing/maintaining-integrations.md) describes the upstream verification workflow.

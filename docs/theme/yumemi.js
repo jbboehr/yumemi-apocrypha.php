@@ -13,6 +13,7 @@
             { id: "autodetect-integrations", title: "Autodetect Integrations" },
             { id: "manual-registration", title: "Manual Registration" },
             { id: "verify-analysis", title: "Verify Analysis" },
+            { id: "troubleshooting", title: "Troubleshooting" },
         ],
         "integrations.html": [
             { id: "version-policy", title: "Version Policy" },

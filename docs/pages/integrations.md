@@ -18,21 +18,21 @@ a record of verified behavior, not a promise to support every future or historic
 
 ## Version Policy
 
-CI resolves the latest compatible release of each verified major and any package-specific minimum shown below. An
-unknown future major, or a release below a stated minimum, is rejected until its signatures and semantics have been
-reviewed.
+On each CI run, the consumer matrix resolves the latest compatible release of every verified major and any
+package-specific minimum shown below. An unknown future major, or a release below a stated minimum, is rejected until
+its signatures and semantics have been reviewed.
 
-| Package family         | Verified versions                   | Verification snapshots                                                           | Checked    |
-| ---------------------- | ----------------------------------- | -------------------------------------------------------------------------------- | ---------- |
-| Carbon                 | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                          | 2026-08-09 |
-| Guzzle                 | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                          | 2026-08-09 |
-| getID3                 | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-09 |
-| Illuminate packages    | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
-| Laravel framework      | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
-| Measurements           | 1.4+ in 1.x                         | `v1.4.0`                                                                         | 2026-08-10 |
-| phpgeo                 | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                      | 2026-08-09 |
-| Symfony HttpFoundation | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4` | 2026-08-09 |
-| Symfony Stopwatch      | 6, 7, 8                             | `v6.0.0`, `v6.4.24`, `v7.0.0`, `v7.4.8`, `v8.0.0`, `v8.1.0`                      | 2026-08-09 |
+| Package family         | Integration key                                                                                                                                        | Verified versions                   | Verification snapshots                                                           | Checked    |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- | -------------------------------------------------------------------------------- | ---------- |
+| Carbon                 | `nesbot/carbon`                                                                                                                                        | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                          | 2026-08-09 |
+| Guzzle                 | `guzzlehttp/guzzle`                                                                                                                                    | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                          | 2026-08-09 |
+| getID3                 | `james-heinrich/getid3`                                                                                                                                | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-09 |
+| Illuminate packages    | `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/process`, `illuminate/queue`, or `illuminate/support` | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
+| Laravel framework      | Select each applicable `illuminate/*` integration                                                                                                      | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
+| Measurements           | `nmarfurt/measurements`                                                                                                                                | 1.4+ in 1.x                         | `v1.4.0`                                                                         | 2026-08-10 |
+| phpgeo                 | `mjaschen/phpgeo`                                                                                                                                      | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                      | 2026-08-09 |
+| Symfony HttpFoundation | `symfony/http-foundation`                                                                                                                              | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4` | 2026-08-09 |
+| Symfony Stopwatch      | `symfony/stopwatch`                                                                                                                                    | 6, 7, 8                             | `v6.0.0`, `v6.4.24`, `v7.0.0`, `v7.4.8`, `v8.0.0`, `v8.1.0`                      | 2026-08-09 |
 
 Laravel applications may install these APIs through `laravel/framework` instead of separate `illuminate/*` component
 packages. Continue to select the precise component integration names, such as `illuminate/cache`; Composer's exact
@@ -174,8 +174,9 @@ global `getID3` class; Apocrypha selects the corresponding stub from the install
 
 The result remains open because getID3 adds format-specific metadata dynamically. Its branded keys are optional so
 callers must check that analysis produced them; guarded, unlisted keys remain available as `mixed`. The audio bitrate
-also retains getID3's special `'free'` value. Pixel dimensions remain unbranded until Yumemi has an explicit pixel
-model.
+also retains getID3's special `'free'` value. Pixel dimensions remain unbranded in this integration. Yumemi now
+distinguishes nominal raster `pixel` values from physical-length `css_pixel` values, but the bounded getID3 result shape
+does not yet include its pixel keys.
 
 The 1.x integration starts at 1.9.22, the first verified release in that signature line that runs cleanly on Apocrypha's
 PHP 8.2 baseline. The namespaced 2.x integration starts at the current `2.0.0-beta6` prerelease. Yumemi currently treats

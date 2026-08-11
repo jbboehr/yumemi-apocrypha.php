@@ -231,11 +231,11 @@ ranking to the following priorities:
   `retryInterval` is seconds. Its public untyped properties require careful stub verification, but the boundary is
   stable and useful. File rotation sizes measured in kilobytes provide a secondary fixed-unit surface.
 - `codeigniter4/framework` exposes a microsecond session lock retry interval, second-valued throttling windows, degree
-  image rotation, and image quality on a 0 through 100 percentage scale. Pixel dimensions remain out of scope until
-  Yumemi has an explicit pixel model; do not let that block a smaller duration, angle, and percentage integration.
+  image rotation, image quality on a 0 through 100 percentage scale, and raster dimensions. Yumemi now provides the
+  nominal `pixel` unit needed for those dimensions, so the image and duration boundaries can be reviewed together.
 - `nette/utils` has strong ecosystem reach, but its most interesting image methods mix pixel integers with percentage
-  strings and percentage opacity. Keep it behind the pixel semantic decision rather than branding only the easy opacity
-  parameter.
+  strings and percentage opacity. Yumemi's nominal `pixel` unit resolves the image-unit question, but the string
+  alternatives still need a deliberate preservation strategy before the integration would be useful.
 - `slim/slim` produced no meaningful native unit boundary: its pixel match came from error-page CSS. `slim/psr7` has
   legitimate byte-valued stream and upload sizes, but bytes are its only useful native unit. Keep Slim in the surveyed
   set and deprioritize an integration unless another fixed unit appears.
@@ -244,19 +244,20 @@ The remaining reviewed Symfony, Laminas, Nette, Spiral, and Hyperf packages pred
 units dynamically, wrap measurements in objects, or produced contextual scanner matches. Do not promote them from the
 automated ranking without a new fixed-boundary finding.
 
-### Candidates Requiring Core Work
+### Capability-Dependent Candidates
 
-The following packages remain valuable after a small amount of core semantic or type-system work:
+The following packages remain valuable after recently completed or still-needed semantic and type-system work:
 
 - `phpoffice/phpspreadsheet`: begin with fixed conversion helpers. Methods whose value unit is selected by a companion
   argument, and Excel column widths whose interpretation depends on font context, cannot be modeled as fixed branded
   parameters.
 - `phpoffice/phpword` and `phpoffice/phppresentation`: conversion helpers and selected OOXML boundaries are strong
-  targets after deciding how Yumemi names and defines pixels, points, twips, and EMUs. Their literal conversion
-  constants are the clearest third-party use case for constant-valued native unit types.
+  targets now that Yumemi distinguishes nominal raster pixels, CSS pixels, typographic points, twips, and English Metric
+  Units. Their literal conversion constants are the clearest third-party use case for constant-valued native unit types.
 - `intervention/image` and `imagine/imagine`: pixel dimensions, signed coordinates, angles, and percentages are useful,
-  but the integration first needs an explicit pixel model. Branded integer and float ranges would then express positive
-  dimensions and bounded opacity more accurately.
+  and Yumemi's nominal `pixel` unit now makes a bounded subset representable. Branded integer and float ranges can
+  express positive dimensions and bounded opacity more accurately; float-range support need not block pixel, angle, and
+  integer-percentage boundaries whose upstream types are already precise.
 - `league/flysystem`: nonnegative file sizes are clear but provide less incremental value than the mixed-unit
   candidates.
 
@@ -282,10 +283,11 @@ Yumemi's implemented and planned types affect these integrations in different wa
   `3:45` are not PHP numeric strings. Guzzle's string-valued `Content-Length` is accessible through a generic header API
   and would need literal-key-dependent inference rather than a fixed stub. Numeric-string brands remain most relevant to
   request, configuration, environment, and serialized-scalar boundaries.
-- **Nominal document and image units** need an explicit semantic decision before stubbing. A pixel may be a sample count
-  or a physical length under an assumed resolution; twips and EMUs are fixed document units; typographic point names
-  must match the effective registry. Do not silently approximate these distinctions for the sake of broader coverage.
+- **Nominal document and image units** are available in Yumemi's default registry. Integrations must still choose the
+  matching meaning deliberately: raster `pixel` is an addressable sample, `css_pixel` is a physical reference length,
+  and `typographic_point`, `twip`, and `english_metric_unit` are fixed document lengths. Do not silently approximate or
+  conflate these distinctions for the sake of broader coverage.
 
-With the bounded Guzzle, phpgeo, and getID3 integrations in place and branded integer precision available, decide the
-pixel and OOXML unit model before expanding into the document and image package group. Float ranges can follow when
-coordinate coverage supplies the concrete acceptance tests.
+With the bounded Guzzle, phpgeo, and getID3 integrations in place, branded integer precision available, and the pixel
+and OOXML unit model established, re-evaluate the document and image package group against real upstream boundaries.
+Float ranges can follow when coordinate coverage supplies the concrete acceptance tests.

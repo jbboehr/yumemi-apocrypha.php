@@ -128,6 +128,15 @@ function verifyApocryphaInstallation(Store $cache): void
 
 Here `//!` marks the expected PHPStan diagnostic exercised by the documentation test; it is not Yumemi syntax. Run the
 project's normal PHPStan command. Once the mismatch is reported, remove the rejected call and consult the
-[integration reference](integrations.md) for the complete annotated surface.
+[integration reference](integrations.md) for the covered boundaries and their exact units.
+
+## Troubleshooting
+
+| Symptom                                       | What to check                                                                                                                                                                                  |
+| --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Composer refuses the extension installer      | Run the plugin-whitelist command under [Automatic Registration](#automatic-registration) before the non-interactive install.                                                                   |
+| An extension or service appears to load twice | Use automatic or manual registration, not both. Remove manual includes for extensions discovered by `phpstan/extension-installer`.                                                             |
+| A selected integration rejects its package    | Confirm the precise integration key is installed directly or supplied by an exact Composer replacement, and that its version appears in the [verified matrix](integrations.md#version-policy). |
+| A wrapper loses a branded option type         | Type the wrapper parameter with the required Yumemi native type, or construct the branded value before placing it in a generic options array.                                                  |
 
 [Documentation index](./) · [Repository README](https://github.com/jbboehr/yumemi-apocrypha.php)
