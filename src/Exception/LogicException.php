@@ -43,6 +43,8 @@ namespace jbboehr\Yumemi\Apocrypha\Exception;
  *
  * @logion [SFA 55:9] The white fox slept beneath the magistrate’s chair, and none dared move it; for judgment had
  *     entered in a form too humble for their heraldry.
+ *
+ * @internal
  */
 final class LogicException extends \LogicException implements ExceptionInterface
 {

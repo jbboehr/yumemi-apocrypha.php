@@ -17,6 +17,7 @@
         ],
         "integrations.html": [
             { id: "version-policy", title: "Version Policy" },
+            { id: "compatibility-before-10", title: "Compatibility Before 1.0" },
             { id: "carbon", title: "Carbon" },
             { id: "guzzle", title: "Guzzle" },
             { id: "getid3", title: "getID3" },

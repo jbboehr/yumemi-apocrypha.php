@@ -67,6 +67,10 @@ upstream versions it claims to support and semantically accurate about the repre
   seconds (0.3%) while preserving the exact diagnostic contract.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
   stubs, metadata adapters, and their selection policy.
+- The provisional [pre-1.0 compatibility contract](../pages/integrations.md#compatibility-before-10) records the public
+  configuration keys and defaults, exact integration identifiers, selection behavior, adapter diagnostic identifier, and
+  diagnostic-producing boundary changes. `ExceptionInterface` and `InvalidConfigurationException` are public; concrete
+  internal-invariant exceptions are not.
 
 ## Maintenance Policy
 
@@ -90,9 +94,6 @@ metadata adapter rather than loading both.
 - Rerun the complete integration semantic audit against the advertised minima, every signature cutover, and the latest
   compatible release of every supported major. Require the Linux matrix to pass and inspect the first real macOS and
   Windows portability runs for package defects before tagging.
-- Decide the provisional public surface deliberately: the `yumemiApocrypha` configuration structure, integration names,
-  the `apocrypha.unit` diagnostic identifier, public exception types, and branded boundary-selection behavior. In
-  particular, confirm whether `LogicException` belongs in the public exception family.
 - When the release is imminent, populate the changelog from observable behavior and prepare release-facing installation
   and compatibility wording. Keep the documentation truthful before publication; do not claim that a tag exists until it
   does.
@@ -104,9 +105,9 @@ fixture, splitting mutation CI, or making advisory portability jobs blocking.
 
 - Depend on a stable compatible Yumemi 1.x line so Apocrypha's branded-type foundation is covered by a corresponding
   compatibility promise.
-- Publish a compatibility policy for configuration and integration names, diagnostic identifiers versus message text,
-  supported upstream-major removal, newly autodetected packages, and boundary additions that may introduce diagnostics
-  into previously clean analysis.
+- Promote the provisional compatibility contract into a stable policy for configuration and integration names,
+  diagnostic identifiers versus message text, supported upstream-major removal, newly autodetected packages, and
+  boundary additions that may introduce diagnostics into previously clean analysis.
 - Accumulate application-scale evidence beyond the isolated fixtures, including Laravel with Larastan, Symfony with
   phpstan-symfony, and an ordinary Composer/PHPStan project. Use observed failures to refine the contract rather than an
   arbitrary download or integration-count threshold.

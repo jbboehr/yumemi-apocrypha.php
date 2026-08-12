@@ -40,7 +40,6 @@ namespace jbboehr\Yumemi\Apocrypha\Tests\Architecture;
 
 use jbboehr\Yumemi\Apocrypha\Exception\ExceptionInterface;
 use jbboehr\Yumemi\Apocrypha\Exception\InvalidConfigurationException;
-use jbboehr\Yumemi\Apocrypha\Exception\LogicException;
 use PHPUnit\Framework\TestCase;
 
 final class PublicApiBoundaryTest extends TestCase
@@ -49,7 +48,6 @@ final class PublicApiBoundaryTest extends TestCase
     private const PUBLIC_TYPE_WHITELIST = [
         ExceptionInterface::class,
         InvalidConfigurationException::class,
-        LogicException::class,
     ];
 
     public function testPublicTypeWhitelistIsUniqueAndSorted(): void

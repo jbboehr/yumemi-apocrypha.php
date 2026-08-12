@@ -28,7 +28,7 @@ its signatures and semantics have been reviewed.
 | Guzzle                 | `guzzlehttp/guzzle`                                                                                                                                    | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                          | 2026-08-09 |
 | getID3                 | `james-heinrich/getid3`                                                                                                                                | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-09 |
 | Illuminate packages    | `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/process`, `illuminate/queue`, or `illuminate/support` | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
-| Laravel framework      | Select each applicable `illuminate/*` integration                                                                                                      | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
+| Laravel framework      | Provider only; select the applicable component keys above                                                                                              | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
 | Measurements           | `nmarfurt/measurements`                                                                                                                                | 1.4+ in 1.x                         | `v1.4.0`                                                                         | 2026-08-10 |
 | phpgeo                 | `mjaschen/phpgeo`                                                                                                                                      | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                      | 2026-08-09 |
 | Symfony HttpFoundation | `symfony/http-foundation`                                                                                                                              | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4` | 2026-08-09 |
@@ -44,6 +44,20 @@ Laravel 11 through 13. When Larastan is present, Apocrypha preserves its framewo
 through PHPStan rules and type extensions. This automatic switch covers the complete integration; Apocrypha never loads
 a partial Illuminate stub over Larastan. An installed Larastan major other than 3 is rejected while an Illuminate
 integration is selected.
+
+## Compatibility Before 1.0
+
+The first releases treat the following surfaces as deliberate but provisional. A change during the 0.x series remains
+compatibility-relevant and should be documented, even when Semantic Versioning permits it before 1.0.
+
+| Surface                 | Provisional contract                                                                                                                                                                                                                   |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Configuration           | `yumemiApocrypha.integrations` defaults to an empty list, `autoDetect` defaults to `false`, and `strictAutoDetect` defaults to `true`.                                                                                                 |
+| Integration identifiers | The package names in the `Integration key` column are exact configuration keys. The Laravel framework row is provider-only: `laravel/framework` supplies applicable `illuminate/*` packages but is not itself an integration key.      |
+| Selection               | Explicit selections always reject missing, unknown, or unverified packages. Autodetection forms a deduplicated union with explicit selections; `strictAutoDetect: false` permits only unsupported autodetected packages to be skipped. |
+| Diagnostics             | Metadata-adapter boundary violations use `apocrypha.unit`; exact message text is not a compatibility promise. Stub-backed mismatches use PHPStan's own identifiers.                                                                    |
+| PHP types               | `jbboehr\Yumemi\Apocrypha\Exception\ExceptionInterface` and `jbboehr\Yumemi\Apocrypha\Exception\InvalidConfigurationException` are public. Concrete internal-invariant exception classes are not public API.                           |
+| Boundary expansion      | Adding a verified boundary or an autodetected integration can reveal a unit error in previously clean analysis. Supported-version reductions and diagnostic-producing coverage changes require an explicit compatibility decision.     |
 
 ## Carbon
 

@@ -187,4 +187,16 @@ final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
             ],
         );
     }
+
+    public function testUnitBoundaryDiagnosticsUseStableIdentifier(): void
+    {
+        $errors = $this->gatherAnalyserErrors([
+            __DIR__ . '/fixtures/larastan-compatibility-cases.php',
+        ]);
+
+        self::assertNotEmpty($errors);
+        foreach ($errors as $error) {
+            self::assertSame('apocrypha.unit', $error->getIdentifier());
+        }
+    }
 }
