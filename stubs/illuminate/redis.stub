@@ -1,0 +1,185 @@
+<?php
+
+namespace Illuminate\Redis\Limiters;
+
+class DurationLimiterBuilder
+{
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $decay;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $timeout;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'millisecond'>
+     */
+    public $sleep;
+
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $decay
+     * @return $this
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $decay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $decay
+     */
+    public function every($decay)
+    {
+    }
+
+    /**
+     * @param int $timeout
+     * @return $this
+     *
+     * @yumemi-param unit_int<'second'> $timeout
+     */
+    public function block($timeout)
+    {
+    }
+
+    /**
+     * @param int $sleep
+     * @return $this
+     *
+     * @yumemi-param unit_int<'millisecond'> $sleep
+     */
+    public function sleep($sleep)
+    {
+    }
+}
+
+class DurationLimiter
+{
+    /**
+     * @param \Illuminate\Redis\Connections\Connection $redis
+     * @param string $name
+     * @param int $maxLocks
+     * @param int $decay
+     *
+     * @yumemi-param unit_int<'second'> $decay
+     */
+    public function __construct($redis, $name, $maxLocks, $decay)
+    {
+    }
+
+    /**
+     * @param int $timeout
+     * @param callable|null $callback
+     * @param int $sleep
+     * @return mixed
+     *
+     * @yumemi-param unit_int<'second'> $timeout
+     * @yumemi-param unit_int<'millisecond'> $sleep
+     */
+    public function block($timeout, $callback = null, $sleep = 750)
+    {
+    }
+}
+
+class ConcurrencyLimiterBuilder
+{
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $releaseAfter;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'second'>
+     */
+    public $timeout;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'millisecond'>
+     */
+    public $sleep;
+
+    /**
+     * @param int $releaseAfter
+     * @return $this
+     *
+     * @yumemi-param unit_int<'second'> $releaseAfter
+     */
+    public function releaseAfter($releaseAfter)
+    {
+    }
+
+    /**
+     * @param int $timeout
+     * @return $this
+     *
+     * @yumemi-param unit_int<'second'> $timeout
+     */
+    public function block($timeout)
+    {
+    }
+
+    /**
+     * @param int $sleep
+     * @return $this
+     *
+     * @yumemi-param unit_int<'millisecond'> $sleep
+     */
+    public function sleep($sleep)
+    {
+    }
+}
+
+class ConcurrencyLimiter
+{
+    /**
+     * @param \Illuminate\Redis\Connections\Connection $redis
+     * @param string $name
+     * @param int $maxLocks
+     * @param int $releaseAfter
+     *
+     * @yumemi-param unit_int<'second'> $releaseAfter
+     */
+    public function __construct($redis, $name, $maxLocks, $releaseAfter)
+    {
+    }
+
+    /**
+     * @param int $timeout
+     * @param callable|null $callback
+     * @param int $sleep
+     * @return mixed
+     *
+     * @yumemi-param unit_int<'second'> $timeout
+     * @yumemi-param unit_int<'millisecond'> $sleep
+     */
+    public function block($timeout, $callback = null, $sleep = 250)
+    {
+    }
+}
+
+namespace Illuminate\Redis\Events;
+
+class CommandExecuted
+{
+    /**
+     * @var float
+     * @yumemi-var unit_float<'millisecond'>
+     */
+    public $time;
+
+    /**
+     * @param string $command
+     * @param array $parameters
+     * @param float|null $time
+     * @param \Illuminate\Redis\Connections\Connection $connection
+     *
+     * @yumemi-param unit_float<'millisecond'>|null $time
+     */
+    public function __construct($command, $parameters, $time, $connection)
+    {
+    }
+}

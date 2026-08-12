@@ -7,6 +7,7 @@
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-filesystem test-consumer-illuminate-process \
 	test-consumer-illuminate-queue \
+	test-consumer-illuminate-redis \
 	test-consumer-illuminate-support test-consumer-laravel-framework \
 	test-consumer-laravel-framework-archive test-consumer-phpgeo test-consumer-phpgeo-archive \
 	test-consumer-measurements test-consumer-measurements-archive \
@@ -29,6 +30,7 @@ ILLUMINATE_FILESYSTEM_MAJOR ?= 12
 ILLUMINATE_HTTP_MAJOR ?= 12
 ILLUMINATE_PROCESS_MAJOR ?= 12
 ILLUMINATE_QUEUE_MAJOR ?= 12
+ILLUMINATE_REDIS_MAJOR ?= 12
 ILLUMINATE_SUPPORT_MAJOR ?= 12
 LARAVEL_FRAMEWORK_MAJOR ?= 12
 MEASUREMENTS_VERSION ?= 1
@@ -106,6 +108,9 @@ test-consumer-illuminate-process:
 
 test-consumer-illuminate-queue:
 	tests/Consumer/run source illuminate-queue $(ILLUMINATE_QUEUE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-redis:
+	tests/Consumer/run source illuminate-redis $(ILLUMINATE_REDIS_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-support:
 	tests/Consumer/run source illuminate-support $(ILLUMINATE_SUPPORT_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)

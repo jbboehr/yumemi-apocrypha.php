@@ -36,47 +36,40 @@
 
 declare(strict_types=1);
 
-namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
+use Illuminate\Redis\Connections\Connection;
+use Illuminate\Redis\Events\CommandExecuted;
+use Illuminate\Redis\Limiters\ConcurrencyLimiter;
+use Illuminate\Redis\Limiters\ConcurrencyLimiterBuilder;
+use Illuminate\Redis\Limiters\DurationLimiter;
+use Illuminate\Redis\Limiters\DurationLimiterBuilder;
 
-use PHPStan\Testing\TypeInferenceTestCase;
+use function jbboehr\Yumemi\unit;
 
-final class LarastanCompatibilityExtensionsTypeInferenceTest extends TypeInferenceTestCase
-{
-    public static function getAdditionalConfigFiles(): array
-    {
-        return [__DIR__ . '/larastan-compatibility-extensions.neon'];
-    }
+function misconfigureRedisLimiters(
+    Connection $connection,
+    DurationLimiterBuilder $duration,
+    ConcurrencyLimiterBuilder $concurrency,
+): void {
+    $duration->every(unit(1, 'minute'));
+    $duration->every(30);
+    $duration->block(unit(250, 'millisecond'));
+    $duration->sleep(unit(1, 'second'));
+    $duration->sleep(250);
+    $duration->decay = unit(1, 'minute');
+    $duration->sleep = unit(1, 'second');
 
-    protected static function getAdditionalAnalysedFiles(): array
-    {
-        return [__DIR__ . '/fixtures/larastan-compatibility-upstream.php'];
-    }
+    $concurrency->releaseAfter(unit(1, 'minute'));
+    $concurrency->block(unit(250, 'millisecond'));
+    $concurrency->sleep(unit(1, 'second'));
+    $concurrency->releaseAfter = unit(1, 'minute');
 
-    public function testUpstreamFixturesAreAvailableToPhpstanReflection(): void
-    {
-        $reflectionProvider = self::createReflectionProvider();
+    $durationLimiter = new DurationLimiter($connection, 'reports', 10, unit(1, 'minute'));
+    $durationLimiter->block(unit(1, 'minute'), null, unit(1, 'second'));
 
-        foreach ([
-            'Illuminate\\Filesystem\\Filesystem',
-            'Illuminate\\Queue\\WorkerOptions',
-            'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder',
-            'Illuminate\\Support\\Benchmark',
-        ] as $class) {
-            self::assertTrue($reflectionProvider->hasClass($class), sprintf('PHPStan cannot reflect %s.', $class));
-        }
-    }
+    $concurrencyLimiter = new ConcurrencyLimiter($connection, 'reports', 10, unit(1, 'minute'));
+    $concurrencyLimiter->block(unit(1, 'minute'), null, unit(1, 'second'));
 
-    public function testFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testRedisFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-redis-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
+    $event = new CommandExecuted('get', ['report'], unit(1.25, 'second'), $connection);
+    new CommandExecuted('get', ['report'], 1.25, $connection);
+    $event->time = unit(1.25, 'second');
 }

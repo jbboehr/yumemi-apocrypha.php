@@ -142,6 +142,52 @@ final class Timebox
     }
 }
 
+namespace Illuminate\Redis\Limiters;
+
+final class DurationLimiterBuilder
+{
+    /** @var int */
+    public $decay = 0;
+
+    /** @var int */
+    public $timeout = 3;
+
+    /** @var int */
+    public $sleep = 750;
+
+    /** @param \DateTimeInterface|\DateInterval|int $decay */
+    public function every($decay): self
+    {
+        return $this;
+    }
+
+    /** @param int $timeout */
+    public function block($timeout): self
+    {
+        return $this;
+    }
+
+    /** @param int $sleep */
+    public function sleep($sleep): self
+    {
+        return $this;
+    }
+}
+
+namespace Illuminate\Redis\Events;
+
+final class CommandExecuted
+{
+    /** @var float */
+    public $time;
+
+    /** @param float|null $time */
+    public function __construct($command, $parameters, $time, $connection)
+    {
+        $this->time = $time;
+    }
+}
+
 namespace Illuminate\Contracts\Cache;
 
 interface Repository

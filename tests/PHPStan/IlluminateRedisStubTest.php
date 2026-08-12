@@ -38,45 +38,54 @@ declare(strict_types=1);
 
 namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
 
-use PHPStan\Testing\TypeInferenceTestCase;
+use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\Namespace_;
+use PHPStan\Parser\Parser;
+use PHPStan\Testing\PHPStanTestCase;
 
-final class LarastanCompatibilityExtensionsTypeInferenceTest extends TypeInferenceTestCase
+final class IlluminateRedisStubTest extends PHPStanTestCase
 {
     public static function getAdditionalConfigFiles(): array
     {
-        return [__DIR__ . '/larastan-compatibility-extensions.neon'];
+        return [
+            __DIR__ . '/../../vendor/jbboehr/yumemi/extension.neon',
+            __DIR__ . '/../../vendor/jbboehr/yumemi/yumemi-tags.neon',
+            __DIR__ . '/illuminate-redis-stub.neon',
+        ];
     }
 
-    protected static function getAdditionalAnalysedFiles(): array
+    public function testLimiterAndEventUnitTagsArePromotedByTheStubParser(): void
     {
-        return [__DIR__ . '/fixtures/larastan-compatibility-upstream.php'];
-    }
+        $parser = self::getContainer()->getService('stubParser');
+        self::assertInstanceOf(Parser::class, $parser);
 
-    public function testUpstreamFixturesAreAvailableToPhpstanReflection(): void
-    {
-        $reflectionProvider = self::createReflectionProvider();
+        $phpDocs = [];
+        foreach ($parser->parseFile(__DIR__ . '/../../stubs/illuminate/redis.stub') as $node) {
+            if (!$node instanceof Namespace_) {
+                continue;
+            }
 
-        foreach ([
-            'Illuminate\\Filesystem\\Filesystem',
-            'Illuminate\\Queue\\WorkerOptions',
-            'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder',
-            'Illuminate\\Support\\Benchmark',
-        ] as $class) {
-            self::assertTrue($reflectionProvider->hasClass($class), sprintf('PHPStan cannot reflect %s.', $class));
+            foreach ($node->stmts as $statement) {
+                if (!$statement instanceof ClassLike || $statement->name === null) {
+                    continue;
+                }
+
+                $class = $statement->name->toString();
+                foreach ($statement->getMethods() as $method) {
+                    $phpDocs[$class . '::' . $method->name->toString()] = $method->getDocComment()?->getText() ?? '';
+                }
+                foreach ($statement->getProperties() as $property) {
+                    $phpDocs[$class . '::$' . $property->props[0]->name->toString()]
+                        = $property->getDocComment()?->getText() ?? '';
+                }
+            }
         }
-    }
 
-    public function testFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testRedisFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-redis-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
+        self::assertStringContainsString("unit_int<'second'>", $phpDocs['DurationLimiterBuilder::every']);
+        self::assertStringContainsString("unit_int<'millisecond'>", $phpDocs['DurationLimiterBuilder::sleep']);
+        self::assertStringContainsString("unit_int<'second'>", $phpDocs['ConcurrencyLimiterBuilder::releaseAfter']);
+        self::assertStringContainsString("unit_int<'millisecond'>", $phpDocs['ConcurrencyLimiter::block']);
+        self::assertStringContainsString("unit_float<'millisecond'>", $phpDocs['CommandExecuted::__construct']);
+        self::assertStringContainsString("unit_float<'millisecond'>", $phpDocs['CommandExecuted::$time']);
     }
 }

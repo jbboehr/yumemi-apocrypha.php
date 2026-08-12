@@ -36,47 +36,22 @@
 
 declare(strict_types=1);
 
-namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
+namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan\Fixtures;
 
-use PHPStan\Testing\TypeInferenceTestCase;
+use Illuminate\Redis\Events\CommandExecuted;
+use Illuminate\Redis\Limiters\DurationLimiterBuilder;
 
-final class LarastanCompatibilityExtensionsTypeInferenceTest extends TypeInferenceTestCase
+use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
+
+function exerciseRedisLarastanCompatibility(DurationLimiterBuilder $limiter): void
 {
-    public static function getAdditionalConfigFiles(): array
-    {
-        return [__DIR__ . '/larastan-compatibility-extensions.neon'];
-    }
+    $limiter->every(unit(1, 'minute'));
+    $limiter->sleep(unit(1, 'second'));
+    $limiter->decay = unit(1, 'minute');
+    $limiter->sleep = unit(1, 'second');
+    new CommandExecuted('get', [], unit(1.0, 'second'), new \stdClass());
 
-    protected static function getAdditionalAnalysedFiles(): array
-    {
-        return [__DIR__ . '/fixtures/larastan-compatibility-upstream.php'];
-    }
-
-    public function testUpstreamFixturesAreAvailableToPhpstanReflection(): void
-    {
-        $reflectionProvider = self::createReflectionProvider();
-
-        foreach ([
-            'Illuminate\\Filesystem\\Filesystem',
-            'Illuminate\\Queue\\WorkerOptions',
-            'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder',
-            'Illuminate\\Support\\Benchmark',
-        ] as $class) {
-            self::assertTrue($reflectionProvider->hasClass($class), sprintf('PHPStan cannot reflect %s.', $class));
-        }
-    }
-
-    public function testFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testRedisFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-redis-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
+    assertType("unit_int<'second'>", $limiter->decay);
+    assertType("unit_int<'1/1000 * second'>", $limiter->sleep);
 }

@@ -312,6 +312,7 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
                         : 'queue-worker-12.stub'
                 ),
             ],
+            'illuminate/redis' => [$base . 'redis.stub'],
             'illuminate/support' => [$base . 'support.stub'],
             'intervention/image' => [
                 __DIR__ . sprintf('/../../stubs/intervention-image/intervention-image-%d.stub', $major),

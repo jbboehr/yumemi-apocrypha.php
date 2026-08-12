@@ -188,6 +188,42 @@ final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
         );
     }
 
+    public function testRedisUnitBoundaryDiagnosticsRunInProcess(): void
+    {
+        $this->analyse(
+            [__DIR__ . '/fixtures/larastan-redis-compatibility-cases.php'],
+            [
+                [
+                    "Illuminate\\Redis\\Limiters\\DurationLimiterBuilder::every() expects "
+                        . "DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given at a Yumemi "
+                        . 'Apocrypha unit boundary.',
+                    49,
+                ],
+                [
+                    "Illuminate\\Redis\\Limiters\\DurationLimiterBuilder::sleep() expects "
+                        . "unit_int<'1/1000 * second'>, 1&unit_int<'second'> given at a Yumemi Apocrypha unit boundary.",
+                    50,
+                ],
+                [
+                    "Illuminate\\Redis\\Limiters\\DurationLimiterBuilder::\$decay expects unit_int<'second'>, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    51,
+                ],
+                [
+                    "Illuminate\\Redis\\Limiters\\DurationLimiterBuilder::\$sleep expects "
+                        . "unit_int<'1/1000 * second'>, 1&unit_int<'second'> given at a Yumemi Apocrypha unit boundary.",
+                    52,
+                ],
+                [
+                    'Parameter $time of class Illuminate\\Redis\\Events\\CommandExecuted constructor expects '
+                        . "unit_float<'1/1000 * second'>|null, 1.0&unit_float<'second'> given at a Yumemi Apocrypha "
+                        . 'unit boundary.',
+                    53,
+                ],
+            ],
+        );
+    }
+
     public function testUnitBoundaryDiagnosticsUseStableIdentifier(): void
     {
         $errors = $this->gatherAnalyserErrors([

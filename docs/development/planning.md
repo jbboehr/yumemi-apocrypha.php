@@ -20,7 +20,8 @@ upstream versions it claims to support and semantically accurate about the repre
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
-  `illuminate/process`, and `illuminate/queue` cover stable unit-bearing APIs across Laravel 11 through 13.
+  `illuminate/process`, `illuminate/queue`, and `illuminate/redis` cover stable unit-bearing APIs across Laravel 11
+  through 13.
 - `intervention/image` covers nominal raster-pixel dimensions and coordinates plus degree rotations across Intervention
   Image 3 and 4. A metadata adapter preserves the package's complete interfaces, while version 4 retains its `Fraction`
   dimension alternatives. Resolution, quality, opacity, transparency, and lower-level geometry objects remain outside

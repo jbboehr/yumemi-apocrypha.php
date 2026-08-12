@@ -45,7 +45,14 @@ final class LarastanCompatibilityTestExtensionFactory
     public static function createSelection(): ConfiguredIntegrationStubFilesExtension
     {
         return new ConfiguredIntegrationStubFilesExtension(
-            ['illuminate/cache', 'illuminate/filesystem', 'illuminate/queue', 'illuminate/support', 'nesbot/carbon'],
+            [
+                'illuminate/cache',
+                'illuminate/filesystem',
+                'illuminate/queue',
+                'illuminate/redis',
+                'illuminate/support',
+                'nesbot/carbon',
+            ],
             false,
             true,
             packageInstalledResolver: static fn (): bool => true,

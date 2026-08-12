@@ -30,6 +30,7 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 | Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.55.0`, `12.65.0`, `13.24.0`                    |
 | Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.55.0`, `12.0.0`, `12.65.0`, `13.0.0`, `13.24.0`            |
 | Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                |
+| Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`            |
 | Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                        |
 | Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                      |
 | Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                 |
@@ -173,11 +174,15 @@ remain unbounded; implementation checks do not justify publishing a narrower typ
 raster-sample unit rather than `css_pixel`. Resolution units depend on object state, and opacity, transparency, quality,
 and lower-level geometry objects remain unbranded.
 
-## Illuminate Process, Queue, and Support
+## Illuminate Process, Queue, Redis, and Support
 
 Evidence: Laravel's
 [`PendingProcess`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Process/PendingProcess.php),
-[`WorkerOptions`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Queue/WorkerOptions.php),
+[`WorkerOptions`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Queue/WorkerOptions.php), Redis's
+[`DurationLimiterBuilder`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Redis/Limiters/DurationLimiterBuilder.php),
+[`ConcurrencyLimiterBuilder`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Redis/Limiters/ConcurrencyLimiterBuilder.php),
+concrete limiters, and
+[`CommandExecuted`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Redis/Events/CommandExecuted.php),
 [`Benchmark`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Benchmark.php),
 [`Sleep`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Sleep.php), and
 [`Timebox`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Timebox.php).
@@ -190,12 +195,15 @@ Evidence: Laravel's
 | Worker `timeout`, `sleep`, `rest`, `maxTime` properties and constructor inputs | integer seconds                                                                   | S/V/I-family |
 | Worker `memory` property and constructor input                                 | integer `1048576 * byte`                                                          | S/V/I        |
 | Worker `stopWhenEmptyFor` property and constructor input                       | integer seconds from 11.53.0, 12.60.0, and 13.10.0 only                           | S/V/I-family |
+| Redis duration decay, concurrency release, and blocking timeouts               | integer seconds                                                                   | S/V/I-family |
+| Redis limiter polling sleeps                                                   | integer milliseconds                                                              | S/V/I-family |
+| Redis `CommandExecuted::$time` and constructor latency                         | float milliseconds; constructor preserves upstream `null`                         | S/V/I        |
 | `Benchmark::measure()` and `value()` elapsed results                           | float milliseconds, preserving array keys and tuple value type                    | S/V/I-family |
 | `Sleep::sleep()`; `Sleep::usleep()`                                            | integer or float seconds; integer microseconds                                    | S/V/I        |
 | `Timebox::call($microseconds)`                                                 | integer microseconds                                                              | S/V/I        |
 
-Worker memory is compared after division by 1024 twice, which establishes the binary-megabyte scale. Attempt counts, job
-counts, and retry counts remain unbranded.
+Worker memory is compared after division by 1024 twice, which establishes the binary-megabyte scale. Redis's absolute
+limiter-expiry timestamp remains unbranded. Attempt counts, job counts, lock counts, and retry counts remain unbranded.
 
 ## Measurements
 

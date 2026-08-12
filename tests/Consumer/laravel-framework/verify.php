@@ -60,6 +60,7 @@ $checks = [
     'illuminate/http' => [Illuminate\Http\Client\PendingRequest::class, 'timeout', 'seconds'],
     'illuminate/process' => [Illuminate\Process\PendingProcess::class, 'timeout', 'timeout'],
     'illuminate/queue' => [Illuminate\Contracts\Queue\Queue::class, 'later', 'delay'],
+    'illuminate/redis' => [Illuminate\Redis\Limiters\DurationLimiterBuilder::class, 'every', 'decay'],
     'illuminate/support' => [Illuminate\Support\Sleep::class, 'sleep', 'duration'],
 ];
 

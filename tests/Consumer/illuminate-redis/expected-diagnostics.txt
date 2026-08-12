@@ -1,0 +1,20 @@
+DurationLimiterBuilder::every() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+DurationLimiterBuilder::every() expects DateInterval|DateTimeInterface|unit_int<'second'>, int given
+DurationLimiterBuilder::block() expects unit_int<'second'>, 250&unit_int<'1/1000 * second'> given
+DurationLimiterBuilder::sleep() expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given
+DurationLimiterBuilder::sleep() expects unit_int<'1/1000 * second'>, int given
+Property Illuminate\Redis\Limiters\DurationLimiterBuilder::$decay (unit_int<'second'>) does not accept 1&unit_int<'minute'>
+Property Illuminate\Redis\Limiters\DurationLimiterBuilder::$sleep (unit_int<'1/1000 * second'>) does not accept 1&unit_int<'second'>
+ConcurrencyLimiterBuilder::releaseAfter() expects unit_int<'second'>, 1&unit_int<'minute'> given
+ConcurrencyLimiterBuilder::block() expects unit_int<'second'>, 250&unit_int<'1/1000 * second'> given
+ConcurrencyLimiterBuilder::sleep() expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given
+Property Illuminate\Redis\Limiters\ConcurrencyLimiterBuilder::$releaseAfter (unit_int<'second'>) does not accept 1&unit_int<'minute'>
+DurationLimiter constructor expects unit_int<'second'>, 1&unit_int<'minute'> given
+DurationLimiter::block() expects unit_int<'second'>, 1&unit_int<'minute'> given
+DurationLimiter::block() expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given
+ConcurrencyLimiter constructor expects unit_int<'second'>, 1&unit_int<'minute'> given
+ConcurrencyLimiter::block() expects unit_int<'second'>, 1&unit_int<'minute'> given
+ConcurrencyLimiter::block() expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given
+CommandExecuted constructor expects unit_float<'1/1000 * second'>|null, 1.25&unit_float<'second'> given
+CommandExecuted constructor expects unit_float<'1/1000 * second'>|null, float given
+Property Illuminate\Redis\Events\CommandExecuted::$time (unit_float<'1/1000 * second'>) does not accept 1.25&unit_float<'second'>

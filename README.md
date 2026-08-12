@@ -24,6 +24,7 @@ No tagged release exists. The current supported integration matrix is:
 | `illuminate/http`         | 11, 12, 13                          |
 | `illuminate/process`      | 11, 12, 13                          |
 | `illuminate/queue`        | 11, 12, 13                          |
+| `illuminate/redis`        | 11, 12, 13                          |
 | `illuminate/support`      | 11, 12, 13                          |
 | `intervention/image`      | 3, 4                                |
 | `laravel/framework`       | 11, 12, 13                          |

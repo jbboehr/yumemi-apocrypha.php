@@ -86,7 +86,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
     git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar --output="$git_archive" HEAD
     php "$PACKAGE_CHECKER" "$git_archive"
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -561,6 +561,7 @@ run_simple_illuminate_integration() {
     local package_major=${PACKAGE_MAJOR%%.*}
     local profile_case=$package_major
     local expected_diagnostics=()
+    local documentation_case=$project_dir/cases/documentation-invalid.php
 
     if [[ ! $package_major =~ ^(11|12|13)$ ]]; then
         printf '%s consumer tests require framework major 11, 12, or 13.\n' "$package" >&2
@@ -589,6 +590,10 @@ run_simple_illuminate_integration() {
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     if [[ $FIXTURE_SUITE == illuminate-support && $COMPATIBILITY_MODE == larastan ]]; then
+        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
+    fi
+
+    if [[ $FIXTURE_SUITE == illuminate-redis && $COMPATIBILITY_MODE == larastan ]]; then
         mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
     fi
 
@@ -653,6 +658,10 @@ run_simple_illuminate_integration() {
     fi
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
+    if [[ $FIXTURE_SUITE == illuminate-redis ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case illuminate-redis "$project_dir" phpstan.neon "$documentation_case" illuminate-redis-invalid
+    fi
 }
 
 run_laravel_framework() {
@@ -663,6 +672,7 @@ run_laravel_framework() {
         "acceptFrameworkMeters expects unit_int<'meter'>, unit_int<'octet'> given"
         "timeout() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
         "Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
+        "DurationLimiterBuilder::sleep() expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
         "Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
         "WorkerOptions constructor expects unit_int<'1048576 * octet'>, 128&unit_int<'1000000 * octet'> given"
     )
@@ -1116,7 +1126,7 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-support)
+    illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-support)
         run_simple_illuminate_integration
         ;;
     intervention-image)
@@ -1141,7 +1151,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

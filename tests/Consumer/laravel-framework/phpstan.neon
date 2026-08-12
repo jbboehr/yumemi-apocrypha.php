@@ -11,4 +11,5 @@ parameters:
             - illuminate/http
             - illuminate/process
             - illuminate/queue
+            - illuminate/redis
             - illuminate/support

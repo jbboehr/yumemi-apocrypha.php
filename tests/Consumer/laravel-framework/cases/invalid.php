@@ -43,6 +43,7 @@ use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
+use Illuminate\Redis\Limiters\DurationLimiterBuilder;
 use Illuminate\Support\Sleep;
 
 use function jbboehr\Yumemi\unit;
@@ -59,6 +60,7 @@ function rejectInvalidLaravelFrameworkUnits(
     PendingRequest $request,
     PendingProcess $process,
     Queue $queue,
+    DurationLimiterBuilder $redisLimiter,
 ): void {
     $cache->put('report', 'ready', unit(1, 'minute'));
     $cookies->make('session', 'token', unit(30, 'second'));
@@ -66,6 +68,7 @@ function rejectInvalidLaravelFrameworkUnits(
     $request->timeout(unit(500, 'millisecond'));
     $process->timeout(unit(1, 'minute'));
     $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
+    $redisLimiter->sleep(unit(1, 'second'));
     Sleep::sleep(unit(500, 'millisecond'));
 
     new WorkerOptions(memory: unit(128, '1000000 * byte'));

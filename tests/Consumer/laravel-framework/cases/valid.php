@@ -43,6 +43,7 @@ use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
+use Illuminate\Redis\Limiters\DurationLimiterBuilder;
 use Illuminate\Support\Sleep;
 
 use function jbboehr\Yumemi\unit;
@@ -55,6 +56,7 @@ function exerciseLaravelFrameworkIntegrations(
     PendingRequest $request,
     PendingProcess $process,
     Queue $queue,
+    DurationLimiterBuilder $redisLimiter,
 ): void {
     $seconds = unit(30, 'second');
 
@@ -64,6 +66,7 @@ function exerciseLaravelFrameworkIntegrations(
     $request->timeout($seconds);
     $process->timeout($seconds);
     $queue->later($seconds, 'App\\Jobs\\RefreshReport');
+    $redisLimiter->every($seconds)->block($seconds)->sleep(unit(250, 'millisecond'));
     Sleep::sleep($seconds);
 
     new WorkerOptions(

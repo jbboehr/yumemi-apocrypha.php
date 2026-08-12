@@ -215,6 +215,33 @@ final class PackageIntegrationUnitBoundaryMetadata
             ],
             'returns' => [],
         ],
+        'illuminate/redis' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder', 'kind' => 'method', 'method' => 'every', 'position' => 0, 'name' => 'decay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder', 'kind' => 'method', 'method' => 'block', 'position' => 0, 'name' => 'timeout', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder', 'kind' => 'method', 'method' => 'sleep', 'position' => 0, 'name' => 'sleep', 'type' => "unit_int<'millisecond'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiter', 'kind' => 'constructor', 'method' => '__construct', 'position' => 3, 'name' => 'decay', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiter', 'kind' => 'method', 'method' => 'block', 'position' => 0, 'name' => 'timeout', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiter', 'kind' => 'method', 'method' => 'block', 'position' => 2, 'name' => 'sleep', 'type' => "unit_int<'millisecond'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiterBuilder', 'kind' => 'method', 'method' => 'releaseAfter', 'position' => 0, 'name' => 'releaseAfter', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiterBuilder', 'kind' => 'method', 'method' => 'block', 'position' => 0, 'name' => 'timeout', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiterBuilder', 'kind' => 'method', 'method' => 'sleep', 'position' => 0, 'name' => 'sleep', 'type' => "unit_int<'millisecond'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiter', 'kind' => 'constructor', 'method' => '__construct', 'position' => 3, 'name' => 'releaseAfter', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiter', 'kind' => 'method', 'method' => 'block', 'position' => 0, 'name' => 'timeout', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiter', 'kind' => 'method', 'method' => 'block', 'position' => 2, 'name' => 'sleep', 'type' => "unit_int<'millisecond'>"],
+                ['class' => 'Illuminate\\Redis\\Events\\CommandExecuted', 'kind' => 'constructor', 'method' => '__construct', 'position' => 2, 'name' => 'time', 'type' => "unit_float<'millisecond'>|null"],
+            ],
+            'properties' => [
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder', 'property' => 'decay', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder', 'property' => 'timeout', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder', 'property' => 'sleep', 'type' => "unit_int<'millisecond'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiterBuilder', 'property' => 'releaseAfter', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiterBuilder', 'property' => 'timeout', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Redis\\Limiters\\ConcurrencyLimiterBuilder', 'property' => 'sleep', 'type' => "unit_int<'millisecond'>"],
+                ['class' => 'Illuminate\\Redis\\Events\\CommandExecuted', 'property' => 'time', 'type' => "unit_float<'millisecond'>"],
+            ],
+            'returns' => [],
+        ],
         'illuminate/support' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Support\\Sleep', 'kind' => 'static', 'method' => 'usleep', 'position' => 0, 'name' => 'duration', 'type' => "unit_int<'microsecond'>"],

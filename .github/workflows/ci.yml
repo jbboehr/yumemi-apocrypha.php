@@ -571,6 +571,7 @@ jobs:
                     - illuminate-filesystem
                     - illuminate-process
                     - illuminate-queue
+                    - illuminate-redis
                     - illuminate-support
                 illuminate-version:
                     - "11"
@@ -594,6 +595,8 @@ jobs:
                       integration-label: Illuminate Process
                     - integration: illuminate-queue
                       integration-label: Illuminate Queue
+                    - integration: illuminate-redis
+                      integration-label: Illuminate Redis
                     - integration: illuminate-queue
                       integration-label: Illuminate Queue
                       illuminate-version: "11.52.0"

@@ -148,6 +148,10 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 ],
             ],
         ],
+        'illuminate/redis' => [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../stubs/illuminate/redis.stub'],
+        ],
         'illuminate/support' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/support.stub'],

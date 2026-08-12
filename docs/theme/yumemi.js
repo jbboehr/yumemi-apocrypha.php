@@ -28,6 +28,7 @@
             { id: "illuminate-support", title: "Illuminate Support" },
             { id: "illuminate-process", title: "Illuminate Process" },
             { id: "illuminate-queue", title: "Illuminate Queue" },
+            { id: "illuminate-redis", title: "Illuminate Redis" },
             { id: "intervention-image", title: "Intervention Image" },
             { id: "measurements", title: "Measurements" },
             { id: "phpgeo", title: "phpgeo" },
