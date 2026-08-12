@@ -16,13 +16,11 @@
       url = "github:hercules-ci/gitignore.nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    akashi = {
-      url = "git+https://github.com/jbboehr/akashi.php?ref=master";
+    agent-badge = {
+      url = "git+https://github.com/jbboehr/agent-badge.ts?ref=master";
       inputs.flake-utils.follows = "flake-utils";
       inputs.gitignore.follows = "gitignore";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.pre-commit-hooks.follows = "pre-commit-hooks";
-      inputs.treefmt-nix.follows = "treefmt-nix";
     };
     php-perfidious = {
       url = "github:jbboehr/php-perfidious";
@@ -38,7 +36,7 @@
       pre-commit-hooks,
       treefmt-nix,
       gitignore,
-      akashi,
+      agent-badge,
       php-perfidious,
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -114,7 +112,7 @@
           pkgs.mkShell {
             buildInputs = with pkgs; [
               actionlint
-              akashi.packages.${system}.agent-badge
+              agent-badge.packages.${system}.default
               mdbook
               phpPackage
               phpPackage.packages.composer

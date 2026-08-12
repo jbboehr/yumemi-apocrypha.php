@@ -1,6 +1,6 @@
 {
   "nodes": {
-    "akashi": {
+    "agent-badge": {
       "inputs": {
         "flake-utils": [
           "flake-utils"
@@ -10,27 +10,21 @@
         ],
         "nixpkgs": [
           "nixpkgs"
-        ],
-        "pre-commit-hooks": [
-          "pre-commit-hooks"
-        ],
-        "treefmt-nix": [
-          "treefmt-nix"
         ]
       },
       "locked": {
-        "lastModified": 1786294919,
-        "narHash": "sha256-HzNoRpCFUz3v51rzFavCn+M2CBALpT8CpZS/8lcEk8g=",
+        "lastModified": 1786503253,
+        "narHash": "sha256-z2RfLBtLSNw5VzV+cA+/YXtgg2Hoxvd+P89aAO5Ts+c=",
         "ref": "master",
-        "rev": "5f2bf519be07b6c2df4bd5563e1cf6b67da1a29a",
-        "revCount": 54,
+        "rev": "4e8f892f443245cf9a32583034d3a155e9fdcb48",
+        "revCount": 463,
         "type": "git",
-        "url": "https://github.com/jbboehr/akashi.php"
+        "url": "https://github.com/jbboehr/agent-badge.ts"
       },
       "original": {
         "ref": "master",
         "type": "git",
-        "url": "https://github.com/jbboehr/akashi.php"
+        "url": "https://github.com/jbboehr/agent-badge.ts"
       }
     },
     "flake-compat": {
@@ -142,7 +136,7 @@
     },
     "root": {
       "inputs": {
-        "akashi": "akashi",
+        "agent-badge": "agent-badge",
         "flake-utils": "flake-utils",
         "gitignore": "gitignore",
         "nixpkgs": "nixpkgs",
