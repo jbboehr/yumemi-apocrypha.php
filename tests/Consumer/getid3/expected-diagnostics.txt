@@ -5,3 +5,4 @@ acceptGetId3Bytes expects unit_int<'octet'>, unit_float<'second'>|unit_int<'seco
 acceptGetId3Duration expects unit_float<'second'>|unit_int<'second'>, unit_float<'bit / second'>|unit_int<'bit / second'> given
 acceptGetId3Duration expects unit_float<'second'>|unit_int<'second'>, unit_float<'hertz'>|unit_int<'hertz'> given
 acceptGetId3Bytes expects unit_int<'octet'>, unit_float<'hertz'>|unit_int<'hertz'> given
+acceptGetId3CssPixels expects unit_int<'css_pixel'>, unit_int<'pixel'> given

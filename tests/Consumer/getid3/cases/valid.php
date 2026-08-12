@@ -59,6 +59,11 @@ function recordGetId3Frequency(int|float $frequency): void
 {
 }
 
+/** @param unit_int<'pixel'> $pixels */
+function recordGetId3Pixels(int $pixels): void
+{
+}
+
 $getId3 = new getID3();
 $getId3->openfile(__FILE__, unit(1, 'byte'));
 $info = $getId3->analyze(__FILE__, unit(1, 'byte'));
@@ -99,4 +104,14 @@ if (isset($info['video']['bitrate'])) {
 
 if (isset($info['video']['frame_rate'])) {
     recordGetId3Frequency($info['video']['frame_rate']);
+}
+
+if (isset($info['video']['resolution_x'])) {
+    assertType("unit_int<'pixel'>", $info['video']['resolution_x']);
+    recordGetId3Pixels($info['video']['resolution_x']);
+}
+
+if (isset($info['video']['resolution_y'])) {
+    assertType("unit_int<'pixel'>", $info['video']['resolution_y']);
+    recordGetId3Pixels($info['video']['resolution_y']);
 }

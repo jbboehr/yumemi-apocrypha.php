@@ -68,6 +68,8 @@ final class GetId3StubTest extends PHPStanTestCase
             self::assertStringContainsString("filesize?: unit_int<'byte'>", $classDoc);
             self::assertStringContainsString("playtime_seconds?: unit_int<'second'>|unit_float<'second'>", $classDoc);
             self::assertStringContainsString("sample_rate?: unit_int<'hertz'>|unit_float<'hertz'>", $classDoc);
+            self::assertStringContainsString("resolution_x?: unit_int<'pixel'>", $classDoc);
+            self::assertStringContainsString("resolution_y?: unit_int<'pixel'>", $classDoc);
 
             $openFileDoc = $statement->getMethod('openfile')?->getDocComment()?->getText() ?? '';
             self::assertStringContainsString("unit_int<'byte'>|null \$filesize", $openFileDoc);
@@ -104,6 +106,8 @@ final class GetId3StubTest extends PHPStanTestCase
                     "frame_rate?: unit_int<'hertz'>|unit_float<'hertz'>",
                     $classDoc,
                 );
+                self::assertStringContainsString("resolution_x?: unit_int<'pixel'>", $classDoc);
+                self::assertStringContainsString("resolution_y?: unit_int<'pixel'>", $classDoc);
 
                 $openFileDoc = $statement->getMethod('openfile')?->getDocComment()?->getText() ?? '';
                 self::assertStringContainsString("unit_int<'byte'>|null \$filesize", $openFileDoc);

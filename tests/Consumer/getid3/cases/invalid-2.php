@@ -50,6 +50,11 @@ function acceptGetId3V2Duration(int|float $duration): void
 {
 }
 
+/** @param unit_int<'css_pixel'> $pixels */
+function acceptGetId3V2CssPixels(int $pixels): void
+{
+}
+
 $getId3 = new GetID3();
 $getId3->openfile(__FILE__, 1024);
 $getId3->analyze(__FILE__, unit(1, 'kilobyte'));
@@ -73,4 +78,8 @@ if (isset($info['audio']['sample_rate'])) {
 
 if (isset($info['video']['frame_rate'])) {
     acceptGetId3V2Bytes($info['video']['frame_rate']);
+}
+
+if (isset($info['video']['resolution_x'])) {
+    acceptGetId3V2CssPixels($info['video']['resolution_x']);
 }

@@ -17,6 +17,8 @@ namespace JamesHeinrich\GetID3;
  *     video?: array{
  *         bitrate?: unit_int<'bit / second'>|unit_float<'bit / second'>,
  *         frame_rate?: unit_int<'hertz'>|unit_float<'hertz'>,
+ *         resolution_x?: unit_int<'pixel'>,
+ *         resolution_y?: unit_int<'pixel'>,
  *         ...
  *     },
  *     ...

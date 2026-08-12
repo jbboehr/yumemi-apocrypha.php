@@ -14,8 +14,9 @@ upstream versions it claims to support and semantically accurate about the repre
   three version profiles preserve Carbon 2's integer APIs, Carbon 3.0 through 3.1's `Real` compatibility aliases, and
   Carbon 3.2 and later's `UTC` aliases without presenting calendar-relative operations as fixed durations. A
   metadata-driven adapter preserves Carbon's complete upstream API and concrete receiver types.
-- `james-heinrich/getid3` covers a bounded open result shape for byte counts, durations, bitrates, sample rates, and
-  frame rates from getID3 1.9.22 and later 1.x releases and 2.0.0-beta6 and later 2.x releases.
+- `james-heinrich/getid3` covers a bounded open result shape for byte counts, durations, bitrates, sample rates, frame
+  rates, and nominal raster-pixel dimensions from getID3 1.9.22 and later 1.x releases and 2.0.0-beta6 and later 2.x
+  releases.
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,

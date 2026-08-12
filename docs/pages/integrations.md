@@ -26,7 +26,7 @@ its signatures and semantics have been reviewed.
 | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- | -------------------------------------------------------------------------------- | ---------- |
 | Carbon                 | `nesbot/carbon`                                                                                                                                        | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                          | 2026-08-09 |
 | Guzzle                 | `guzzlehttp/guzzle`                                                                                                                                    | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                          | 2026-08-09 |
-| getID3                 | `james-heinrich/getid3`                                                                                                                                | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-09 |
+| getID3                 | `james-heinrich/getid3`                                                                                                                                | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-11 |
 | Illuminate packages    | `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/process`, `illuminate/queue`, or `illuminate/support` | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
 | Laravel framework      | Provider only; select the applicable component keys above                                                                                              | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
 | Measurements           | `nmarfurt/measurements`                                                                                                                                | 1.4+ in 1.x                         | `v1.4.0`                                                                         | 2026-08-10 |
@@ -160,6 +160,7 @@ the optional file-size override accepted by `analyze()` and `openfile()`.
 | Playback duration                  | `second`       |
 | Overall, audio, and video bitrates | `bit / second` |
 | Audio sample and video frame rates | `hertz`        |
+| Video width and height             | `pixel`        |
 
 <!-- yumemi-example: getid3-invalid -->
 
@@ -188,9 +189,9 @@ global `getID3` class; Apocrypha selects the corresponding stub from the install
 
 The result remains open because getID3 adds format-specific metadata dynamically. Its branded keys are optional so
 callers must check that analysis produced them; guarded, unlisted keys remain available as `mixed`. The audio bitrate
-also retains getID3's special `'free'` value. Pixel dimensions remain unbranded in this integration. Yumemi now
-distinguishes nominal raster `pixel` values from physical-length `css_pixel` values, but the bounded getID3 result shape
-does not yet include its pixel keys.
+also retains getID3's special `'free'` value. The standardized `video.resolution_x` and `video.resolution_y` keys are
+integer counts of addressable raster samples, so they use Yumemi's nominal `pixel` unit. They are not physical-length
+`css_pixel` values. Format-specific nested image dimensions remain outside the bounded result shape.
 
 The 1.x integration starts at 1.9.22, the first verified release in that signature line that runs cleanly on Apocrypha's
 PHP 8.2 baseline. The namespaced 2.x integration starts at the current `2.0.0-beta6` prerelease. Yumemi currently treats

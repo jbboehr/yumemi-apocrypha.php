@@ -86,9 +86,11 @@ different retry callback signatures.
 
 ## getID3
 
-Evidence: the 1.x [`getID3` analyzer](https://github.com/JamesHeinrich/getID3/blob/1.9.25/getid3/getid3.php) and the 2.x
-[`GetID3` analyzer](https://github.com/JamesHeinrich/getID3/blob/2.0.0-beta6/src/GetID3.php), together with format
-modules that calculate the published fields.
+Evidence: the 1.x [`getID3` analyzer](https://github.com/JamesHeinrich/getID3/blob/1.9.25/getid3/getid3.php) and
+[`structure reference`](https://github.com/JamesHeinrich/getID3/blob/1.9.25/structure.txt), and the 2.x
+[`GetID3` analyzer](https://github.com/JamesHeinrich/getID3/blob/2.0.0-beta6/src/GetID3.php) and
+[`structure reference`](https://github.com/JamesHeinrich/getID3/blob/2.0.0-beta6/docs/Structure.md), together with
+format modules that calculate the published fields.
 
 | Boundaries                                                   | Promoted type                                                            | Coverage     |
 | ------------------------------------------------------------ | ------------------------------------------------------------------------ | ------------ |
@@ -97,9 +99,12 @@ modules that calculate the published fields.
 | Open result key `playtime_seconds`                           | optional integer or float seconds                                        | S/V/I        |
 | Open result keys `bitrate`, `audio.bitrate`, `video.bitrate` | optional integer or float bits per second; audio also preserves `'free'` | S/V/I-family |
 | Open result keys `audio.sample_rate`, `video.frame_rate`     | optional integer or float hertz                                          | S/V/I-family |
+| Open result keys `video.resolution_x`, `video.resolution_y`  | optional integer nominal raster pixels                                   | S/V/I-family |
 
 The top-level, audio, and video shapes remain open because format modules add keys dynamically. All branded keys remain
-optional. Pixel dimensions remain unbranded.
+optional. The upstream structure reference defines the standardized video dimensions as integers measured in pixels;
+Yumemi's `pixel` is the nominal raster-sample dimension rather than the physical-length `css_pixel` unit. Other
+format-specific image dimensions remain unbranded.
 
 ## Illuminate Cache and Cookie
 

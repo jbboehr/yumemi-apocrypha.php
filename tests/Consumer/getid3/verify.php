@@ -132,3 +132,40 @@ foreach ($expected as $key => $value) {
 if (($info['audio']['bitrate'] ?? null) !== 64000 || ($info['audio']['sample_rate'] ?? null) !== 8000) {
     throw new RuntimeException('getID3 returned unexpected audio rate metadata.');
 }
+
+$pngChunk = static function (string $type, string $data): string {
+    $body = $type . $data;
+
+    return pack('N', strlen($data)) . $body . pack('N', crc32($body));
+};
+$compressedPixels = gzcompress(str_repeat("\0", 3 * (1 + 2 * 3)));
+if ($compressedPixels === false) {
+    throw new RuntimeException('Unable to compress the getID3 image fixture.');
+}
+
+// The padding keeps the fixture large enough for getID3's unconditional trailing-tag probes.
+$png = "\x89PNG\r\n\x1a\n"
+    . $pngChunk('IHDR', pack('NNCCCCC', 2, 3, 8, 2, 0, 0, 0))
+    . $pngChunk('tEXt', "Comment\0" . str_repeat('x', 96))
+    . $pngChunk('IDAT', $compressedPixels)
+    . $pngChunk('IEND', '');
+$imageFile = tempnam(sys_get_temp_dir(), 'yumemi-getid3-');
+if ($imageFile === false || file_put_contents($imageFile, $png) !== strlen($png)) {
+    throw new RuntimeException('Unable to create the getID3 image fixture.');
+}
+
+try {
+    $imageInfo = (new $analyzerClass())->analyze($imageFile);
+} finally {
+    unlink($imageFile);
+}
+
+if (($imageInfo['video']['resolution_x'] ?? null) !== 2 || ($imageInfo['video']['resolution_y'] ?? null) !== 3) {
+    throw new RuntimeException(sprintf(
+        'getID3 returned unexpected image resolution %s by %s; errors: %s; warnings: %s.',
+        var_export($imageInfo['video']['resolution_x'] ?? null, true),
+        var_export($imageInfo['video']['resolution_y'] ?? null, true),
+        var_export($imageInfo['error'] ?? [], true),
+        var_export($imageInfo['warning'] ?? [], true),
+    ));
+}
