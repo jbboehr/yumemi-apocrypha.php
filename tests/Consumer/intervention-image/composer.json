@@ -1,0 +1,21 @@
+{
+    "name": "jbboehr/yumemi-apocrypha-consumer-intervention-image",
+    "description": "Isolated Intervention Image consumer fixture for Yumemi Apocrypha.",
+    "type": "project",
+    "license": "AGPL-3.0-only WITH romic-exception",
+    "require": {
+        "ext-gd": "*",
+        "jbboehr/yumemi-apocrypha": "dev-consumer"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

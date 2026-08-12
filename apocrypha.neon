@@ -117,3 +117,12 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    packageIntegrationInterventionImageReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: intervention/image
+            class: Intervention\Image\Interfaces\ImageInterface
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension

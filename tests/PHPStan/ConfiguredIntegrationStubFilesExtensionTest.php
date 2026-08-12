@@ -981,6 +981,32 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertTrue($extension->usesUnitBoundaryAdapter('nmarfurt/measurements'));
     }
 
+    /** @return iterable<string, array{non-empty-string, int}> */
+    public static function interventionImageVersions(): iterable
+    {
+        yield 'version 3' => ['3.0.0', 3];
+        yield 'version 4' => ['4.2.1', 4];
+    }
+
+    #[DataProvider('interventionImageVersions')]
+    public function testInterventionImageAlwaysUsesTheAdapterInsteadOfItsReferenceStub(
+        string $version,
+        int $major,
+    ): void {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['intervention/image'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'intervention/image',
+            static fn (): string => $version,
+        );
+
+        self::assertSame([], $extension->getFiles());
+        self::assertSame($major, $extension->getSelectedMajor('intervention/image'));
+        self::assertTrue($extension->usesUnitBoundaryAdapter('intervention/image'));
+    }
+
     public function testMeasurementsRejectsVersionsBeforeOneFour(): void
     {
         $extension = new ConfiguredIntegrationStubFilesExtension(

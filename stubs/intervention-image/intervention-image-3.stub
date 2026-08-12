@@ -1,0 +1,233 @@
+<?php
+
+namespace Intervention\Image;
+
+use Intervention\Image\Interfaces\ImageInterface;
+
+class ImageManager
+{
+    /**
+     * @phpstan-param unit_int<'pixel'> $width
+     * @phpstan-param unit_int<'pixel'> $height
+     * @yumemi-param unit_int<'pixel'> $width
+     * @yumemi-param unit_int<'pixel'> $height
+     */
+    public function create(int $width, int $height): ImageInterface
+    {
+    }
+}
+
+namespace Intervention\Image\Interfaces;
+
+use Closure;
+use Intervention\Image\Geometry\Circle;
+use Intervention\Image\Geometry\Ellipse;
+use Intervention\Image\Geometry\Rectangle;
+
+interface ImageInterface
+{
+    /**
+     * @phpstan-return unit_int<'pixel'>
+     * @yumemi-return unit_int<'pixel'>
+     */
+    public function width(): int;
+
+    /**
+     * @phpstan-return unit_int<'pixel'>
+     * @yumemi-return unit_int<'pixel'>
+     */
+    public function height(): int;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $size
+     * @yumemi-param unit_int<'pixel'> $size
+     */
+    public function pixelate(int $size): self;
+
+    /**
+     * @phpstan-param unit_float<'degree'> $angle
+     * @yumemi-param unit_float<'degree'> $angle
+     */
+    public function rotate(float $angle, mixed $background = 'ffffff'): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function text(string $text, int $x, int $y, callable|Closure|FontInterface $font): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'>|null $width
+     * @phpstan-param unit_int<'pixel'>|null $height
+     * @yumemi-param unit_int<'pixel'>|null $width
+     * @yumemi-param unit_int<'pixel'>|null $height
+     */
+    public function resize(?int $width = null, ?int $height = null): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'>|null $width
+     * @phpstan-param unit_int<'pixel'>|null $height
+     * @yumemi-param unit_int<'pixel'>|null $width
+     * @yumemi-param unit_int<'pixel'>|null $height
+     */
+    public function resizeDown(?int $width = null, ?int $height = null): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'>|null $width
+     * @phpstan-param unit_int<'pixel'>|null $height
+     * @yumemi-param unit_int<'pixel'>|null $width
+     * @yumemi-param unit_int<'pixel'>|null $height
+     */
+    public function scale(?int $width = null, ?int $height = null): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'>|null $width
+     * @phpstan-param unit_int<'pixel'>|null $height
+     * @yumemi-param unit_int<'pixel'>|null $width
+     * @yumemi-param unit_int<'pixel'>|null $height
+     */
+    public function scaleDown(?int $width = null, ?int $height = null): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $width
+     * @phpstan-param unit_int<'pixel'> $height
+     * @yumemi-param unit_int<'pixel'> $width
+     * @yumemi-param unit_int<'pixel'> $height
+     */
+    public function cover(int $width, int $height, string $position = 'center'): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $width
+     * @phpstan-param unit_int<'pixel'> $height
+     * @yumemi-param unit_int<'pixel'> $width
+     * @yumemi-param unit_int<'pixel'> $height
+     */
+    public function coverDown(int $width, int $height, string $position = 'center'): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'>|null $width
+     * @phpstan-param unit_int<'pixel'>|null $height
+     * @yumemi-param unit_int<'pixel'>|null $width
+     * @yumemi-param unit_int<'pixel'>|null $height
+     */
+    public function resizeCanvas(
+        ?int $width = null,
+        ?int $height = null,
+        mixed $background = 'ffffff',
+        string $position = 'center'
+    ): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'>|null $width
+     * @phpstan-param unit_int<'pixel'>|null $height
+     * @yumemi-param unit_int<'pixel'>|null $width
+     * @yumemi-param unit_int<'pixel'>|null $height
+     */
+    public function resizeCanvasRelative(
+        ?int $width = null,
+        ?int $height = null,
+        mixed $background = 'ffffff',
+        string $position = 'center'
+    ): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $width
+     * @phpstan-param unit_int<'pixel'> $height
+     * @yumemi-param unit_int<'pixel'> $width
+     * @yumemi-param unit_int<'pixel'> $height
+     */
+    public function pad(
+        int $width,
+        int $height,
+        mixed $background = 'ffffff',
+        string $position = 'center'
+    ): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $width
+     * @phpstan-param unit_int<'pixel'> $height
+     * @yumemi-param unit_int<'pixel'> $width
+     * @yumemi-param unit_int<'pixel'> $height
+     */
+    public function contain(
+        int $width,
+        int $height,
+        mixed $background = 'ffffff',
+        string $position = 'center'
+    ): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $width
+     * @phpstan-param unit_int<'pixel'> $height
+     * @phpstan-param unit_int<'pixel'> $offset_x
+     * @phpstan-param unit_int<'pixel'> $offset_y
+     * @yumemi-param unit_int<'pixel'> $width
+     * @yumemi-param unit_int<'pixel'> $height
+     * @yumemi-param unit_int<'pixel'> $offset_x
+     * @yumemi-param unit_int<'pixel'> $offset_y
+     */
+    public function crop(
+        int $width,
+        int $height,
+        int $offset_x = 0,
+        int $offset_y = 0,
+        mixed $background = 'ffffff',
+        string $position = 'top-left'
+    ): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $offset_x
+     * @phpstan-param unit_int<'pixel'> $offset_y
+     * @yumemi-param unit_int<'pixel'> $offset_x
+     * @yumemi-param unit_int<'pixel'> $offset_y
+     */
+    public function place(
+        mixed $element,
+        string $position = 'top-left',
+        int $offset_x = 0,
+        int $offset_y = 0,
+        int $opacity = 100
+    ): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'>|null $x
+     * @phpstan-param unit_int<'pixel'>|null $y
+     * @yumemi-param unit_int<'pixel'>|null $x
+     * @yumemi-param unit_int<'pixel'>|null $y
+     */
+    public function fill(mixed $color, ?int $x = null, ?int $y = null): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function drawPixel(int $x, int $y, mixed $color): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function drawRectangle(int $x, int $y, callable|Closure|Rectangle $init): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function drawEllipse(int $x, int $y, callable|Closure|Ellipse $init): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function drawCircle(int $x, int $y, callable|Closure|Circle $init): self;
+}

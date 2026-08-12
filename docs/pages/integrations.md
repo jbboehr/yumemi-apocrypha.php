@@ -28,6 +28,7 @@ its signatures and semantics have been reviewed.
 | Guzzle                 | `guzzlehttp/guzzle`                                                                                                                                    | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                          | 2026-08-09 |
 | getID3                 | `james-heinrich/getid3`                                                                                                                                | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-11 |
 | Illuminate packages    | `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/process`, `illuminate/queue`, or `illuminate/support` | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
+| Intervention Image     | `intervention/image`                                                                                                                                   | 3, 4                                | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                              | 2026-08-11 |
 | Laravel framework      | Provider only; select the applicable component keys above                                                                                              | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
 | Measurements           | `nmarfurt/measurements`                                                                                                                                | 1.4+ in 1.x                         | `v1.4.0`                                                                         | 2026-08-10 |
 | phpgeo                 | `mjaschen/phpgeo`                                                                                                                                      | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                      | 2026-08-09 |
@@ -322,6 +323,46 @@ The memory limit is measured in binary megabytes by Laravel's worker implementat
 `stopWhenEmptyFor` was added independently to Laravel 11.53.0, 12.60.0, and 13.10.0. Apocrypha selects the complete
 worker profile at each release boundary so earlier releases in every supported major retain their original constructor
 and property surface.
+
+## Intervention Image
+
+Enable `intervention/image` to distinguish raster dimensions and coordinates from rotation angles. These values remain
+ordinary PHP integers and floats at runtime; Apocrypha adds units only to PHPStan's view of Intervention Image's public
+manager and image APIs.
+
+| API concern                                                  | Unit     |
+| ------------------------------------------------------------ | -------- |
+| Image creation, resizing, canvas, crop, and pixelation sizes | `pixel`  |
+| Text, crop, insertion, fill, and drawing coordinates         | `pixel`  |
+| `width()` and `height()` results                             | `pixel`  |
+| `rotate()` angle                                             | `degree` |
+
+<!-- yumemi-example: intervention-image-invalid -->
+
+```php
+<?php
+
+use Intervention\Image\ImageManager;
+
+use function jbboehr\Yumemi\unit;
+
+$manager = new ImageManager(new Intervention\Image\Drivers\Gd\Driver());
+$image = $manager->createImage(unit(1200, 'pixel'), unit(800, 'pixel'));
+$image->rotate(unit(45.0, 'degree'));
+
+//! ImageInterface::rotate() expects unit_float<'arc_degree'>, 1.0&unit_float<'radian'> given
+$image->rotate(unit(1.0, 'radian'));
+```
+
+Intervention Image 3 names the manager method `create()`; version 4 uses `createImage()` and also accepts its `Fraction`
+enum wherever the upstream API permits relative dimensions. Apocrypha preserves those alternatives. The integration is
+metadata-driven so it does not replace the package's large central interfaces or hide unrelated methods and concrete
+return precision.
+
+Resolution values remain unbranded because their scale depends on whether the image resolution is expressed per inch or
+per centimeter. Quality, opacity, and transparency are also outside this bounded first surface. The `pixel` brand means
+a nominal raster sample, not the physical-length `css_pixel` unit. Plain upstream integers are not narrowed from runtime
+validation or convention alone.
 
 ## Measurements
 

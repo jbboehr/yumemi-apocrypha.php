@@ -52,6 +52,7 @@ GETID3_VERSION=2 make test-consumer-getid3
 GUZZLE_MAJOR=8 make test-consumer-guzzle
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
+INTERVENTION_IMAGE_VERSION=3 make test-consumer-intervention-image
 LARAVEL_FRAMEWORK_MAJOR=12 make test-consumer-laravel-framework
 MEASUREMENTS_VERSION=1 make test-consumer-measurements
 PHPGEO_MAJOR=6 make test-consumer-phpgeo
@@ -65,8 +66,9 @@ Set `SYMFONY_COMPATIBILITY_MODE=phpstan-symfony` on a Symfony HttpFoundation or 
 coexistence with `phpstan/phpstan-symfony` 2. The compatibility profile installs and autodiscovers both extensions, then
 runs the same reflection, valid-case, invalid-case, explicit-selection, and autodetection checks as plain mode.
 
-Laravel 13 requires PHP 8.3 or later, and Symfony Stopwatch 8 requires PHP 8.4.1 or later. Guzzle 7 and 8 both run on
-the repository's PHP 8.2 baseline. The CI matrix selects a compatible PHP version automatically.
+Laravel 13 and Intervention Image 4 require PHP 8.3 or later, and Symfony Stopwatch 8 requires PHP 8.4.1 or later.
+Guzzle 7 and 8 and Intervention Image 3 run on the repository's PHP 8.2 baseline. The CI matrix selects a compatible PHP
+version automatically.
 
 ## Verify Package Behavior
 
@@ -90,6 +92,10 @@ type.
 Measurements also always uses the metadata adapter because a partial `Length` or `Duration` stub would replace the
 complete upstream magic-factory list. Keep `stubs/measurements/measurements.stub` as a reviewable semantic reference,
 never enable it alongside the adapter, and keep `usesUnitBoundaryAdapter()` true for `nmarfurt/measurements`.
+
+Intervention Image always uses the metadata adapter because partial declarations of its central manager and image types
+would hide unrelated upstream methods. Keep the v3 and v4 reference stubs in exact parity with the metadata catalog,
+never enable either alongside the adapter, and verify both interface-typed and concrete `Image` calls.
 
 Symfony compatibility currently keeps Apocrypha's stubs enabled because `phpstan/phpstan-symfony` 2 does not register
 the same declarations for supported HttpFoundation and Stopwatch releases. Exercise every supported Symfony major in

@@ -1,0 +1,219 @@
+<?php
+
+namespace Intervention\Image;
+
+use Intervention\Image\Interfaces\AnimationFactoryInterface;
+use Intervention\Image\Interfaces\ImageInterface;
+
+class ImageManager
+{
+    /**
+     * @phpstan-param unit_int<'pixel'> $width
+     * @phpstan-param unit_int<'pixel'> $height
+     * @yumemi-param unit_int<'pixel'> $width
+     * @yumemi-param unit_int<'pixel'> $height
+     */
+    public function createImage(
+        int $width,
+        int $height,
+        null|callable|AnimationFactoryInterface $animation = null,
+    ): ImageInterface {
+    }
+}
+
+namespace Intervention\Image\Interfaces;
+
+use Intervention\Image\Alignment;
+use Intervention\Image\Fraction;
+
+interface ImageInterface
+{
+    /**
+     * @phpstan-return unit_int<'pixel'>
+     * @yumemi-return unit_int<'pixel'>
+     */
+    public function width(): int;
+
+    /**
+     * @phpstan-return unit_int<'pixel'>
+     * @yumemi-return unit_int<'pixel'>
+     */
+    public function height(): int;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $size
+     * @yumemi-param unit_int<'pixel'> $size
+     */
+    public function pixelate(int $size): self;
+
+    /**
+     * @phpstan-param unit_float<'degree'> $angle
+     * @yumemi-param unit_float<'degree'> $angle
+     */
+    public function rotate(float $angle, null|string|ColorInterface $background = null): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function text(string $text, int $x, int $y, callable|FontInterface $font): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     */
+    public function resize(null|int|Fraction $width = null, null|int|Fraction $height = null): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     */
+    public function resizeDown(null|int|Fraction $width = null, null|int|Fraction $height = null): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     */
+    public function scale(null|int|Fraction $width = null, null|int|Fraction $height = null): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     */
+    public function scaleDown(null|int|Fraction $width = null, null|int|Fraction $height = null): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     */
+    public function cover(
+        int|Fraction $width,
+        int|Fraction $height,
+        string|Alignment $alignment = Alignment::CENTER,
+    ): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     */
+    public function coverDown(
+        int|Fraction $width,
+        int|Fraction $height,
+        string|Alignment $alignment = Alignment::CENTER,
+    ): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     */
+    public function resizeCanvas(
+        null|int|Fraction $width = null,
+        null|int|Fraction $height = null,
+        null|string|ColorInterface $background = null,
+        string|Alignment $alignment = Alignment::CENTER,
+    ): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'>|null $height
+     */
+    public function resizeCanvasRelative(
+        null|int|Fraction $width = null,
+        null|int|Fraction $height = null,
+        null|string|ColorInterface $background = null,
+        string|Alignment $alignment = Alignment::CENTER,
+    ): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     */
+    public function contain(
+        int|Fraction $width,
+        int|Fraction $height,
+        null|string|ColorInterface $background = null,
+        string|Alignment $alignment = Alignment::CENTER,
+    ): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     */
+    public function containDown(
+        int|Fraction $width,
+        int|Fraction $height,
+        null|string|ColorInterface $background = null,
+        string|Alignment $alignment = Alignment::CENTER,
+    ): self;
+
+    /**
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @phpstan-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $width
+     * @yumemi-param \Intervention\Image\Fraction|unit_int<'pixel'> $height
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function crop(
+        int|Fraction $width,
+        int|Fraction $height,
+        int $x = 0,
+        int $y = 0,
+        null|string|ColorInterface $background = null,
+        string|Alignment $alignment = Alignment::TOP_LEFT,
+    ): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function insert(
+        mixed $image,
+        int $x = 0,
+        int $y = 0,
+        string|Alignment $alignment = Alignment::TOP_LEFT,
+        float $transparency = 1,
+    ): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'>|null $x
+     * @phpstan-param unit_int<'pixel'>|null $y
+     * @yumemi-param unit_int<'pixel'>|null $x
+     * @yumemi-param unit_int<'pixel'>|null $y
+     */
+    public function fill(string|ColorInterface $color, ?int $x = null, ?int $y = null): self;
+
+    /**
+     * @phpstan-param unit_int<'pixel'> $x
+     * @phpstan-param unit_int<'pixel'> $y
+     * @yumemi-param unit_int<'pixel'> $x
+     * @yumemi-param unit_int<'pixel'> $y
+     */
+    public function drawPixel(int $x, int $y, string|ColorInterface $color): self;
+}

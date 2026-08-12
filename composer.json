@@ -152,6 +152,8 @@
         "test:consumer:getid3:archive": "make test-consumer-getid3-archive",
         "test:consumer:guzzle": "make test-consumer-guzzle",
         "test:consumer:guzzle:archive": "make test-consumer-guzzle-archive",
+        "test:consumer:intervention-image": "make test-consumer-intervention-image",
+        "test:consumer:intervention-image:archive": "make test-consumer-intervention-image-archive",
         "test:consumer:illuminate-cache": "make test-consumer-illuminate-cache",
         "test:consumer:illuminate-cache:archive": "make test-consumer-illuminate-cache-archive",
         "test:consumer:illuminate-cookie": "make test-consumer-illuminate-cookie",

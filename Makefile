@@ -2,6 +2,7 @@
 .PHONY: all coverage-branch docs docs-check docs-serve test-consumer-carbon test-consumer-carbon-archive \
 	test-consumer-getid3 test-consumer-getid3-archive \
 	test-consumer-guzzle test-consumer-guzzle-archive \
+	test-consumer-intervention-image test-consumer-intervention-image-archive \
 	test-consumer-illuminate-cache \
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-filesystem test-consumer-illuminate-process \
@@ -22,6 +23,7 @@ ILLUMINATE_CACHE_MAJOR ?= 12
 ILLUMINATE_COMPATIBILITY_MODE ?= plain
 GETID3_VERSION ?= 2
 GUZZLE_MAJOR ?= 8
+INTERVENTION_IMAGE_VERSION ?= 4
 ILLUMINATE_COOKIE_MAJOR ?= 12
 ILLUMINATE_FILESYSTEM_MAJOR ?= 12
 ILLUMINATE_HTTP_MAJOR ?= 12
@@ -74,6 +76,12 @@ test-consumer-guzzle:
 
 test-consumer-guzzle-archive:
 	tests/Consumer/run archive guzzle $(GUZZLE_MAJOR)
+
+test-consumer-intervention-image:
+	tests/Consumer/run source intervention-image $(INTERVENTION_IMAGE_VERSION)
+
+test-consumer-intervention-image-archive:
+	tests/Consumer/run archive intervention-image $(INTERVENTION_IMAGE_VERSION)
 
 test-consumer-illuminate-cache:
 	tests/Consumer/run source illuminate-cache $(ILLUMINATE_CACHE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)

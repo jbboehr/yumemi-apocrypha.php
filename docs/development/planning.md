@@ -21,6 +21,10 @@ upstream versions it claims to support and semantically accurate about the repre
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
   `illuminate/process`, and `illuminate/queue` cover stable unit-bearing APIs across Laravel 11 through 13.
+- `intervention/image` covers nominal raster-pixel dimensions and coordinates plus degree rotations across Intervention
+  Image 3 and 4. A metadata adapter preserves the package's complete interfaces, while version 4 retains its `Fraction`
+  dimension alternatives. Resolution, quality, opacity, transparency, and lower-level geometry objects remain outside
+  the bounded first surface.
 - Every Illuminate integration coexists automatically with Larastan 3. Standalone analysis uses the package stubs;
   Larastan analysis keeps Larastan's declarations and reproduces Apocrypha's unit boundaries through a metadata-driven
   rule and type-extension adapter, with parity enforced against the canonical stubs.
@@ -256,10 +260,10 @@ The following packages remain valuable after recently completed or still-needed 
 - `phpoffice/phpword` and `phpoffice/phppresentation`: conversion helpers and selected OOXML boundaries are strong
   targets now that Yumemi distinguishes nominal raster pixels, CSS pixels, typographic points, twips, and English Metric
   Units. Their literal conversion constants are the clearest third-party use case for constant-valued native unit types.
-- `intervention/image` and `imagine/imagine`: pixel dimensions, signed coordinates, angles, and percentages are useful,
-  and Yumemi's nominal `pixel` unit now makes a bounded subset representable. Branded integer and float ranges can
-  express positive dimensions and bounded opacity more accurately; float-range support need not block pixel, angle, and
-  integer-percentage boundaries whose upstream types are already precise.
+- `imagine/imagine`: pixel dimensions, signed coordinates, angles, and percentages are useful, and Yumemi's nominal
+  `pixel` unit makes a bounded subset representable. Intervention Image has graduated with a narrower pixel-and-angle
+  surface; use its application evidence to decide whether Imagine adds enough distinct value. Branded integer and float
+  ranges can express positive dimensions and bounded opacity more accurately.
 - `league/flysystem`: nonnegative file sizes are clear but provide less incremental value than the mixed-unit
   candidates.
 

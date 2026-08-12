@@ -92,6 +92,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-http',
         ],
+        'intervention-image-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'intervention-image',
+        ],
         'measurements-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'measurements',

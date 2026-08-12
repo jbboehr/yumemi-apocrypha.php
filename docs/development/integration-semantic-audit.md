@@ -1,7 +1,7 @@
 # Integration Semantic Audit
 
 This ledger records the source evidence and consumer coverage behind every branded third-party boundary. It was last
-reviewed on 2026-08-10. The public supported-version matrix remains in
+reviewed on 2026-08-11. The public supported-version matrix remains in
 [`docs/pages/integrations.md`](../pages/integrations.md); this document is the maintainer-facing evidence behind it.
 
 ## Method
@@ -13,7 +13,8 @@ package. `V` means a branded value is accepted or an inferred return is asserted
 means the boundary is exercised directly by `V`, while rejection is tested on another boundary with the identical
 promoted type. Every integration runs explicit and autodetected registration; every Illuminate integration also runs
 through the package-boundary adapter, whose core catalog is mechanically compared with the selected canonical stub.
-Carbon always uses the same adapter so its partial verification stubs cannot replace Carbon's complete declarations.
+Carbon and Intervention Image always use the same adapter so their partial verification stubs cannot replace complete
+upstream declarations.
 
 The audit preserves upstream scalar alternatives and nullability, keeps dynamic result and option arrays open, and does
 not narrow plain upstream integers from implementation behavior alone. It distinguishes relative durations from Unix
@@ -30,6 +31,7 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 | Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.55.0`, `12.0.0`, `12.65.0`, `13.0.0`, `13.24.0`            |
 | Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                |
 | Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                        |
+| Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                      |
 | Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                 |
 | phpgeo                        | 4–6                                                                    | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                              |
 | Symfony HttpFoundation        | 6.4+ base; 7.3+ SSE; 8+ IP byte counts                                 | `6.4.0`, `6.4.43`, `7.0.0`, `7.2.9`, `7.3.0`, `7.4.16`, `8.0.0`, `8.1.4` |
@@ -147,6 +149,29 @@ and fake-upload [`File`](https://github.com/laravel/framework/blob/v13.24.0/src/
 
 The fake-upload input scale follows Laravel's multiplication by 1024, not decimal `kilobyte`. Filesystem modification
 times remain unbranded timestamps.
+
+## Intervention Image
+
+Evidence: Intervention Image's `ImageManager`, `Image`, and `ImageInterface` at
+[`3.0.0`](https://github.com/Intervention/image/tree/3.0.0/src),
+[`3.11.8`](https://github.com/Intervention/image/tree/3.11.8/src),
+[`4.0.0`](https://github.com/Intervention/image/tree/4.0.0/src), and
+[`4.2.1`](https://github.com/Intervention/image/tree/4.2.1/src). Runtime checks create and resize a GD image at the
+minimum and current release of each supported major.
+
+| Boundaries                                                                  | Promoted type                                                  | Coverage     |
+| --------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------ |
+| Manager `create()` in 3.x and `createImage()` in 4.x                        | integer pixels for width and height                            | S/V/I        |
+| `ImageInterface::width()` and `height()`                                    | integer pixels                                                 | S/V/I        |
+| Pixelation, resize, scale, cover, canvas, contain, and crop dimensions      | integer pixels; 4.x preserves each published `Fraction` option | S/V/I-family |
+| Text, crop, placement/insertion, fill, pixel, and 3.x primitive coordinates | signed integer pixels                                          | S/V/I-family |
+| `ImageInterface::rotate()`                                                  | float degrees                                                  | S/V/I        |
+
+The active metadata adapter preserves the complete upstream interface and concrete receiver precision. Version-specific
+reference stubs exist only for metadata parity and are never loaded during consumer analysis. Upstream plain integers
+remain unbounded; implementation checks do not justify publishing a narrower type. Pixel values use Yumemi's nominal
+raster-sample unit rather than `css_pixel`. Resolution units depend on object state, and opacity, transparency, quality,
+and lower-level geometry objects remain unbranded.
 
 ## Illuminate Process, Queue, and Support
 

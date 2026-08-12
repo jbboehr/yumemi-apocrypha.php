@@ -152,6 +152,13 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/support.stub'],
         ],
+        'intervention/image' => [
+            'majors' => [3, 4],
+            'files' => [__DIR__ . '/../../stubs/intervention-image/intervention-image-3.stub'],
+            'filesByMajor' => [
+                4 => [__DIR__ . '/../../stubs/intervention-image/intervention-image-4.stub'],
+            ],
+        ],
         'james-heinrich/getid3' => [
             'majors' => [1, 2],
             'minimumVersions' => [
@@ -540,7 +547,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             return false;
         }
 
-        if ($integration === 'nesbot/carbon' || $integration === 'nmarfurt/measurements') {
+        if (in_array($integration, ['intervention/image', 'nesbot/carbon', 'nmarfurt/measurements'], true)) {
             return true;
         }
 

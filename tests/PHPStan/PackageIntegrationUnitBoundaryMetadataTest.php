@@ -74,6 +74,8 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         yield 'illuminate/http v11.35.1' => ['illuminate/http', 11, 'v11.35.1'];
         yield 'illuminate/http normalized 11.35.1' => ['illuminate/http', 11, '11.35.1.0'];
         yield 'illuminate/http 11.x-dev' => ['illuminate/http', 11, '11.x-dev'];
+        yield 'Intervention Image 3' => ['intervention/image', 3, '3.0.0'];
+        yield 'Intervention Image 4' => ['intervention/image', 4, '4.0.0'];
     }
 
     #[DataProvider('integrationMajors')]
@@ -85,7 +87,7 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         self::assertSame(
             $this->stubBoundaries($integration, $major, $version),
             $this->metadataBoundaries($integration, $major, $version),
-            sprintf('Package integration metadata drifted from %s stubs for Laravel %s.', $integration, $version),
+            sprintf('Package integration metadata drifted from %s stubs for package version %s.', $integration, $version),
         );
     }
 
@@ -103,7 +105,7 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         $neon = (string) file_get_contents(__DIR__ . '/../../apocrypha.neon');
         self::assertSame(
             count($expected),
-            preg_match_all('/^ {12}class: ((?:Carbon|Illuminate)\\\\[^\r\n]+)$/m', $neon, $matches),
+            preg_match_all('/^ {12}class: ((?:Carbon|Illuminate|Intervention)\\\\[^\r\n]+)$/m', $neon, $matches),
         );
         $actual = array_values(array_unique($matches[1]));
         sort($actual);
@@ -311,7 +313,10 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
                 ),
             ],
             'illuminate/support' => [$base . 'support.stub'],
-            default => throw new \LogicException(sprintf('Unknown Illuminate integration %s.', $integration)),
+            'intervention/image' => [
+                __DIR__ . sprintf('/../../stubs/intervention-image/intervention-image-%d.stub', $major),
+            ],
+            default => throw new \LogicException(sprintf('Unknown adapter integration %s.', $integration)),
         };
     }
 

@@ -86,7 +86,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
     git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar --output="$git_archive" HEAD
     php "$PACKAGE_CHECKER" "$git_archive"
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -943,6 +943,77 @@ run_measurements() {
     run_documentation_phpstan_case measurements "$project_dir" phpstan.neon "$documentation_case" measurements-invalid
 }
 
+run_intervention_image() {
+    local project_dir=$WORK_DIR/intervention-image
+    local documentation_case=$project_dir/cases/documentation-invalid.php
+    local package_constraint
+    local profile
+    case $PACKAGE_MAJOR in
+        3.0.0)
+            package_constraint=$PACKAGE_MAJOR
+            profile=3
+            ;;
+        3)
+            package_constraint='^3.0'
+            profile=3
+            ;;
+        4.0.0)
+            package_constraint=$PACKAGE_MAJOR
+            profile=4
+            ;;
+        4)
+            package_constraint='^4.0'
+            profile=4
+            ;;
+        *)
+            printf 'Intervention Image consumer tests require version 3, 3.0.0, 4, or 4.0.0.\n' >&2
+            exit 2
+            ;;
+    esac
+
+    mkdir -p -- "$project_dir"
+    cp -R -- "$FIXTURES_DIR/intervention-image/." "$project_dir/"
+
+    composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
+    if [[ -n $yumemi_repository_json ]]; then
+        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+    fi
+    composer --working-dir="$project_dir" require --dev \
+        "intervention/image:$package_constraint" --no-update --no-interaction
+    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+
+    php "$project_dir/verify.php"
+    run_phpstan_case "$project_dir" phpstan.neon "valid-$profile.php"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$profile.php"
+
+    local expected_diagnostics=()
+    if [[ $profile == 3 ]]; then
+        expected_diagnostics=(
+            "ImageManager::create() expects unit_int<'pixel'>, int given"
+            "ImageInterface::resize() expects unit_int<'pixel'>|null, 1&unit_int<'second'> given"
+            "ImageInterface::rotate() expects unit_float<'arc_degree'>, 1.0&unit_float<'radian'> given"
+            "ImageInterface::crop() expects unit_int<'pixel'>, 1&unit_int<'meter'> given"
+            "recordInterventionThreeSeconds expects unit_int<'second'>, unit_int<'pixel'> given"
+        )
+    else
+        expected_diagnostics=(
+            "ImageManager::createImage() expects unit_int<'pixel'>, int given"
+            "ImageInterface::resize() expects Intervention\\Image\\Fraction|unit_int<'pixel'>|null, 1&unit_int<'second'> given"
+            "ImageInterface::rotate() expects unit_float<'arc_degree'>, 1.0&unit_float<'radian'> given"
+            "ImageInterface::crop() expects unit_int<'pixel'>, 1&unit_int<'meter'> given"
+            "recordInterventionFourSeconds expects unit_int<'second'>, unit_int<'pixel'> given"
+        )
+    fi
+
+    run_phpstan_case "$project_dir" phpstan.neon "invalid-$profile.php" "${expected_diagnostics[@]}"
+    run_phpstan_case "$project_dir" phpstan-autodetect.neon "invalid-$profile.php" "${expected_diagnostics[@]}"
+
+    if [[ $profile == 4 ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case intervention-image "$project_dir" phpstan.neon "$documentation_case" intervention-image-invalid
+    fi
+}
+
 run_getid3() {
     local project_dir=$WORK_DIR/getid3
     local documentation_case=$project_dir/cases/documentation-invalid.php
@@ -1048,6 +1119,9 @@ case $FIXTURE_SUITE in
     illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-support)
         run_simple_illuminate_integration
         ;;
+    intervention-image)
+        run_intervention_image
+        ;;
     laravel-framework)
         run_laravel_framework
         ;;
@@ -1067,7 +1141,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-support|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac
