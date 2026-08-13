@@ -186,8 +186,9 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-carbon-${{ matrix.carbon-version }}-${{
-                      matrix.compatibility-mode }}
+                      matrix.compatibility-mode }}-${{ hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-carbon-${{ matrix.carbon-version }}-${{ matrix.compatibility-mode }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-carbon-${{ matrix.carbon-version }}-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-carbon-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
@@ -245,8 +246,11 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-getid3-${{ matrix.getid3-version }}
+                  key:
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-getid3-${{ matrix.getid3-version }}-${{
+                      hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-getid3-${{ matrix.getid3-version }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-getid3-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -305,8 +309,11 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-intervention-image-${{ matrix.image-version }}
+                  key:
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-intervention-image-${{ matrix.image-version }}-${{
+                      hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-intervention-image-${{ matrix.image-version }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-intervention-image-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -374,8 +381,11 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-guzzle-${{ matrix.guzzle-version }}
+                  key:
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-guzzle-${{ matrix.guzzle-version }}-${{
+                      hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-guzzle-${{ matrix.guzzle-version }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-guzzle-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -447,8 +457,9 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-cache-${{ matrix.illuminate-version
-                      }}-${{ matrix.compatibility-mode }}
+                      }}-${{ matrix.compatibility-mode }}-${{ hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-cache-${{ matrix.illuminate-version }}-${{ matrix.compatibility-mode }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-cache-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -542,8 +553,9 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-http-${{ matrix.illuminate-version
-                      }}-${{ matrix.compatibility-mode }}
+                      }}-${{ matrix.compatibility-mode }}-${{ hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-http-${{ matrix.illuminate-version }}-${{ matrix.compatibility-mode }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-illuminate-http-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -657,8 +669,9 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key:
                       ${{ runner.os }}-${{ matrix.integration }}-${{ matrix.illuminate-version }}-${{
-                      matrix.compatibility-mode }}
+                      matrix.compatibility-mode }}-${{ hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-${{ matrix.integration }}-${{ matrix.illuminate-version }}-${{ matrix.compatibility-mode }}
                       ${{ runner.os }}-${{ matrix.integration }}-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -731,8 +744,9 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-laravel-framework-${{ matrix.laravel-version }}-${{
-                      matrix.compatibility-mode }}
+                      matrix.compatibility-mode }}-${{ hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-laravel-framework-${{ matrix.laravel-version }}-${{ matrix.compatibility-mode }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-laravel-framework-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -784,8 +798,11 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-8.2-measurements-${{ matrix.measurements-version }}
+                  key:
+                      ${{ runner.os }}-php-8.2-measurements-${{ matrix.measurements-version }}-${{
+                      hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-8.2-measurements-${{ matrix.measurements-version }}
                       ${{ runner.os }}-php-8.2-measurements-
                       ${{ runner.os }}-php-8.2-composer-
                       ${{ runner.os }}-php-composer-
@@ -840,8 +857,11 @@ jobs:
               uses: actions/cache@v6
               with:
                   path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-php-${{ matrix.php-version }}-phpgeo-${{ matrix.phpgeo-version }}
+                  key:
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-phpgeo-${{ matrix.phpgeo-version }}-${{
+                      hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-phpgeo-${{ matrix.phpgeo-version }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-phpgeo-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -931,8 +951,10 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key:
                       ${{ runner.os }}-php-${{ matrix.php-version }}-symfony-http-foundation-${{
-                      matrix.http-foundation-version }}-${{ matrix.compatibility-mode }}
+                      matrix.http-foundation-version }}-${{ matrix.compatibility-mode }}-${{ hashFiles('composer.lock')
+                      }}
                   restore-keys: |
+                      ${{ runner.os }}-php-${{ matrix.php-version }}-symfony-http-foundation-${{ matrix.http-foundation-version }}-${{ matrix.compatibility-mode }}
                       ${{ runner.os }}-php-${{ matrix.php-version }}-symfony-http-foundation-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
@@ -1008,8 +1030,9 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key:
                       ${{ runner.os }}-symfony-stopwatch-${{ matrix.stopwatch-version }}-${{ matrix.compatibility-mode
-                      }}
+                      }}-${{ hashFiles('composer.lock') }}
                   restore-keys: |
+                      ${{ runner.os }}-symfony-stopwatch-${{ matrix.stopwatch-version }}-${{ matrix.compatibility-mode }}
                       ${{ runner.os }}-symfony-stopwatch-
                       ${{ runner.os }}-php-${{ matrix.php-version }}-composer-
                       ${{ runner.os }}-php-composer-
