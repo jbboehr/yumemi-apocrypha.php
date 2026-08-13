@@ -585,6 +585,7 @@ jobs:
                     - illuminate-process
                     - illuminate-queue
                     - illuminate-redis
+                    - illuminate-session
                     - illuminate-support
                     - illuminate-validation
                 illuminate-version:
@@ -623,6 +624,8 @@ jobs:
                       integration-label: Illuminate Queue
                     - integration: illuminate-redis
                       integration-label: Illuminate Redis
+                    - integration: illuminate-session
+                      integration-label: Illuminate Session
                     - integration: illuminate-queue
                       integration-label: Illuminate Queue
                       illuminate-version: "11.52.0"

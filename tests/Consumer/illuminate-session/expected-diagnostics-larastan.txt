@@ -1,0 +1,16 @@
+Parameter $minutes of class Illuminate\Session\ArraySessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+Parameter $minutes of class Illuminate\Session\ArraySessionHandler constructor expects unit_int<'minute'>, int given
+Parameter $minutes of class Illuminate\Session\CacheBasedSessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+Parameter $minutes of class Illuminate\Session\CookieSessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+Parameter $minutes of class Illuminate\Session\DatabaseSessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+Parameter $minutes of class Illuminate\Session\FileSessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+Illuminate\Session\ArraySessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+Illuminate\Session\CacheBasedSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+Illuminate\Session\CookieSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+Illuminate\Session\DatabaseSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+Illuminate\Session\FileSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+Illuminate\Session\NullSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+Illuminate\Session\NullSessionHandler::gc() expects unit_int<'second'>, int given
+Illuminate\Session\SymfonySessionDecorator::invalidate() expects unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Session\SymfonySessionDecorator::migrate() expects unit_int<'second'>|null, 1&unit_int<'minute'> given
+acceptSessionMinutes expects unit_int<'minute'>, unit_int<'second'> given

@@ -26,6 +26,7 @@ No tagged release exists. The current supported integration matrix is:
 | `illuminate/process`      | 11, 12, 13                          |
 | `illuminate/queue`        | 11, 12, 13                          |
 | `illuminate/redis`        | 11, 12, 13                          |
+| `illuminate/session`      | 11, 12, 13                          |
 | `illuminate/support`      | 11, 12, 13                          |
 | `illuminate/validation`   | 11, 12, 13                          |
 | `intervention/image`      | 3, 4                                |

@@ -257,6 +257,28 @@ final class PackageIntegrationUnitBoundaryMetadata
             ],
             'returns' => [],
         ],
+        'illuminate/session' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Session\\ArraySessionHandler', 'kind' => 'constructor', 'method' => '__construct', 'position' => 0, 'name' => 'minutes', 'type' => "unit_int<'minute'>"],
+                ['class' => 'Illuminate\\Session\\ArraySessionHandler', 'kind' => 'method', 'method' => 'gc', 'position' => 0, 'name' => 'lifetime', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Session\\CacheBasedSessionHandler', 'kind' => 'constructor', 'method' => '__construct', 'position' => 1, 'name' => 'minutes', 'type' => "unit_int<'minute'>"],
+                ['class' => 'Illuminate\\Session\\CacheBasedSessionHandler', 'kind' => 'method', 'method' => 'gc', 'position' => 0, 'name' => 'lifetime', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Session\\CookieSessionHandler', 'kind' => 'constructor', 'method' => '__construct', 'position' => 1, 'name' => 'minutes', 'type' => "unit_int<'minute'>"],
+                ['class' => 'Illuminate\\Session\\CookieSessionHandler', 'kind' => 'method', 'method' => 'gc', 'position' => 0, 'name' => 'lifetime', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Session\\DatabaseSessionHandler', 'kind' => 'constructor', 'method' => '__construct', 'position' => 2, 'name' => 'minutes', 'type' => "unit_int<'minute'>"],
+                ['class' => 'Illuminate\\Session\\DatabaseSessionHandler', 'kind' => 'method', 'method' => 'gc', 'position' => 0, 'name' => 'lifetime', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Session\\FileSessionHandler', 'kind' => 'constructor', 'method' => '__construct', 'position' => 2, 'name' => 'minutes', 'type' => "unit_int<'minute'>"],
+                ['class' => 'Illuminate\\Session\\FileSessionHandler', 'kind' => 'method', 'method' => 'gc', 'position' => 0, 'name' => 'lifetime', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Session\\NullSessionHandler', 'kind' => 'method', 'method' => 'gc', 'position' => 0, 'name' => 'lifetime', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Session\\SymfonySessionDecorator', 'kind' => 'method', 'method' => 'invalidate', 'position' => 0, 'name' => 'lifetime', 'type' => "unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Session\\SymfonySessionDecorator', 'kind' => 'method', 'method' => 'migrate', 'position' => 1, 'name' => 'lifetime', 'type' => "unit_int<'second'>|null"],
+            ],
+            'properties' => [],
+            'returns' => [
+                ['class' => 'Illuminate\\Session\\SessionManager', 'kind' => 'method', 'method' => 'defaultRouteBlockLockSeconds', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Session\\SessionManager', 'kind' => 'method', 'method' => 'defaultRouteBlockWaitSeconds', 'type' => "unit_int<'second'>"],
+            ],
+        ],
         'illuminate/validation' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Validation\\Rules\\Dimensions', 'kind' => 'method', 'method' => 'width', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'pixel'>"],

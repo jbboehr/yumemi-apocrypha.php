@@ -231,6 +231,54 @@ final class CommandExecuted
     }
 }
 
+namespace Illuminate\Session;
+
+final class ArraySessionHandler
+{
+    public function __construct(int $minutes)
+    {
+    }
+
+    public function gc(int $lifetime): int
+    {
+        return 0;
+    }
+}
+
+final class NullSessionHandler
+{
+    public function gc(int $lifetime): int
+    {
+        return 0;
+    }
+}
+
+final class SessionManager
+{
+    public function defaultRouteBlockLockSeconds(): int
+    {
+        return 10;
+    }
+
+    public function defaultRouteBlockWaitSeconds(): int
+    {
+        return 10;
+    }
+}
+
+final class SymfonySessionDecorator
+{
+    public function invalidate(?int $lifetime = null): bool
+    {
+        return true;
+    }
+
+    public function migrate(bool $destroy = false, ?int $lifetime = null): bool
+    {
+        return true;
+    }
+}
+
 namespace Illuminate\Validation\Rules;
 
 final class Dimensions

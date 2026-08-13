@@ -38,62 +38,68 @@ declare(strict_types=1);
 
 namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
 
-use PHPStan\Testing\TypeInferenceTestCase;
+use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\Namespace_;
+use PHPStan\Parser\Parser;
+use PHPStan\Testing\PHPStanTestCase;
 
-final class LarastanCompatibilityExtensionsTypeInferenceTest extends TypeInferenceTestCase
+final class IlluminateSessionStubTest extends PHPStanTestCase
 {
     public static function getAdditionalConfigFiles(): array
     {
-        return [__DIR__ . '/larastan-compatibility-extensions.neon'];
+        return [
+            __DIR__ . '/../../vendor/jbboehr/yumemi/extension.neon',
+            __DIR__ . '/../../vendor/jbboehr/yumemi/yumemi-tags.neon',
+            __DIR__ . '/illuminate-session-stub.neon',
+        ];
     }
 
-    protected static function getAdditionalAnalysedFiles(): array
+    public function testMinuteAndSecondTagsArePromotedByTheStubParser(): void
     {
-        return [__DIR__ . '/fixtures/larastan-compatibility-upstream.php'];
-    }
+        $parser = self::getContainer()->getService('stubParser');
+        self::assertInstanceOf(Parser::class, $parser);
 
-    public function testUpstreamFixturesAreAvailableToPhpstanReflection(): void
-    {
-        $reflectionProvider = self::createReflectionProvider();
+        $phpDocs = [];
+        foreach ($parser->parseFile(__DIR__ . '/../../stubs/illuminate/session.stub') as $node) {
+            if (!$node instanceof Namespace_) {
+                continue;
+            }
+
+            foreach ($node->stmts as $statement) {
+                if (!$statement instanceof ClassLike || $statement->name === null) {
+                    continue;
+                }
+
+                foreach ($statement->getMethods() as $method) {
+                    $phpDocs[$statement->name->toString() . '::' . $method->name->toString()]
+                        = $method->getDocComment()?->getText() ?? '';
+                }
+            }
+        }
 
         foreach ([
-            'Illuminate\\Database\\Connection',
-            'Illuminate\\Filesystem\\Filesystem',
-            'Illuminate\\Queue\\WorkerOptions',
-            'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder',
-            'Illuminate\\Session\\SessionManager',
-            'Illuminate\\Support\\Benchmark',
-            'Illuminate\\Validation\\Rules\\Dimensions',
-        ] as $class) {
-            self::assertTrue($reflectionProvider->hasClass($class), sprintf('PHPStan cannot reflect %s.', $class));
+            'ArraySessionHandler::__construct',
+            'CacheBasedSessionHandler::__construct',
+            'CookieSessionHandler::__construct',
+            'DatabaseSessionHandler::__construct',
+            'FileSessionHandler::__construct',
+        ] as $method) {
+            self::assertStringContainsString("unit_int<'minute'>", $phpDocs[$method]);
         }
-    }
 
-    public function testFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testRedisFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-redis-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testDatabaseFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-database-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testSessionFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-session-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
+        foreach ([
+            'ArraySessionHandler::gc',
+            'CacheBasedSessionHandler::gc',
+            'CookieSessionHandler::gc',
+            'DatabaseSessionHandler::gc',
+            'FileSessionHandler::gc',
+            'NullSessionHandler::gc',
+            'SessionManager::defaultRouteBlockLockSeconds',
+            'SessionManager::defaultRouteBlockWaitSeconds',
+            'SymfonySessionDecorator::invalidate',
+            'SymfonySessionDecorator::migrate',
+        ] as $method) {
+            self::assertStringContainsString("unit_int<'second'>", $phpDocs[$method]);
         }
     }
 }

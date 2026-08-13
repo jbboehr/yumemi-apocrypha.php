@@ -1,0 +1,16 @@
+ArraySessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+ArraySessionHandler constructor expects unit_int<'minute'>, int given
+CacheBasedSessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+CookieSessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+DatabaseSessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+FileSessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given
+ArraySessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+CacheBasedSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+CookieSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+DatabaseSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+FileSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+NullSessionHandler::gc() expects unit_int<'second'>, 1&unit_int<'minute'> given
+NullSessionHandler::gc() expects unit_int<'second'>, int given
+SymfonySessionDecorator::invalidate() expects unit_int<'second'>|null, 1&unit_int<'minute'> given
+SymfonySessionDecorator::migrate() expects unit_int<'second'>|null, 1&unit_int<'minute'> given
+acceptSessionMinutes expects unit_int<'minute'>, unit_int<'second'> given

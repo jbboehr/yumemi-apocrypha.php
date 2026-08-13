@@ -1,0 +1,174 @@
+<?php
+
+namespace Illuminate\Session;
+
+class ArraySessionHandler
+{
+    /**
+     * @param int $minutes
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function __construct($minutes)
+    {
+    }
+
+    /**
+     * @param int $lifetime
+     *
+     * @yumemi-param unit_int<'second'> $lifetime
+     */
+    public function gc($lifetime): int
+    {
+    }
+}
+
+class CacheBasedSessionHandler
+{
+    /**
+     * @param \Illuminate\Contracts\Cache\Repository $cache
+     * @param int $minutes
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function __construct(\Illuminate\Contracts\Cache\Repository $cache, $minutes)
+    {
+    }
+
+    /**
+     * @param int $lifetime
+     *
+     * @yumemi-param unit_int<'second'> $lifetime
+     */
+    public function gc($lifetime): int
+    {
+    }
+}
+
+class CookieSessionHandler
+{
+    /**
+     * @param \Illuminate\Contracts\Cookie\QueueingFactory $cookie
+     * @param int $minutes
+     * @param bool $expireOnClose
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function __construct(\Illuminate\Contracts\Cookie\QueueingFactory $cookie, $minutes, $expireOnClose = false)
+    {
+    }
+
+    /**
+     * @param int $lifetime
+     *
+     * @yumemi-param unit_int<'second'> $lifetime
+     */
+    public function gc($lifetime): int
+    {
+    }
+}
+
+class DatabaseSessionHandler
+{
+    /**
+     * @param \Illuminate\Database\ConnectionInterface $connection
+     * @param string $table
+     * @param int $minutes
+     * @param \Illuminate\Contracts\Container\Container|null $container
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function __construct(
+        \Illuminate\Database\ConnectionInterface $connection,
+        $table,
+        $minutes,
+        ?\Illuminate\Contracts\Container\Container $container = null,
+    )
+    {
+    }
+
+    /**
+     * @param int $lifetime
+     *
+     * @yumemi-param unit_int<'second'> $lifetime
+     */
+    public function gc($lifetime): int
+    {
+    }
+}
+
+class FileSessionHandler
+{
+    /**
+     * @param \Illuminate\Filesystem\Filesystem $files
+     * @param string $path
+     * @param int $minutes
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function __construct(\Illuminate\Filesystem\Filesystem $files, $path, $minutes)
+    {
+    }
+
+    /**
+     * @param int $lifetime
+     *
+     * @yumemi-param unit_int<'second'> $lifetime
+     */
+    public function gc($lifetime): int
+    {
+    }
+}
+
+class NullSessionHandler
+{
+    /**
+     * @param int $lifetime
+     *
+     * @yumemi-param unit_int<'second'> $lifetime
+     */
+    public function gc($lifetime): int
+    {
+    }
+}
+
+/** @mixin \Illuminate\Session\Store */
+class SessionManager extends \Illuminate\Support\Manager
+{
+    /**
+     * @return int
+     *
+     * @yumemi-return unit_int<'second'>
+     */
+    public function defaultRouteBlockLockSeconds()
+    {
+    }
+
+    /**
+     * @return int
+     *
+     * @yumemi-return unit_int<'second'>
+     */
+    public function defaultRouteBlockWaitSeconds()
+    {
+    }
+}
+
+class SymfonySessionDecorator
+{
+    /**
+     * @phpstan-param unit_int<'second'>|null $lifetime
+     * @yumemi-param unit_int<'second'>|null $lifetime
+     */
+    public function invalidate(?int $lifetime = null): bool
+    {
+    }
+
+    /**
+     * @phpstan-param unit_int<'second'>|null $lifetime
+     * @yumemi-param unit_int<'second'>|null $lifetime
+     */
+    public function migrate(bool $destroy = false, ?int $lifetime = null): bool
+    {
+    }
+}

@@ -36,50 +36,53 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Database\Connection;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
+use Illuminate\Contracts\Cache\Repository;
+use Illuminate\Contracts\Container\Container;
+use Illuminate\Contracts\Cookie\QueueingFactory;
+use Illuminate\Contracts\Session\Session;
+use Illuminate\Database\ConnectionInterface;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Session\ArraySessionHandler;
-use Illuminate\Support\Sleep;
-use Illuminate\Validation\Rules\Dimensions;
-use Illuminate\Validation\Rules\File;
+use Illuminate\Session\CacheBasedSessionHandler;
+use Illuminate\Session\CookieSessionHandler;
+use Illuminate\Session\DatabaseSessionHandler;
+use Illuminate\Session\FileSessionHandler;
+use Illuminate\Session\NullSessionHandler;
+use Illuminate\Session\SessionManager;
+use Illuminate\Session\SymfonySessionDecorator;
 
 use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
 
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
-{
-}
-
-function rejectInvalidLaravelFrameworkUnits(
-    Store $cache,
-    Factory $cookies,
-    Connection $database,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
+function configureSessionStorage(
+    Repository $cache,
+    QueueingFactory $cookies,
+    ConnectionInterface $connection,
+    Container $container,
+    Filesystem $files,
+    Session $store,
+    SessionManager $manager,
 ): void {
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    $database->whenQueryingForLongerThan(unit(1, 'second'), static function (): void {
-    });
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
-    new ArraySessionHandler(unit(30, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
+    $array = new ArraySessionHandler(unit(30, 'minute'));
+    $cacheHandler = new CacheBasedSessionHandler($cache, unit(30, 'minute'));
+    $cookie = new CookieSessionHandler($cookies, unit(30, 'minute'));
+    $database = new DatabaseSessionHandler($connection, 'sessions', unit(30, 'minute'), $container);
+    $file = new FileSessionHandler($files, '/tmp/sessions', unit(30, 'minute'));
+    $null = new NullSessionHandler();
 
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+    $array->gc(unit(3600, 'second'));
+    $cacheHandler->gc(unit(3600, 'second'));
+    $cookie->gc(unit(3600, 'second'));
+    $database->gc(unit(3600, 'second'));
+    $file->gc(unit(3600, 'second'));
+    $null->gc(unit(3600, 'second'));
+
+    $decorator = new SymfonySessionDecorator($store);
+    $decorator->invalidate(unit(3600, 'second'));
+    $decorator->invalidate(null);
+    $decorator->migrate(false, unit(3600, 'second'));
+    $decorator->migrate(false, null);
+
+    assertType("unit_int<'second'>", $manager->defaultRouteBlockLockSeconds());
+    assertType("unit_int<'second'>", $manager->defaultRouteBlockWaitSeconds());
 }

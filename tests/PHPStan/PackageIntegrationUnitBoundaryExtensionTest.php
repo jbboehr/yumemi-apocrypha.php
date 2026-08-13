@@ -311,4 +311,33 @@ final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
             self::assertSame('apocrypha.unit', $error->getIdentifier());
         }
     }
+
+    public function testSessionUnitBoundaryDiagnosticsRunInProcess(): void
+    {
+        $this->analyse(
+            [__DIR__ . '/fixtures/larastan-session-compatibility-cases.php'],
+            [
+                [
+                    'Parameter $minutes of class Illuminate\\Session\\ArraySessionHandler constructor expects '
+                        . "unit_int<'minute'>, 30&unit_int<'second'> given at a Yumemi Apocrypha unit boundary.",
+                    54,
+                ],
+                [
+                    "Illuminate\\Session\\NullSessionHandler::gc() expects unit_int<'second'>, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    55,
+                ],
+                [
+                    "Illuminate\\Session\\SymfonySessionDecorator::invalidate() expects unit_int<'second'>|null, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    56,
+                ],
+                [
+                    "Illuminate\\Session\\SymfonySessionDecorator::migrate() expects unit_int<'second'>|null, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    57,
+                ],
+            ],
+        );
+    }
 }

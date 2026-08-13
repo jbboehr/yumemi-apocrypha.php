@@ -51,6 +51,7 @@ final class LarastanCompatibilityTestExtensionFactory
                 'illuminate/filesystem',
                 'illuminate/queue',
                 'illuminate/redis',
+                'illuminate/session',
                 'illuminate/support',
                 'illuminate/validation',
                 'nesbot/carbon',

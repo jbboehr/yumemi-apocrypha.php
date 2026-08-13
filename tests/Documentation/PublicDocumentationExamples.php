@@ -100,6 +100,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-redis',
         ],
+        'illuminate-session-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'illuminate-session',
+        ],
         'illuminate-validation-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-validation',

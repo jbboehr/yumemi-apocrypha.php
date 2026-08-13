@@ -324,6 +324,7 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
                 ),
             ],
             'illuminate/redis' => [$base . 'redis.stub'],
+            'illuminate/session' => [$base . 'session.stub'],
             'illuminate/support' => [$base . 'support.stub'],
             'illuminate/validation' => [$base . 'validation.stub'],
             'intervention/image' => [

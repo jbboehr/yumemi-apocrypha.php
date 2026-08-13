@@ -36,50 +36,26 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Database\Connection;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
+namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan\Fixtures;
+
 use Illuminate\Session\ArraySessionHandler;
-use Illuminate\Support\Sleep;
-use Illuminate\Validation\Rules\Dimensions;
-use Illuminate\Validation\Rules\File;
+use Illuminate\Session\NullSessionHandler;
+use Illuminate\Session\SessionManager;
+use Illuminate\Session\SymfonySessionDecorator;
 
 use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
 
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
-{
-}
-
-function rejectInvalidLaravelFrameworkUnits(
-    Store $cache,
-    Factory $cookies,
-    Connection $database,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
+function exerciseSessionLarastanCompatibility(
+    NullSessionHandler $nullHandler,
+    SessionManager $manager,
+    SymfonySessionDecorator $decorator,
 ): void {
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    $database->whenQueryingForLongerThan(unit(1, 'second'), static function (): void {
-    });
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
     new ArraySessionHandler(unit(30, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
+    $nullHandler->gc(unit(1, 'minute'));
+    $decorator->invalidate(unit(1, 'minute'));
+    $decorator->migrate(false, unit(1, 'minute'));
 
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+    assertType("unit_int<'second'>", $manager->defaultRouteBlockLockSeconds());
+    assertType("unit_int<'second'>", $manager->defaultRouteBlockWaitSeconds());
 }

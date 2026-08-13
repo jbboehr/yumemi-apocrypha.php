@@ -32,6 +32,7 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 | Illuminate Database           | 11–13 query timings; query timeout from 12.51.0                        | `11.0.0`, `11.51.0`, `12.0.0`, `12.50.0`, `12.51.0`, `12.66.0`, `13.0.0`, `13.25.0` |
 | Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                           |
 | Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
+| Illuminate Session            | 11–13 shared handler and lock-lifetime profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
 | Illuminate Validation         | 11–13 shared fluent-rule profile                                       | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
 | Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                                   |
 | Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                                 |
@@ -230,6 +231,32 @@ concrete limiters, and
 
 Worker memory is compared after division by 1024 twice, which establishes the binary-megabyte scale. Redis's absolute
 limiter-expiry timestamp remains unbranded. Attempt counts, job counts, lock counts, and retry counts remain unbranded.
+
+## Illuminate Session
+
+Evidence: Laravel's
+[`ArraySessionHandler`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Session/ArraySessionHandler.php),
+[`CacheBasedSessionHandler`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Session/CacheBasedSessionHandler.php),
+[`CookieSessionHandler`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Session/CookieSessionHandler.php),
+[`DatabaseSessionHandler`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Session/DatabaseSessionHandler.php),
+[`FileSessionHandler`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Session/FileSessionHandler.php),
+[`SessionManager`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Session/SessionManager.php), and
+[`SymfonySessionDecorator`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Session/SymfonySessionDecorator.php),
+checked at the initial and current snapshots of Laravel 11 through 13.
+
+| Boundaries                                                                 | Promoted type            | Coverage     |
+| -------------------------------------------------------------------------- | ------------------------ | ------------ |
+| Array, cache, cookie, database, and file handler constructor lifetime      | integer minutes          | S/V/I        |
+| `gc()` on all six concrete session handlers                                | integer seconds          | S/V/I-family |
+| `SessionManager` route-block lock and wait defaults                        | integer seconds          | S/V/I        |
+| `SymfonySessionDecorator::invalidate()` and `migrate()` lifetime arguments | nullable integer seconds | S/V/I        |
+
+Every stateful handler stores its constructor lifetime as minutes; Array and Cookie multiply it by 60, Database and File
+use minute-aware date arithmetic, and Cache multiplies it by 60 before writing. Laravel's session middleware converts
+the configured lifetime to seconds before calling the concrete handler's `gc()` method. The two manager defaults are
+documented and configured as seconds. The decorator preserves the nullable lifetime signature of Symfony's
+`SessionInterface`, even though Laravel's underlying store currently ignores the argument. Absolute session activity and
+expiration timestamps, lock-owner identifiers, attempt counts, and garbage-collection lottery odds remain unbranded.
 
 ## Illuminate Validation
 
