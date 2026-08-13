@@ -62,6 +62,7 @@ final class BoundaryMetadataBench
         'illuminate/process' => [13, '13.10.0'],
         'illuminate/queue' => [13, '13.10.0'],
         'illuminate/redis' => [13, '13.25.0'],
+        'illuminate/routing' => [13, '13.25.0'],
         'illuminate/session' => [13, '13.25.0'],
         'illuminate/support' => [13, '13.10.0'],
         'illuminate/validation' => [13, '13.25.0'],

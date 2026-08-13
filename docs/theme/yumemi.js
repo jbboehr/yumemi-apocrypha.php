@@ -30,6 +30,7 @@
             { id: "illuminate-process", title: "Illuminate Process" },
             { id: "illuminate-queue", title: "Illuminate Queue" },
             { id: "illuminate-redis", title: "Illuminate Redis" },
+            { id: "illuminate-routing", title: "Illuminate Routing" },
             { id: "illuminate-session", title: "Illuminate Session" },
             { id: "illuminate-validation", title: "Illuminate Validation" },
             { id: "intervention-image", title: "Intervention Image" },

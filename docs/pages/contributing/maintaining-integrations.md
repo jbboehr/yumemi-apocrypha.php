@@ -52,6 +52,7 @@ GETID3_VERSION=2 make test-consumer-getid3
 GUZZLE_MAJOR=8 make test-consumer-guzzle
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
+ILLUMINATE_ROUTING_MAJOR=12 make test-consumer-illuminate-routing
 INTERVENTION_IMAGE_VERSION=3 make test-consumer-intervention-image
 LARAVEL_FRAMEWORK_MAJOR=12 make test-consumer-laravel-framework
 MEASUREMENTS_VERSION=1 make test-consumer-measurements
@@ -60,8 +61,8 @@ SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 ```
 
 Set `ILLUMINATE_COMPATIBILITY_MODE=larastan` on any Illuminate or Laravel framework command to exercise coexistence with
-Larastan. This switches most integrations from standalone stubs to the adapter; Illuminate Database already uses the
-adapter in plain mode.
+Larastan. This switches most integrations from standalone stubs to the adapter; Illuminate Database and Routing already
+use the adapter in plain mode.
 
 Set `ILLUMINATE_COMPATIBILITY_MODE=phpstan-laravel-validation` on the Illuminate Validation command to install Larastan
 and `jbboehr/phpstan-laravel-validation` together. This profile verifies Apocrypha's unit diagnostics and the validation
@@ -89,10 +90,14 @@ guardrail, not a substitute for real consumer coverage: verify positional and na
 reads and writes, return precision, and both direct-package and `laravel/framework` installs. Unknown unpack positions
 must not produce a speculative `apocrypha.unit` diagnostic.
 
-Illuminate Database is the exception: it always uses the metadata adapter because Laravel changed callback and
-event-constructor PHPDoc within supported majors. Keep its retained profile stubs as reviewable unit-semantic
-references, never enable them alongside the adapter, and verify that modern upstream callback types remain enforced in
-plain mode.
+Illuminate Database always uses the metadata adapter because Laravel changed callback and event-constructor PHPDoc
+within supported majors. Keep its retained profile stubs as reviewable unit-semantic references, never enable them
+alongside the adapter, and verify that modern upstream callback types remain enforced in plain mode.
+
+Illuminate Routing also always uses the metadata adapter because a partial `Route` declaration would hide most of its
+upstream method surface, while Larastan supplies additional `Route` PHPDoc of its own. Keep its retained stub as a
+reviewable unit-semantic reference, never enable it alongside the adapter, and exercise an unrelated upstream route
+method in both compatibility modes.
 
 Carbon always uses the metadata adapter because a partial `CarbonInterface` stub can replace unrelated upstream methods.
 Keep its retained profile stubs as reviewable semantic references, but never enable them alongside the adapter. Every
@@ -153,8 +158,9 @@ requires an explicit compatibility decision and, after the first tag, a changelo
 For Larastan, coexistence is an integration-wide choice rather than a declaration overlay. Loading even an apparently
 nonoverlapping stub can collide with a class Larastan adds in a later minor release. When a selected Illuminate
 integration and supported Larastan are both installed, disable all Apocrypha stubs for that integration and use the
-metadata adapter. Illuminate Database makes the same whole-integration choice without Larastan so upstream PHPDoc
-remains authoritative in both modes. Reject an unknown Larastan major until the complete matrix has been verified.
+metadata adapter. Illuminate Database and Routing make the same whole-integration choice without Larastan so upstream
+PHPDoc remains authoritative in both modes. Reject an unknown Larastan major until the complete matrix has been
+verified.
 
 For `phpstan/phpstan-symfony`, direct coexistence remains acceptable only while the combined consumer matrix proves that
 its registered declarations do not overlap the selected Apocrypha integration. If an extension release begins owning any

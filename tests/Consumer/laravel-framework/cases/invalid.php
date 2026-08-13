@@ -45,6 +45,7 @@ use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Redis\Limiters\DurationLimiterBuilder;
+use Illuminate\Routing\Route;
 use Illuminate\Session\ArraySessionHandler;
 use Illuminate\Support\Sleep;
 use Illuminate\Validation\Rules\Dimensions;
@@ -76,6 +77,7 @@ function rejectInvalidLaravelFrameworkUnits(
     $process->timeout(unit(1, 'minute'));
     $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
     $redisLimiter->sleep(unit(1, 'second'));
+    (new Route(['GET'], '/report', static fn (): string => 'report'))->block(unit(1, 'minute'));
     new ArraySessionHandler(unit(30, 'second'));
     Sleep::sleep(unit(500, 'millisecond'));
     (new Dimensions())->width(unit(1200, 'css_pixel'));

@@ -279,6 +279,96 @@ final class SymfonySessionDecorator
     }
 }
 
+namespace Illuminate\Contracts\Routing;
+
+interface UrlGenerator
+{
+    public function signedRoute($name, $parameters = [], \DateTimeInterface|\DateInterval|int|null $expiration = null, $absolute = true): string;
+
+    public function temporarySignedRoute($name, \DateTimeInterface|\DateInterval|int $expiration, $parameters = [], $absolute = true): string;
+}
+
+namespace Illuminate\Routing;
+
+final class Route
+{
+    public function block(?int $lockSeconds = 10, ?int $waitSeconds = 10): self
+    {
+        return $this;
+    }
+
+    public function locksFor(): ?int
+    {
+        return 10;
+    }
+
+    public function middleware(string|array|null $middleware = null): self|array
+    {
+        return $middleware === null ? [] : $this;
+    }
+
+    public function waitsFor(): ?int
+    {
+        return 10;
+    }
+}
+
+final class UrlGenerator implements \Illuminate\Contracts\Routing\UrlGenerator
+{
+    public function signedRoute($name, $parameters = [], \DateTimeInterface|\DateInterval|int|null $expiration = null, $absolute = true): string
+    {
+        return '/signed';
+    }
+
+    public function temporarySignedRoute($name, \DateTimeInterface|\DateInterval|int $expiration, $parameters = [], $absolute = true): string
+    {
+        return '/signed';
+    }
+}
+
+final class Redirector
+{
+    public function signedRoute($route, $parameters = [], \DateTimeInterface|\DateInterval|int|null $expiration = null, $status = 302, $headers = []): string
+    {
+        return '/signed';
+    }
+
+    public function temporarySignedRoute($route, \DateTimeInterface|\DateInterval|int|null $expiration, $parameters = [], $status = 302, $headers = []): string
+    {
+        return '/signed';
+    }
+}
+
+namespace Illuminate\Routing\Middleware;
+
+final class ThrottleRequests
+{
+    public static function with($maxAttempts = 60, int $decayMinutes = 1, $prefix = ''): string
+    {
+        return '';
+    }
+
+    public function handle($request, \Closure $next, $maxAttempts = 60, int|float $decayMinutes = 1, $prefix = ''): mixed
+    {
+        return $next($request);
+    }
+}
+
+namespace Illuminate\Support\Facades;
+
+final class URL
+{
+    public static function signedRoute($name, $parameters = [], \DateTimeInterface|\DateInterval|int|null $expiration = null, $absolute = true): string
+    {
+        return '/signed';
+    }
+
+    public static function temporarySignedRoute($name, \DateTimeInterface|\DateInterval|int $expiration, $parameters = [], $absolute = true): string
+    {
+        return '/signed';
+    }
+}
+
 namespace Illuminate\Validation\Rules;
 
 final class Dimensions

@@ -92,7 +92,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
     git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar --output="$git_archive" HEAD
     php "$PACKAGE_CHECKER" "$git_archive"
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -228,7 +228,13 @@ run_phpstan_case() {
     local stderr_file
     shift 3
     local expected_diagnostics=("$@")
-    local phpstan=("$project_dir/$CONSUMER_VENDOR_DIR/bin/phpstan" analyse --no-progress --configuration="$configuration")
+    local phpstan=(
+        "$project_dir/$CONSUMER_VENDOR_DIR/bin/phpstan"
+        analyse
+        --no-progress
+        --memory-limit=1G
+        --configuration="$configuration"
+    )
 
     if [[ $case_file == valid*.php ]]; then
         (
@@ -270,6 +276,7 @@ run_phpstan_without_apocrypha_diagnostic() {
         "$project_dir/$CONSUMER_VENDOR_DIR/bin/phpstan"
         analyse
         --no-progress
+        --memory-limit=1G
         --error-format=json
         --configuration="$configuration"
     )
@@ -733,6 +740,10 @@ run_simple_illuminate_integration() {
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-redis "$project_dir" phpstan.neon "$documentation_case" illuminate-redis-invalid
     fi
+    if [[ $FIXTURE_SUITE == illuminate-routing ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case illuminate-routing "$project_dir" phpstan.neon "$documentation_case" illuminate-routing-invalid
+    fi
     if [[ $FIXTURE_SUITE == illuminate-session ]]; then
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-session "$project_dir" phpstan.neon "$documentation_case" illuminate-session-invalid
@@ -757,6 +768,7 @@ run_laravel_framework() {
         "timeout() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
         "Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
         "DurationLimiterBuilder::sleep() expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
+        "Route::block() expects unit_int<'second'>|null, 1&unit_int<'minute'> given"
         "ArraySessionHandler constructor expects unit_int<'minute'>, 30&unit_int<'second'> given"
         "Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
         "Dimensions::width() expects unit_int<'pixel'>, 1200&unit_int<'css_pixel'> given"
@@ -1213,7 +1225,7 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-session | illuminate-support | illuminate-validation)
+    illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
         run_simple_illuminate_integration
         ;;
     intervention-image)
@@ -1238,7 +1250,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

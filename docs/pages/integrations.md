@@ -22,18 +22,18 @@ On each CI run, the consumer matrix resolves the latest compatible release of ev
 package-specific minimum shown below. An unknown future major, or a release below a stated minimum, is rejected until
 its signatures and semantics have been reviewed.
 
-| Package family         | Integration key                                                                                                                                                                                                                                  | Verified versions                   | Verification snapshots                                                                                  | Checked    |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------- | ---------- |
-| Carbon                 | `nesbot/carbon`                                                                                                                                                                                                                                  | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                                                 | 2026-08-09 |
-| Guzzle                 | `guzzlehttp/guzzle`                                                                                                                                                                                                                              | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                                                 | 2026-08-09 |
-| getID3                 | `james-heinrich/getid3`                                                                                                                                                                                                                          | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                                       | 2026-08-11 |
-| Illuminate packages    | `illuminate/cache`, `illuminate/cookie`, `illuminate/database`, `illuminate/filesystem`, `illuminate/http`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`, `illuminate/session`, `illuminate/support`, or `illuminate/validation` | 11, 12, 13                          | `v11.55.0`, `v12.66.0`, `v13.25.0`; Database, HTTP, Queue, Redis, Session, and Validation details below | 2026-08-12 |
-| Intervention Image     | `intervention/image`                                                                                                                                                                                                                             | 3, 4                                | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                                                     | 2026-08-11 |
-| Laravel framework      | Provider only; select the applicable component keys above                                                                                                                                                                                        | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                                       | 2026-08-09 |
-| Measurements           | `nmarfurt/measurements`                                                                                                                                                                                                                          | 1.4+ in 1.x                         | `v1.4.0`                                                                                                | 2026-08-10 |
-| phpgeo                 | `mjaschen/phpgeo`                                                                                                                                                                                                                                | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                                             | 2026-08-09 |
-| Symfony HttpFoundation | `symfony/http-foundation`                                                                                                                                                                                                                        | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4`                        | 2026-08-09 |
-| Symfony Stopwatch      | `symfony/stopwatch`                                                                                                                                                                                                                              | 6, 7, 8                             | `v6.0.0`, `v6.4.24`, `v7.0.0`, `v7.4.8`, `v8.0.0`, `v8.1.0`                                             | 2026-08-09 |
+| Package family         | Integration key                                                                                                                                                                                                                                                        | Verified versions                   | Verification snapshots                                                                                           | Checked    |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ---------- |
+| Carbon                 | `nesbot/carbon`                                                                                                                                                                                                                                                        | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                                                          | 2026-08-09 |
+| Guzzle                 | `guzzlehttp/guzzle`                                                                                                                                                                                                                                                    | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                                                          | 2026-08-09 |
+| getID3                 | `james-heinrich/getid3`                                                                                                                                                                                                                                                | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                                                | 2026-08-11 |
+| Illuminate packages    | `illuminate/cache`, `illuminate/cookie`, `illuminate/database`, `illuminate/filesystem`, `illuminate/http`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`, `illuminate/routing`, `illuminate/session`, `illuminate/support`, or `illuminate/validation` | 11, 12, 13                          | `v11.55.0`, `v12.66.0`, `v13.25.0`; Database, HTTP, Queue, Redis, Routing, Session, and Validation details below | 2026-08-12 |
+| Intervention Image     | `intervention/image`                                                                                                                                                                                                                                                   | 3, 4                                | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                                                              | 2026-08-11 |
+| Laravel framework      | Provider only; select the applicable component keys above                                                                                                                                                                                                              | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                                                | 2026-08-09 |
+| Measurements           | `nmarfurt/measurements`                                                                                                                                                                                                                                                | 1.4+ in 1.x                         | `v1.4.0`                                                                                                         | 2026-08-10 |
+| phpgeo                 | `mjaschen/phpgeo`                                                                                                                                                                                                                                                      | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                                                      | 2026-08-09 |
+| Symfony HttpFoundation | `symfony/http-foundation`                                                                                                                                                                                                                                              | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4`                                 | 2026-08-09 |
+| Symfony Stopwatch      | `symfony/stopwatch`                                                                                                                                                                                                                                                    | 6, 7, 8                             | `v6.0.0`, `v6.4.24`, `v7.0.0`, `v7.4.8`, `v8.0.0`, `v8.1.0`                                                      | 2026-08-09 |
 
 Laravel applications may install these APIs through `laravel/framework` instead of separate `illuminate/*` component
 packages. Continue to select the precise component integration names, such as `illuminate/cache`; Composer's exact
@@ -43,9 +43,9 @@ constraints are not treated as verified versions.
 Larastan 3 (verified at `v3.10.0`) is tested with every Illuminate integration and the complete Laravel framework across
 Laravel 11 through 13. When Larastan is present, Apocrypha preserves its framework declarations and adds unit semantics
 through PHPStan rules and type extensions. This automatic switch covers the complete integration; Apocrypha never loads
-a partial Illuminate stub over Larastan. Illuminate Database uses the same extension path even without Larastan so the
-installed package remains authoritative for ordinary PHPDoc. An installed Larastan major other than 3 is rejected while
-an Illuminate integration is selected.
+a partial Illuminate stub over Larastan. Illuminate Database and Routing use the same extension path even without
+Larastan so their installed package declarations remain authoritative. An installed Larastan major other than 3 is
+rejected while an Illuminate integration is selected.
 
 ## Compatibility Before 1.0
 
@@ -396,6 +396,39 @@ The fluent duration builder also accepts Laravel's published `DateTimeInterface`
 decay window. The concrete limiter constructors and `block()` methods carry the same units as their builders. Absolute
 limiter-expiry timestamps remain unbranded. The shared profile was checked at the initial and current releases of each
 supported major: `v11.0.0`, `v11.51.0`, `v12.0.0`, `v12.66.0`, `v13.0.0`, and `v13.25.0`.
+
+## Illuminate Routing
+
+Enable `illuminate/routing` to distinguish minute-valued request-throttle decay from second-valued route locks and
+signed-URL expirations.
+
+| API concern                                                                  | Unit     |
+| ---------------------------------------------------------------------------- | -------- |
+| `ThrottleRequests::with()` and `handle()` decay                              | `minute` |
+| `Route::block()`, `locksFor()`, and `waitsFor()`                             | `second` |
+| Integer signed-route expiration on generators, redirects, and the URL facade | `second` |
+
+<!-- yumemi-example: illuminate-routing-invalid -->
+
+```php
+<?php
+
+use Illuminate\Routing\Route;
+
+use function jbboehr\Yumemi\unit;
+
+function protectReportRoute(Route $route): void
+{
+    //! Route::block() expects unit_int<'second'>|null, 1&unit_int<'minute'> given
+    $route->block(unit(1, 'minute'));
+}
+```
+
+Signed routes continue to accept `DateTimeInterface` and `DateInterval`; only their integer alternative represents
+relative seconds. Attempt counts, HTTP status codes, and absolute Unix timestamps remain unbranded. Routing always uses
+the metadata adapter so the complete upstream `Route` declaration—and Larastan's added `Route` metadata when
+installed—stays authoritative. The shared profile was checked at the initial and current releases of each supported
+major: `v11.0.0`, `v11.51.0`, `v12.0.0`, `v12.66.0`, `v13.0.0`, and `v13.25.0`.
 
 ## Illuminate Session
 

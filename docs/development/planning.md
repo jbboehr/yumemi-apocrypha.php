@@ -20,11 +20,13 @@ upstream versions it claims to support and semantically accurate about the repre
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/database`, `illuminate/filesystem`, `illuminate/http`,
-  `illuminate/support`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`, `illuminate/session`, and
-  `illuminate/validation` cover stable unit-bearing APIs across Laravel 11 through 13. Database distinguishes
-  millisecond query timings from second-valued query execution timeouts where that API exists. Validation covers raster
-  dimensions and integer file-rule sizes while preserving upstream string size expressions. Session distinguishes
-  minute-valued handler retention from second-valued garbage collection, route locks, and decorator lifetimes.
+  `illuminate/support`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`, `illuminate/routing`,
+  `illuminate/session`, and `illuminate/validation` cover stable unit-bearing APIs across Laravel 11 through 13.
+  Database distinguishes millisecond query timings from second-valued query execution timeouts where that API exists.
+  Validation covers raster dimensions and integer file-rule sizes while preserving upstream string size expressions.
+  Routing distinguishes minute-valued throttle decay from second-valued route locks and signed-URL expirations. Session
+  distinguishes minute-valued handler retention from second-valued garbage collection, route locks, and decorator
+  lifetimes.
 - `intervention/image` covers nominal raster-pixel dimensions and coordinates plus degree rotations across Intervention
   Image 3 and 4. A metadata adapter preserves the package's complete interfaces, while version 4 retains its `Fraction`
   dimension alternatives. Resolution, quality, opacity, transparency, and lower-level geometry objects remain outside
@@ -32,10 +34,12 @@ upstream versions it claims to support and semantically accurate about the repre
 - Every Illuminate integration coexists automatically with Larastan 3. Most use package stubs during standalone
   analysis, then keep Larastan's declarations and reproduce Apocrypha's unit boundaries through a metadata-driven rule
   and type-extension adapter when Larastan is present. Illuminate Database uses that adapter in both modes so its unit
-  annotations cannot overwrite upstream callback or event-constructor PHPDoc that changed within supported majors. Its
-  retained stubs are review references whose promoted tags remain in parity with the metadata catalog. Illuminate
-  Validation additionally has a combined profile with `jbboehr/phpstan-laravel-validation`; the extensions retain their
-  separate Validator inference and declaration surfaces while Apocrypha owns only the fluent rule units.
+  annotations cannot overwrite upstream callback or event-constructor PHPDoc that changed within supported majors.
+  Illuminate Routing also uses the adapter in both modes so its partial reference stub cannot replace the complete
+  upstream `Route` surface or Larastan's added metadata. Their retained stubs are review references whose promoted tags
+  remain in parity with the metadata catalog. Illuminate Validation additionally has a combined profile with
+  `jbboehr/phpstan-laravel-validation`; the extensions retain their separate Validator inference and declaration
+  surfaces while Apocrypha owns only the fluent rule units.
 - `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
   phpgeo 4 through 6 while leaving coordinate origins unbranded.
 - `nmarfurt/measurements` covers the complete fixed-unit magic-factory surfaces of `Length` and `Duration` from 1.4.0
@@ -94,10 +98,11 @@ suite. Integration scope remains curated: add APIs only when their physical unit
 Larastan compatibility is selected for an entire Illuminate integration rather than as a partial stub overlay, and an
 unverified Larastan major is rejected until its combined behavior passes the same matrix. Illuminate Database uses the
 same whole-integration adapter even without Larastan because preserving its installed upstream declaration PHPDoc is
-safer than maintaining ordinary signature copies across mid-major changes. `phpstan/phpstan-symfony` 2 currently
-coexists directly with the Symfony stubs because its active declarations do not overlap them. If an extension release
-begins owning any declaration in a selected integration, disable that integration's complete stub set and use a metadata
-adapter rather than loading both.
+safer than maintaining ordinary signature copies across mid-major changes. Illuminate Routing does the same because a
+partial `Route` stub would hide unrelated upstream methods. `phpstan/phpstan-symfony` 2 currently coexists directly with
+the Symfony stubs because its active declarations do not overlap them. If an extension release begins owning any
+declaration in a selected integration, disable that integration's complete stub set and use a metadata adapter rather
+than loading both.
 
 The Illuminate Validation compatibility profile installs Larastan and `jbboehr/phpstan-laravel-validation` together.
 Keep validation-result inference and `Validator` stubs with those extensions; Apocrypha should claim only fixed-unit

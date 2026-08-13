@@ -1,0 +1,128 @@
+<?php
+
+namespace Illuminate\Contracts\Routing;
+
+interface UrlGenerator
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int|null $expiration
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'>|null $expiration
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'>|null $expiration
+     */
+    public function signedRoute($name, $parameters = [], $expiration = null, $absolute = true);
+
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $expiration
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $expiration
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $expiration
+     */
+    public function temporarySignedRoute($name, $expiration, $parameters = [], $absolute = true);
+}
+
+namespace Illuminate\Routing;
+
+class UrlGenerator
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int|null $expiration
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'>|null $expiration
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'>|null $expiration
+     */
+    public function signedRoute($name, $parameters = [], $expiration = null, $absolute = true)
+    {
+    }
+
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $expiration
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $expiration
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $expiration
+     */
+    public function temporarySignedRoute($name, $expiration, $parameters = [], $absolute = true)
+    {
+    }
+}
+
+class Redirector
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int|null $expiration
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'>|null $expiration
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'>|null $expiration
+     */
+    public function signedRoute($route, $parameters = [], $expiration = null, $status = 302, $headers = [])
+    {
+    }
+
+    /**
+     * @param \DateTimeInterface|\DateInterval|int|null $expiration
+     *
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'>|null $expiration
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'>|null $expiration
+     */
+    public function temporarySignedRoute($route, $expiration, $parameters = [], $status = 302, $headers = [])
+    {
+    }
+}
+
+class Route
+{
+    /**
+     * @param int|null $lockSeconds
+     * @param int|null $waitSeconds
+     * @return $this
+     *
+     * @phpstan-param unit_int<'second'>|null $lockSeconds
+     * @phpstan-param unit_int<'second'>|null $waitSeconds
+     * @yumemi-param unit_int<'second'>|null $lockSeconds
+     * @yumemi-param unit_int<'second'>|null $waitSeconds
+     */
+    public function block($lockSeconds = 10, $waitSeconds = 10)
+    {
+    }
+
+    /**
+     * @return int|null
+     * @yumemi-return unit_int<'second'>|null
+     */
+    public function locksFor()
+    {
+    }
+
+    /**
+     * @return int|null
+     * @yumemi-return unit_int<'second'>|null
+     */
+    public function waitsFor()
+    {
+    }
+}
+
+namespace Illuminate\Routing\Middleware;
+
+class ThrottleRequests
+{
+    /**
+     * @param int $decayMinutes
+     * @return string
+     *
+     * @yumemi-param unit_int<'minute'> $decayMinutes
+     */
+    public static function with($maxAttempts = 60, $decayMinutes = 1, $prefix = '')
+    {
+    }
+
+    /**
+     * @param float|int $decayMinutes
+     *
+     * @phpstan-param unit_float<'minute'>|unit_int<'minute'> $decayMinutes
+     * @yumemi-param unit_float<'minute'>|unit_int<'minute'> $decayMinutes
+     */
+    public function handle($request, \Closure $next, $maxAttempts = 60, $decayMinutes = 1, $prefix = '')
+    {
+    }
+}

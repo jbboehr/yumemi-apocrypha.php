@@ -257,6 +257,27 @@ final class PackageIntegrationUnitBoundaryMetadata
             ],
             'returns' => [],
         ],
+        'illuminate/routing' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Contracts\\Routing\\UrlGenerator', 'kind' => 'method', 'method' => 'signedRoute', 'position' => 2, 'name' => 'expiration', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Contracts\\Routing\\UrlGenerator', 'kind' => 'method', 'method' => 'temporarySignedRoute', 'position' => 1, 'name' => 'expiration', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Routing\\UrlGenerator', 'kind' => 'method', 'method' => 'signedRoute', 'position' => 2, 'name' => 'expiration', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Routing\\UrlGenerator', 'kind' => 'method', 'method' => 'temporarySignedRoute', 'position' => 1, 'name' => 'expiration', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Routing\\Redirector', 'kind' => 'method', 'method' => 'signedRoute', 'position' => 2, 'name' => 'expiration', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Routing\\Redirector', 'kind' => 'method', 'method' => 'temporarySignedRoute', 'position' => 1, 'name' => 'expiration', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Support\\Facades\\URL', 'kind' => 'static', 'method' => 'signedRoute', 'position' => 2, 'name' => 'expiration', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>|null", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\URL', 'kind' => 'static', 'method' => 'temporarySignedRoute', 'position' => 1, 'name' => 'expiration', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Routing\\Route', 'kind' => 'method', 'method' => 'block', 'position' => 0, 'name' => 'lockSeconds', 'type' => "unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Routing\\Route', 'kind' => 'method', 'method' => 'block', 'position' => 1, 'name' => 'waitSeconds', 'type' => "unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Routing\\Middleware\\ThrottleRequests', 'kind' => 'static', 'method' => 'with', 'position' => 1, 'name' => 'decayMinutes', 'type' => "unit_int<'minute'>"],
+                ['class' => 'Illuminate\\Routing\\Middleware\\ThrottleRequests', 'kind' => 'method', 'method' => 'handle', 'position' => 3, 'name' => 'decayMinutes', 'type' => "unit_float<'minute'>|unit_int<'minute'>"],
+            ],
+            'properties' => [],
+            'returns' => [
+                ['class' => 'Illuminate\\Routing\\Route', 'kind' => 'method', 'method' => 'locksFor', 'type' => "unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Routing\\Route', 'kind' => 'method', 'method' => 'waitsFor', 'type' => "unit_int<'second'>|null"],
+            ],
+        ],
         'illuminate/session' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Session\\ArraySessionHandler', 'kind' => 'constructor', 'method' => '__construct', 'position' => 0, 'name' => 'minutes', 'type' => "unit_int<'minute'>"],

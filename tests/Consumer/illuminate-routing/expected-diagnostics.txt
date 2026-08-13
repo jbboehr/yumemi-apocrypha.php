@@ -1,0 +1,12 @@
+Illuminate\Contracts\Routing\UrlGenerator::signedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Contracts\Routing\UrlGenerator::signedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, int given
+Illuminate\Routing\UrlGenerator::temporarySignedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Illuminate\Routing\Redirector::signedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Support\Facades\URL::signedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Support\Facades\URL::temporarySignedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Illuminate\Routing\Route::block() expects unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Routing\Route::block() expects unit_int<'second'>|null, int given
+acceptRouteMinutes expects unit_int<'minute'>|null, unit_int<'second'>|null given
+Illuminate\Routing\Middleware\ThrottleRequests::with() expects unit_int<'minute'>, 60&unit_int<'second'> given
+Illuminate\Routing\Middleware\ThrottleRequests::with() expects unit_int<'minute'>, int given
+Illuminate\Routing\Middleware\ThrottleRequests::handle() expects unit_float<'minute'>|unit_int<'minute'>, 60&unit_int<'second'> given

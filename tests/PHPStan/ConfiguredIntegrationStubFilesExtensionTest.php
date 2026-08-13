@@ -883,6 +883,34 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/database'));
     }
 
+    /** @return iterable<string, array{non-empty-string, int}> */
+    public static function routingVersions(): iterable
+    {
+        yield 'Laravel 11' => ['11.51.0', 11];
+        yield 'Laravel 12' => ['12.66.0', 12];
+        yield 'Laravel 13' => ['13.25.0', 13];
+    }
+
+    #[DataProvider('routingVersions')]
+    public function testRoutingAlwaysUsesTheAdapterInsteadOfItsReferenceStub(
+        string $version,
+        int $major,
+    ): void {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/routing'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'illuminate/routing',
+            static fn (): string => $version,
+        );
+
+        self::assertSame([], $extension->getFiles());
+        self::assertSame($major, $extension->getSelectedMajor('illuminate/routing'));
+        self::assertSame($version, $extension->getSelectedVersion('illuminate/routing'));
+        self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/routing'));
+    }
+
     /** @return iterable<string, array{string, list<string>}> */
     public static function symfonyHttpFoundationProfiles(): iterable
     {

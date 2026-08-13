@@ -62,6 +62,7 @@ $checks = [
     'illuminate/process' => [Illuminate\Process\PendingProcess::class, 'timeout', 'timeout'],
     'illuminate/queue' => [Illuminate\Contracts\Queue\Queue::class, 'later', 'delay'],
     'illuminate/redis' => [Illuminate\Redis\Limiters\DurationLimiterBuilder::class, 'every', 'decay'],
+    'illuminate/routing' => [Illuminate\Routing\Route::class, 'block', 'lockSeconds'],
     'illuminate/session' => [Illuminate\Session\ArraySessionHandler::class, '__construct', 'minutes'],
     'illuminate/support' => [Illuminate\Support\Sleep::class, 'sleep', 'duration'],
     'illuminate/validation' => [Illuminate\Validation\Rules\Dimensions::class, 'width', 'value'],

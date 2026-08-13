@@ -340,4 +340,22 @@ final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
             ],
         );
     }
+
+    public function testRoutingUnitBoundaryDiagnosticsRunInProcess(): void
+    {
+        $this->analyse(
+            [__DIR__ . '/fixtures/larastan-routing-compatibility-cases.php'],
+            [
+                ["Illuminate\\Contracts\\Routing\\UrlGenerator::signedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.", 58],
+                ["Illuminate\\Routing\\UrlGenerator::temporarySignedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.", 59],
+                ["Illuminate\\Routing\\Redirector::signedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.", 60],
+                ["Illuminate\\Support\\Facades\\URL::signedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.", 61],
+                ["Illuminate\\Support\\Facades\\URL::temporarySignedRoute() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.", 62],
+                ["Illuminate\\Routing\\Route::block() expects unit_int<'second'>|null, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.", 63],
+                ["Illuminate\\Routing\\Route::block() expects unit_int<'second'>|null, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.", 63],
+                ["Illuminate\\Routing\\Middleware\\ThrottleRequests::with() expects unit_int<'minute'>, 60&unit_int<'second'> given at a Yumemi Apocrypha unit boundary.", 65],
+                ["Illuminate\\Routing\\Middleware\\ThrottleRequests::handle() expects unit_float<'minute'>|unit_int<'minute'>, 60&unit_int<'second'> given at a Yumemi Apocrypha unit boundary.", 66],
+            ],
+        );
+    }
 }

@@ -38,70 +38,66 @@ declare(strict_types=1);
 
 namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
 
-use PHPStan\Testing\TypeInferenceTestCase;
+use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\Namespace_;
+use PHPStan\Parser\Parser;
+use PHPStan\Testing\PHPStanTestCase;
 
-final class LarastanCompatibilityExtensionsTypeInferenceTest extends TypeInferenceTestCase
+final class IlluminateRoutingStubTest extends PHPStanTestCase
 {
     public static function getAdditionalConfigFiles(): array
     {
-        return [__DIR__ . '/larastan-compatibility-extensions.neon'];
+        return [
+            __DIR__ . '/../../vendor/jbboehr/yumemi/extension.neon',
+            __DIR__ . '/../../vendor/jbboehr/yumemi/yumemi-tags.neon',
+            __DIR__ . '/illuminate-routing-stub.neon',
+        ];
     }
 
-    protected static function getAdditionalAnalysedFiles(): array
+    public function testMinuteAndSecondTagsArePromotedByTheStubParser(): void
     {
-        return [__DIR__ . '/fixtures/larastan-compatibility-upstream.php'];
-    }
+        $parser = self::getContainer()->getService('stubParser');
+        self::assertInstanceOf(Parser::class, $parser);
 
-    public function testUpstreamFixturesAreAvailableToPhpstanReflection(): void
-    {
-        $reflectionProvider = self::createReflectionProvider();
+        $phpDocs = [];
+        $namespace = '';
+        foreach ($parser->parseFile(__DIR__ . '/../../stubs/illuminate/routing.stub') as $node) {
+            if (!$node instanceof Namespace_) {
+                continue;
+            }
+
+            $namespace = $node->name?->toString() ?? '';
+            foreach ($node->stmts as $statement) {
+                if (!$statement instanceof ClassLike || $statement->name === null) {
+                    continue;
+                }
+
+                foreach ($statement->getMethods() as $method) {
+                    $phpDocs[$namespace . '\\' . $statement->name->toString() . '::' . $method->name->toString()]
+                        = $method->getDocComment()?->getText() ?? '';
+                }
+            }
+        }
 
         foreach ([
-            'Illuminate\\Database\\Connection',
-            'Illuminate\\Filesystem\\Filesystem',
-            'Illuminate\\Queue\\WorkerOptions',
-            'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder',
-            'Illuminate\\Routing\\Route',
-            'Illuminate\\Session\\SessionManager',
-            'Illuminate\\Support\\Benchmark',
-            'Illuminate\\Validation\\Rules\\Dimensions',
-        ] as $class) {
-            self::assertTrue($reflectionProvider->hasClass($class), sprintf('PHPStan cannot reflect %s.', $class));
+            'Illuminate\\Contracts\\Routing\\UrlGenerator::signedRoute',
+            'Illuminate\\Contracts\\Routing\\UrlGenerator::temporarySignedRoute',
+            'Illuminate\\Routing\\UrlGenerator::signedRoute',
+            'Illuminate\\Routing\\UrlGenerator::temporarySignedRoute',
+            'Illuminate\\Routing\\Redirector::signedRoute',
+            'Illuminate\\Routing\\Redirector::temporarySignedRoute',
+            'Illuminate\\Routing\\Route::block',
+            'Illuminate\\Routing\\Route::locksFor',
+            'Illuminate\\Routing\\Route::waitsFor',
+        ] as $method) {
+            self::assertStringContainsString("unit_int<'second'>", $phpDocs[$method]);
         }
-    }
 
-    public function testFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testRedisFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-redis-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testDatabaseFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-database-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testSessionFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-session-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
-        }
-    }
-
-    public function testRoutingFileAsserts(): void
-    {
-        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-routing-compatibility-cases.php') as $arguments) {
-            $this->assertFileAsserts(...$arguments);
+        foreach ([
+            'Illuminate\\Routing\\Middleware\\ThrottleRequests::with',
+            'Illuminate\\Routing\\Middleware\\ThrottleRequests::handle',
+        ] as $method) {
+            self::assertStringContainsString("<'minute'>", $phpDocs[$method]);
         }
     }
 }

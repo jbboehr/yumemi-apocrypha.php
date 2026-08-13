@@ -585,6 +585,7 @@ jobs:
                     - illuminate-process
                     - illuminate-queue
                     - illuminate-redis
+                    - illuminate-routing
                     - illuminate-session
                     - illuminate-support
                     - illuminate-validation
@@ -624,6 +625,8 @@ jobs:
                       integration-label: Illuminate Queue
                     - integration: illuminate-redis
                       integration-label: Illuminate Redis
+                    - integration: illuminate-routing
+                      integration-label: Illuminate Routing
                     - integration: illuminate-session
                       integration-label: Illuminate Session
                     - integration: illuminate-queue

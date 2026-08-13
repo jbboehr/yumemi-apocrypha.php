@@ -13,6 +13,7 @@ parameters:
             - illuminate/process
             - illuminate/queue
             - illuminate/redis
+            - illuminate/routing
             - illuminate/session
             - illuminate/support
             - illuminate/validation

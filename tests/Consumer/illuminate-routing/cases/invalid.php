@@ -36,58 +36,39 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Database\Connection;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
+use Illuminate\Contracts\Routing\UrlGenerator as UrlGeneratorContract;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\ThrottleRequests;
+use Illuminate\Routing\Redirector;
 use Illuminate\Routing\Route;
-use Illuminate\Session\ArraySessionHandler;
-use Illuminate\Support\Sleep;
-use Illuminate\Validation\Rules\Dimensions;
-use Illuminate\Validation\Rules\File;
+use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\URL;
 
 use function jbboehr\Yumemi\unit;
-use function PHPStan\Testing\assertType;
 
-function exerciseLaravelFrameworkIntegrations(
-    Store $cache,
-    Factory $cookies,
-    Connection $database,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
+/** @param unit_int<'minute'>|null $minutes */
+function acceptRouteMinutes(?int $minutes): void
+{
+}
+
+function misconfigureRoutingDurations(
+    UrlGeneratorContract $contract,
+    UrlGenerator $generator,
+    Redirector $redirector,
+    Route $route,
+    ThrottleRequests $throttle,
 ): void {
-    $seconds = unit(30, 'second');
-
-    $cache->put('report', 'ready', $seconds);
-    $cookies->make('session', 'token', unit(30, 'minute'));
-    $database->whenQueryingForLongerThan(unit(500, 'millisecond'), static function (): void {
-    });
-    assertType("unit_float<'1/1000 * second'>", $database->totalQueryDuration());
-    assertType("unit_int<'octet'>", $filesystem->size('report.csv'));
-    $request->timeout($seconds);
-    $process->timeout($seconds);
-    $queue->later($seconds, 'App\\Jobs\\RefreshReport');
-    $redisLimiter->every($seconds)->block($seconds)->sleep(unit(250, 'millisecond'));
-    (new Route(['GET'], '/report', static fn (): string => 'report'))->block($seconds, $seconds);
-    (new ArraySessionHandler(unit(30, 'minute')))->gc(unit(3600, 'second'));
-    Sleep::sleep($seconds);
-    (new Dimensions())->width(unit(1200, 'pixel'))->height(unit(800, 'pixel'));
-    (new File())->between(unit(64, '1024 * byte'), unit(2048, '1024 * byte'));
-
-    new WorkerOptions(
-        backoff: [unit(1, 'second'), unit(5, 'second')],
-        memory: unit(128, '1048576 * byte'),
-        timeout: unit(60, 'second'),
-        sleep: unit(3, 'second'),
-        maxTime: unit(3600, 'second'),
-        rest: unit(1, 'second'),
-    );
+    $contract->signedRoute('report', expiration: unit(1, 'minute'));
+    $contract->signedRoute('report', expiration: 30);
+    $generator->temporarySignedRoute('report', unit(1, 'minute'));
+    $redirector->signedRoute('report', expiration: unit(1, 'minute'));
+    URL::signedRoute('report', [], unit(1, 'minute'));
+    URL::temporarySignedRoute('report', unit(1, 'minute'));
+    $route->block(unit(1, 'minute'), unit(1, 'minute'));
+    $route->block(30);
+    acceptRouteMinutes($route->locksFor());
+    acceptRouteMinutes($route->waitsFor());
+    ThrottleRequests::with(decayMinutes: unit(60, 'second'));
+    ThrottleRequests::with(decayMinutes: 1);
+    $throttle->handle(new Request(), static fn (Request $request): Request => $request, decayMinutes: unit(60, 'second'));
 }

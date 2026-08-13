@@ -13,8 +13,8 @@ package. `V` means a branded value is accepted or an inferred return is asserted
 means the boundary is exercised directly by `V`, while rejection is tested on another boundary with the identical
 promoted type. Every integration runs explicit and autodetected registration; every Illuminate integration also runs
 through the package-boundary adapter, whose core catalog is mechanically compared with its retained or selected
-reference stub. Carbon, Illuminate Database, Measurements, and Intervention Image always use the same adapter so their
-partial verification stubs cannot replace complete or more precise upstream declarations.
+reference stub. Carbon, Illuminate Database, Illuminate Routing, Measurements, and Intervention Image always use the
+same adapter so their partial verification stubs cannot replace complete or more precise upstream declarations.
 
 The audit preserves upstream scalar alternatives and nullability, keeps dynamic result and option arrays open, and does
 not narrow plain upstream integers from implementation behavior alone. It distinguishes relative durations from Unix
@@ -32,6 +32,7 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 | Illuminate Database           | 11–13 query timings; query timeout from 12.51.0                        | `11.0.0`, `11.51.0`, `12.0.0`, `12.50.0`, `12.51.0`, `12.66.0`, `13.0.0`, `13.25.0` |
 | Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                           |
 | Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
+| Illuminate Routing            | 11–13 shared throttle, route-lock, and signed-URL profile              | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
 | Illuminate Session            | 11–13 shared handler and lock-lifetime profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
 | Illuminate Validation         | 11–13 shared fluent-rule profile                                       | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
 | Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                                   |
@@ -231,6 +232,29 @@ concrete limiters, and
 
 Worker memory is compared after division by 1024 twice, which establishes the binary-megabyte scale. Redis's absolute
 limiter-expiry timestamp remains unbranded. Attempt counts, job counts, lock counts, and retry counts remain unbranded.
+
+## Illuminate Routing
+
+Evidence: Laravel's [`Route`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Routing/Route.php),
+[`ThrottleRequests`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Routing/Middleware/ThrottleRequests.php),
+[`UrlGenerator`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Routing/UrlGenerator.php), and
+[`Redirector`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Routing/Redirector.php), checked at the
+initial and current snapshots of Laravel 11 through 13.
+
+| Boundaries                                         | Promoted type                   | Coverage     |
+| -------------------------------------------------- | ------------------------------- | ------------ |
+| `ThrottleRequests::with()` decay                   | integer minutes                 | S/V/I        |
+| `ThrottleRequests::handle()` decay                 | integer or float minutes        | S/V/I        |
+| `Route::block()` lock and wait                     | nullable integer seconds        | S/V/I        |
+| `Route::locksFor()` and `waitsFor()`               | nullable integer seconds        | S/V/I        |
+| Generator, contract, redirector, and facade expiry | interval, date-time, or seconds | S/V/I-family |
+
+Throttle middleware multiplies the decay value by 60 before passing seconds to the rate limiter. Route lock fields are
+documented and consumed as seconds. Signed-URL generation passes integer expirations through `InteractsWithTime`, where
+integers are relative seconds; `DateTimeInterface` remains the absolute-time alternative. Routing always uses the
+metadata adapter so its partial reference stub cannot replace the complete upstream `Route` surface, and so Larastan's
+additional `Route` PHPDoc remains authoritative when installed. Attempt counts, HTTP status codes, and absolute Unix
+timestamps remain unbranded.
 
 ## Illuminate Session
 
