@@ -62,6 +62,7 @@ final class BoundaryMetadataBench
         'illuminate/queue' => [13, '13.10.0'],
         'illuminate/redis' => [13, '13.25.0'],
         'illuminate/support' => [13, '13.10.0'],
+        'illuminate/validation' => [13, '13.25.0'],
         'intervention/image' => [4, '4.0.0'],
         'nesbot/carbon' => [3, '3.2.0'],
         'nmarfurt/measurements' => [1, '1.4.0'],

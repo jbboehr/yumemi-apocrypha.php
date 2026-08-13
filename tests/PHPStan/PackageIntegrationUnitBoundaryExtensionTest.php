@@ -224,6 +224,40 @@ final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
         );
     }
 
+    public function testValidationUnitBoundaryDiagnosticsRunInProcess(): void
+    {
+        $this->analyse(
+            [__DIR__ . '/fixtures/larastan-validation-compatibility-cases.php'],
+            [
+                [
+                    "Illuminate\\Validation\\Rules\\Dimensions::width() expects unit_int<'pixel'>, "
+                        . "1&unit_int<'meter'> given at a Yumemi Apocrypha unit boundary.",
+                    48,
+                ],
+                [
+                    "Illuminate\\Validation\\Rules\\Dimensions::maxHeight() expects unit_int<'pixel'>, "
+                        . 'int given at a Yumemi Apocrypha unit boundary.',
+                    49,
+                ],
+                [
+                    "Illuminate\\Validation\\Rules\\File::size() expects string|unit_int<'1024 * octet'>, "
+                        . "1&unit_int<'1000 * octet'> given at a Yumemi Apocrypha unit boundary.",
+                    50,
+                ],
+                [
+                    "Illuminate\\Validation\\Rules\\File::between() expects string|unit_int<'1024 * octet'>, "
+                        . "64&unit_int<'octet'> given at a Yumemi Apocrypha unit boundary.",
+                    51,
+                ],
+                [
+                    "Illuminate\\Validation\\Rules\\File::between() expects string|unit_int<'1024 * octet'>, "
+                        . "2&unit_int<'1000000 * octet'> given at a Yumemi Apocrypha unit boundary.",
+                    51,
+                ],
+            ],
+        );
+    }
+
     public function testUnitBoundaryDiagnosticsUseStableIdentifier(): void
     {
         $errors = $this->gatherAnalyserErrors([

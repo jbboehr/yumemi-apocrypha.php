@@ -242,6 +242,23 @@ final class PackageIntegrationUnitBoundaryMetadata
             ],
             'returns' => [],
         ],
+        'illuminate/validation' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Validation\\Rules\\Dimensions', 'kind' => 'method', 'method' => 'width', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'pixel'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\Dimensions', 'kind' => 'method', 'method' => 'height', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'pixel'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\Dimensions', 'kind' => 'method', 'method' => 'minWidth', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'pixel'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\Dimensions', 'kind' => 'method', 'method' => 'minHeight', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'pixel'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\Dimensions', 'kind' => 'method', 'method' => 'maxWidth', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'pixel'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\Dimensions', 'kind' => 'method', 'method' => 'maxHeight', 'position' => 0, 'name' => 'value', 'type' => "unit_int<'pixel'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\File', 'kind' => 'method', 'method' => 'size', 'position' => 0, 'name' => 'size', 'type' => "string|unit_int<'1024 * byte'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\File', 'kind' => 'method', 'method' => 'between', 'position' => 0, 'name' => 'minSize', 'type' => "string|unit_int<'1024 * byte'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\File', 'kind' => 'method', 'method' => 'between', 'position' => 1, 'name' => 'maxSize', 'type' => "string|unit_int<'1024 * byte'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\File', 'kind' => 'method', 'method' => 'min', 'position' => 0, 'name' => 'size', 'type' => "string|unit_int<'1024 * byte'>"],
+                ['class' => 'Illuminate\\Validation\\Rules\\File', 'kind' => 'method', 'method' => 'max', 'position' => 0, 'name' => 'size', 'type' => "string|unit_int<'1024 * byte'>"],
+            ],
+            'properties' => [],
+            'returns' => [],
+        ],
         'illuminate/support' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Support\\Sleep', 'kind' => 'static', 'method' => 'usleep', 'position' => 0, 'name' => 'duration', 'type' => "unit_int<'microsecond'>"],

@@ -24,8 +24,8 @@ if [[ ! -x $AKASHI ]]; then
     exit 1
 fi
 
-if [[ $COMPATIBILITY_MODE != plain && $COMPATIBILITY_MODE != larastan && $COMPATIBILITY_MODE != phpstan-symfony ]]; then
-    printf 'Compatibility mode must be plain, larastan, or phpstan-symfony; received %s.\n' "$COMPATIBILITY_MODE" >&2
+if [[ $COMPATIBILITY_MODE != plain && $COMPATIBILITY_MODE != larastan && $COMPATIBILITY_MODE != phpstan-laravel-validation && $COMPATIBILITY_MODE != phpstan-symfony ]]; then
+    printf 'Compatibility mode must be plain, larastan, phpstan-laravel-validation, or phpstan-symfony; received %s.\n' "$COMPATIBILITY_MODE" >&2
     exit 2
 fi
 
@@ -48,6 +48,12 @@ case $COMPATIBILITY_MODE in
                 exit 2
                 ;;
         esac
+        ;;
+    phpstan-laravel-validation)
+        if [[ $FIXTURE_SUITE != illuminate-validation ]]; then
+            printf 'Laravel Validation extension compatibility mode does not support the %s consumer.\n' "$FIXTURE_SUITE" >&2
+            exit 2
+        fi
         ;;
     phpstan-symfony)
         case $FIXTURE_SUITE in
@@ -86,7 +92,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
     git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar --output="$git_archive" HEAD
     php "$PACKAGE_CHECKER" "$git_archive"
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -130,7 +136,7 @@ enable_larastan() {
     local project_dir=$1
     local testbench_major
 
-    if [[ $COMPATIBILITY_MODE == larastan ]]; then
+    if [[ $COMPATIBILITY_MODE == larastan || $COMPATIBILITY_MODE == phpstan-laravel-validation ]]; then
         case $PACKAGE_MAJOR in
             11) testbench_major=9 ;;
             12) testbench_major=10 ;;
@@ -144,6 +150,18 @@ enable_larastan() {
         composer --working-dir="$project_dir" require --dev \
             "larastan/larastan:^3.0" \
             "orchestra/testbench:^$testbench_major.0" \
+            --no-update --no-interaction
+    fi
+}
+
+enable_phpstan_laravel_validation() {
+    local project_dir=$1
+
+    if [[ $COMPATIBILITY_MODE == phpstan-laravel-validation ]]; then
+        composer --working-dir="$project_dir" repo add phpstan-laravel-validation \
+            vcs https://github.com/jbboehr/phpstan-laravel-validation.git --no-interaction
+        composer --working-dir="$project_dir" require --dev \
+            'jbboehr/phpstan-laravel-validation:dev-master' \
             --no-update --no-interaction
     fi
 }
@@ -597,6 +615,10 @@ run_simple_illuminate_integration() {
         mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
     fi
 
+    if [[ $FIXTURE_SUITE == illuminate-validation && $COMPATIBILITY_MODE != plain ]]; then
+        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
+    fi
+
     if [[ $FIXTURE_SUITE == illuminate-queue ]]; then
         if [[ $COMPATIBILITY_MODE == larastan ]]; then
             expected_diagnostics+=(
@@ -624,6 +646,7 @@ run_simple_illuminate_integration() {
             PKSA-m5cs-t1y6-qpcs PKSA-3r5d-mb8f-1qw9 PKSA-mdq4-51ck-6kdq
     fi
     enable_larastan "$project_dir"
+    enable_phpstan_laravel_validation "$project_dir"
     composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
 
     php "$project_dir/verify.php"
@@ -646,6 +669,10 @@ run_simple_illuminate_integration() {
         run_phpstan_case "$project_dir" phpstan.neon valid-larastan.php
         run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-larastan.php
     fi
+    if [[ $COMPATIBILITY_MODE == phpstan-laravel-validation ]]; then
+        run_phpstan_case "$project_dir" phpstan.neon valid-phpstan-laravel-validation.php
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-phpstan-laravel-validation.php
+    fi
     if [[ -f $project_dir/cases/valid-$profile_case.php ]]; then
         run_phpstan_case "$project_dir" phpstan.neon "valid-$profile_case.php"
         run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$profile_case.php"
@@ -662,6 +689,10 @@ run_simple_illuminate_integration() {
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-redis "$project_dir" phpstan.neon "$documentation_case" illuminate-redis-invalid
     fi
+    if [[ $FIXTURE_SUITE == illuminate-validation ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case illuminate-validation "$project_dir" phpstan.neon "$documentation_case" illuminate-validation-invalid
+    fi
 }
 
 run_laravel_framework() {
@@ -674,6 +705,8 @@ run_laravel_framework() {
         "Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
         "DurationLimiterBuilder::sleep() expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
         "Sleep::sleep() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
+        "Dimensions::width() expects unit_int<'pixel'>, 1200&unit_int<'css_pixel'> given"
+        "File::max() expects string|unit_int<'1024 * octet'>, 2&unit_int<'1000000 * octet'> given"
         "WorkerOptions constructor expects unit_int<'1048576 * octet'>, 128&unit_int<'1000000 * octet'> given"
     )
 
@@ -1126,7 +1159,7 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-support)
+    illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-support | illuminate-validation)
         run_simple_illuminate_integration
         ;;
     intervention-image)
@@ -1151,7 +1184,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

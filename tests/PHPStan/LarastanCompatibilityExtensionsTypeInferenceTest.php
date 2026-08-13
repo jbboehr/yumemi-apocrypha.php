@@ -61,6 +61,7 @@ final class LarastanCompatibilityExtensionsTypeInferenceTest extends TypeInferen
             'Illuminate\\Queue\\WorkerOptions',
             'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder',
             'Illuminate\\Support\\Benchmark',
+            'Illuminate\\Validation\\Rules\\Dimensions',
         ] as $class) {
             self::assertTrue($reflectionProvider->hasClass($class), sprintf('PHPStan cannot reflect %s.', $class));
         }

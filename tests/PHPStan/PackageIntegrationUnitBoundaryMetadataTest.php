@@ -314,6 +314,7 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
             ],
             'illuminate/redis' => [$base . 'redis.stub'],
             'illuminate/support' => [$base . 'support.stub'],
+            'illuminate/validation' => [$base . 'validation.stub'],
             'intervention/image' => [
                 __DIR__ . sprintf('/../../stubs/intervention-image/intervention-image-%d.stub', $major),
             ],

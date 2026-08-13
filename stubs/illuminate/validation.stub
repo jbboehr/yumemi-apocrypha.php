@@ -1,0 +1,116 @@
+<?php
+
+namespace Illuminate\Validation\Rules;
+
+class Dimensions
+{
+    /**
+     * @param int $value
+     * @return $this
+     *
+     * @yumemi-param unit_int<'pixel'> $value
+     */
+    public function width($value)
+    {
+    }
+
+    /**
+     * @param int $value
+     * @return $this
+     *
+     * @yumemi-param unit_int<'pixel'> $value
+     */
+    public function height($value)
+    {
+    }
+
+    /**
+     * @param int $value
+     * @return $this
+     *
+     * @yumemi-param unit_int<'pixel'> $value
+     */
+    public function minWidth($value)
+    {
+    }
+
+    /**
+     * @param int $value
+     * @return $this
+     *
+     * @yumemi-param unit_int<'pixel'> $value
+     */
+    public function minHeight($value)
+    {
+    }
+
+    /**
+     * @param int $value
+     * @return $this
+     *
+     * @yumemi-param unit_int<'pixel'> $value
+     */
+    public function maxWidth($value)
+    {
+    }
+
+    /**
+     * @param int $value
+     * @return $this
+     *
+     * @yumemi-param unit_int<'pixel'> $value
+     */
+    public function maxHeight($value)
+    {
+    }
+}
+
+class File
+{
+    /**
+     * @param string|int $size
+     * @return $this
+     *
+     * @phpstan-param string|unit_int<'1024 * byte'> $size
+     * @yumemi-param string|unit_int<'1024 * byte'> $size
+     */
+    public function size($size)
+    {
+    }
+
+    /**
+     * @param string|int $minSize
+     * @param string|int $maxSize
+     * @return $this
+     *
+     * @phpstan-param string|unit_int<'1024 * byte'> $minSize
+     * @phpstan-param string|unit_int<'1024 * byte'> $maxSize
+     * @yumemi-param string|unit_int<'1024 * byte'> $minSize
+     * @yumemi-param string|unit_int<'1024 * byte'> $maxSize
+     */
+    public function between($minSize, $maxSize)
+    {
+    }
+
+    /**
+     * @param string|int $size
+     * @return $this
+     *
+     * @phpstan-param string|unit_int<'1024 * byte'> $size
+     * @yumemi-param string|unit_int<'1024 * byte'> $size
+     */
+    public function min($size)
+    {
+    }
+
+    /**
+     * @param string|int $size
+     * @return $this
+     *
+     * @phpstan-param string|unit_int<'1024 * byte'> $size
+     * @yumemi-param string|unit_int<'1024 * byte'> $size
+     */
+    public function max($size)
+    {
+    }
+}

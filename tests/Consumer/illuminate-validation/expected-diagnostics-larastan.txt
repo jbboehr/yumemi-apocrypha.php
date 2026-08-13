@@ -1,0 +1,12 @@
+Dimensions::width() expects unit_int<'pixel'>, int given
+Dimensions::height() expects unit_int<'pixel'>, 800&unit_int<'css_pixel'> given
+Dimensions::minWidth() expects unit_int<'pixel'>, 320&unit_int<'meter'> given
+Dimensions::minHeight() expects unit_int<'pixel'>, 240&unit_int<'second'> given
+Dimensions::maxWidth() expects unit_int<'pixel'>, 3840&unit_int<'css_pixel'> given
+Dimensions::maxHeight() expects unit_int<'pixel'>, 2160&unit_int<'meter'> given
+File::size() expects string|unit_int<'1024 * octet'>, int given
+File::size() expects string|unit_int<'1024 * octet'>, 512&unit_int<'1000 * octet'> given
+File::between() expects string|unit_int<'1024 * octet'>, 64&unit_int<'octet'> given
+File::between() expects string|unit_int<'1024 * octet'>, 2&unit_int<'1000000 * octet'> given
+File::min() expects string|unit_int<'1024 * octet'>, 64&unit_int<'second'> given
+File::max() expects string|unit_int<'1024 * octet'>, 2048&unit_int<'octet'> given

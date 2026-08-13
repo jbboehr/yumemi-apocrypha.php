@@ -22,18 +22,18 @@ On each CI run, the consumer matrix resolves the latest compatible release of ev
 package-specific minimum shown below. An unknown future major, or a release below a stated minimum, is rejected until
 its signatures and semantics have been reviewed.
 
-| Package family         | Integration key                                                                                                                                                            | Verified versions                   | Verification snapshots                                                           | Checked    |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------- | ---------- |
-| Carbon                 | `nesbot/carbon`                                                                                                                                                            | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                          | 2026-08-09 |
-| Guzzle                 | `guzzlehttp/guzzle`                                                                                                                                                        | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                          | 2026-08-09 |
-| getID3                 | `james-heinrich/getid3`                                                                                                                                                    | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                | 2026-08-11 |
-| Illuminate packages    | `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`, or `illuminate/support` | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP, Queue, and Redis details below         | 2026-08-11 |
-| Intervention Image     | `intervention/image`                                                                                                                                                       | 3, 4                                | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                              | 2026-08-11 |
-| Laravel framework      | Provider only; select the applicable component keys above                                                                                                                  | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                | 2026-08-09 |
-| Measurements           | `nmarfurt/measurements`                                                                                                                                                    | 1.4+ in 1.x                         | `v1.4.0`                                                                         | 2026-08-10 |
-| phpgeo                 | `mjaschen/phpgeo`                                                                                                                                                          | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                      | 2026-08-09 |
-| Symfony HttpFoundation | `symfony/http-foundation`                                                                                                                                                  | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4` | 2026-08-09 |
-| Symfony Stopwatch      | `symfony/stopwatch`                                                                                                                                                        | 6, 7, 8                             | `v6.0.0`, `v6.4.24`, `v7.0.0`, `v7.4.8`, `v8.0.0`, `v8.1.0`                      | 2026-08-09 |
+| Package family         | Integration key                                                                                                                                                                                     | Verified versions                   | Verification snapshots                                                               | Checked    |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | ------------------------------------------------------------------------------------ | ---------- |
+| Carbon                 | `nesbot/carbon`                                                                                                                                                                                     | 2.62.1+ in 2.x; 3.x                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                              | 2026-08-09 |
+| Guzzle                 | `guzzlehttp/guzzle`                                                                                                                                                                                 | 7, 8                                | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                              | 2026-08-09 |
+| getID3                 | `james-heinrich/getid3`                                                                                                                                                                             | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                    | 2026-08-11 |
+| Illuminate packages    | `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`, `illuminate/support`, or `illuminate/validation` | 11, 12, 13                          | `v11.55.0`, `v12.66.0`, `v13.25.0`; HTTP, Queue, Redis, and Validation details below | 2026-08-12 |
+| Intervention Image     | `intervention/image`                                                                                                                                                                                | 3, 4                                | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                                  | 2026-08-11 |
+| Laravel framework      | Provider only; select the applicable component keys above                                                                                                                                           | 11, 12, 13                          | `v11.55.0`, `v12.65.0`, `v13.24.0`; HTTP and Queue cutovers below                    | 2026-08-09 |
+| Measurements           | `nmarfurt/measurements`                                                                                                                                                                             | 1.4+ in 1.x                         | `v1.4.0`                                                                             | 2026-08-10 |
+| phpgeo                 | `mjaschen/phpgeo`                                                                                                                                                                                   | 4, 5, 6                             | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                          | 2026-08-09 |
+| Symfony HttpFoundation | `symfony/http-foundation`                                                                                                                                                                           | 6.4+ in 6.x; 7.x; 8.x               | `v6.4.0`, `v6.4.43`, `v7.0.0`, `v7.2.9`, `v7.3.0`, `v7.4.16`, `v8.0.0`, `v8.1.4`     | 2026-08-09 |
+| Symfony Stopwatch      | `symfony/stopwatch`                                                                                                                                                                                 | 6, 7, 8                             | `v6.0.0`, `v6.4.24`, `v7.0.0`, `v7.4.8`, `v8.0.0`, `v8.1.0`                          | 2026-08-09 |
 
 Laravel applications may install these APIs through `laravel/framework` instead of separate `illuminate/*` component
 packages. Continue to select the precise component integration names, such as `illuminate/cache`; Composer's exact
@@ -358,6 +358,50 @@ The fluent duration builder also accepts Laravel's published `DateTimeInterface`
 decay window. The concrete limiter constructors and `block()` methods carry the same units as their builders. Absolute
 limiter-expiry timestamps remain unbranded. The shared profile was checked at the initial and current releases of each
 supported major: `v11.0.0`, `v11.51.0`, `v12.0.0`, `v12.66.0`, `v13.0.0`, and `v13.25.0`.
+
+## Illuminate Validation
+
+Enable `illuminate/validation` to distinguish nominal raster dimensions from physical lengths and binary file-size
+chunks from decimal storage units.
+
+| API concern                                                                        | Unit          |
+| ---------------------------------------------------------------------------------- | ------------- |
+| `Dimensions` width, height, and minimum/maximum dimensions                         | `pixel`       |
+| Integer alternatives accepted by `File::size()`, `between()`, `min()`, and `max()` | `1024 * byte` |
+
+<!-- yumemi-example: illuminate-validation-invalid -->
+
+```php
+<?php
+
+use Illuminate\Validation\Rules\Dimensions;
+use Illuminate\Validation\Rules\File;
+
+use function jbboehr\Yumemi\unit;
+
+function configureProductImage(Dimensions $dimensions, File $file): void
+{
+    $dimensions->width(unit(1200, 'pixel'));
+    $file->max(unit(2048, '1024 * byte'));
+
+    //! Dimensions::width() expects unit_int<'pixel'>, 1200&unit_int<'css_pixel'> given
+    $dimensions->width(unit(1200, 'css_pixel'));
+}
+```
+
+Laravel calls numeric file-rule sizes “kilobytes,” but uploaded files are compared after their byte size is divided
+by 1024. Apocrypha therefore brands the integer alternative as the exact scale `1024 * byte`; decimal UDUNITS `kilobyte`
+and `megabyte` values are not definitionally equivalent. Laravel's string forms, such as `'64kb'` and `'2mb'`, remain
+valid and unbranded because Laravel parses their suffixes itself.
+
+Aspect ratios remain dimensionless. The `Dimensions` constructor remains unbranded because it accepts a general
+constraint array, and `File::dimensions()` accepts a rule object rather than a native measurement. Image-file rules
+inherit the annotated file-size methods. The shared profile was checked at `v11.0.0`, `v11.51.0`, `v12.0.0`, `v12.66.0`,
+`v13.0.0`, and `v13.25.0`.
+
+This integration is also tested with Larastan 3 and the current development version of
+`jbboehr/phpstan-laravel-validation` installed together. Those extensions retain ownership of validation-result
+inference and their `Validator` declarations; Apocrypha adds only the unit-bearing fluent rule boundaries above.
 
 ## Intervention Image
 

@@ -96,6 +96,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-redis',
         ],
+        'illuminate-validation-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'illuminate-validation',
+        ],
         'intervention-image-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'intervention-image',

@@ -164,6 +164,7 @@
         "test:consumer:illuminate-queue": "make test-consumer-illuminate-queue",
         "test:consumer:illuminate-redis": "make test-consumer-illuminate-redis",
         "test:consumer:illuminate-support": "make test-consumer-illuminate-support",
+        "test:consumer:illuminate-validation": "make test-consumer-illuminate-validation",
         "test:consumer:laravel-framework": "make test-consumer-laravel-framework",
         "test:consumer:laravel-framework:archive": "make test-consumer-laravel-framework-archive",
         "test:consumer:measurements": "make test-consumer-measurements",

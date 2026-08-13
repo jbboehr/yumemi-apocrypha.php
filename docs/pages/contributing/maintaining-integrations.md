@@ -62,6 +62,10 @@ SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 Set `ILLUMINATE_COMPATIBILITY_MODE=larastan` on any Illuminate or Laravel framework command to exercise the adapter
 instead of the standalone stubs.
 
+Set `ILLUMINATE_COMPATIBILITY_MODE=phpstan-laravel-validation` on the Illuminate Validation command to install Larastan
+and `jbboehr/phpstan-laravel-validation` together. This profile verifies Apocrypha's unit diagnostics and the validation
+extension's inferred output type in the same analysis.
+
 Set `SYMFONY_COMPATIBILITY_MODE=phpstan-symfony` on a Symfony HttpFoundation or Stopwatch command to exercise direct
 coexistence with `phpstan/phpstan-symfony` 2. The compatibility profile installs and autodiscovers both extensions, then
 runs the same reflection, valid-case, invalid-case, explicit-selection, and autodetection checks as plain mode.

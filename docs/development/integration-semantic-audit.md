@@ -1,7 +1,7 @@
 # Integration Semantic Audit
 
 This ledger records the source evidence and consumer coverage behind every branded third-party boundary. It was last
-reviewed on 2026-08-11. The public supported-version matrix remains in
+reviewed on 2026-08-12. The public supported-version matrix remains in
 [`docs/pages/integrations.md`](../pages/integrations.md); this document is the maintainer-facing evidence behind it.
 
 ## Method
@@ -31,6 +31,7 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 | Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.55.0`, `12.0.0`, `12.65.0`, `13.0.0`, `13.24.0`            |
 | Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                |
 | Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`            |
+| Illuminate Validation         | 11–13 shared fluent-rule profile                                       | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`            |
 | Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                        |
 | Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                      |
 | Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                 |
@@ -204,6 +205,29 @@ concrete limiters, and
 
 Worker memory is compared after division by 1024 twice, which establishes the binary-megabyte scale. Redis's absolute
 limiter-expiry timestamp remains unbranded. Attempt counts, job counts, lock counts, and retry counts remain unbranded.
+
+## Illuminate Validation
+
+Evidence: Laravel's
+[`Dimensions`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Validation/Rules/Dimensions.php),
+[`File`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Validation/Rules/File.php), and
+[`ImageFile`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Validation/Rules/ImageFile.php), checked
+at the initial and current snapshots of Laravel 11 through 13. The overlap audit also checked Larastan 3's validation
+stub and `jbboehr/phpstan-laravel-validation` at development commit `93a4d0d`.
+
+| Boundaries                                                        | Promoted type                                   | Coverage     |
+| ----------------------------------------------------------------- | ----------------------------------------------- | ------------ |
+| `Dimensions` width, height, and minimum/maximum dimension methods | integer nominal raster pixels                   | S/V/I-family |
+| `File::size`, `between`, `min`, and `max` integer alternatives    | integer `1024 * byte`, preserving string inputs | S/V/I        |
+
+Laravel's file validator compares the uploaded byte count after division by 1024, establishing the integer input's
+binary scale. String size expressions remain an upstream-parsed alternative and are not branded. Ratios, general
+constraint arrays, and rule-object inputs remain unbranded. `ImageFile` inherits the annotated `File` methods.
+
+Larastan's validation stub currently owns `Validator::safe()`, while `jbboehr/phpstan-laravel-validation` owns
+validation-result inference and `Validator::setRules()`. Neither declares the fluent rule methods above. The isolated
+consumer installs all three extensions together; Apocrypha uses its whole-integration metadata adapter whenever Larastan
+is present, leaving both existing extensions' declarations authoritative.
 
 ## Measurements
 

@@ -36,44 +36,50 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
-use Illuminate\Support\Sleep;
-use Illuminate\Validation\Rules\Dimensions;
-use Illuminate\Validation\Rules\File;
+namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
 
-use function jbboehr\Yumemi\unit;
+use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\Namespace_;
+use PHPStan\Parser\Parser;
+use PHPStan\Testing\PHPStanTestCase;
 
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
+final class IlluminateValidationStubTest extends PHPStanTestCase
 {
-}
+    public static function getAdditionalConfigFiles(): array
+    {
+        return [
+            __DIR__ . '/../../vendor/jbboehr/yumemi/extension.neon',
+            __DIR__ . '/../../vendor/jbboehr/yumemi/yumemi-tags.neon',
+            __DIR__ . '/illuminate-validation-stub.neon',
+        ];
+    }
 
-function rejectInvalidLaravelFrameworkUnits(
-    Store $cache,
-    Factory $cookies,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
-): void {
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
+    public function testDimensionAndFileSizeUnitTagsArePromotedByTheStubParser(): void
+    {
+        $parser = self::getContainer()->getService('stubParser');
+        self::assertInstanceOf(Parser::class, $parser);
 
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+        $phpDocs = [];
+        foreach ($parser->parseFile(__DIR__ . '/../../stubs/illuminate/validation.stub') as $node) {
+            if (!$node instanceof Namespace_) {
+                continue;
+            }
+
+            foreach ($node->stmts as $statement) {
+                if (!$statement instanceof ClassLike || $statement->name === null) {
+                    continue;
+                }
+
+                foreach ($statement->getMethods() as $method) {
+                    $phpDocs[$statement->name->toString() . '::' . $method->name->toString()]
+                        = $method->getDocComment()?->getText() ?? '';
+                }
+            }
+        }
+
+        self::assertStringContainsString("unit_int<'pixel'>", $phpDocs['Dimensions::width']);
+        self::assertStringContainsString("unit_int<'pixel'>", $phpDocs['Dimensions::maxHeight']);
+        self::assertStringContainsString("string|unit_int<'1024 * byte'>", $phpDocs['File::size']);
+        self::assertSame(4, substr_count($phpDocs['File::between'], "unit_int<'1024 * byte'>"));
+    }
 }

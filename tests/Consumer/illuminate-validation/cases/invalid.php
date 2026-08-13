@@ -36,44 +36,23 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
-use Illuminate\Support\Sleep;
 use Illuminate\Validation\Rules\Dimensions;
 use Illuminate\Validation\Rules\File;
 
 use function jbboehr\Yumemi\unit;
 
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
+function misconfigureUploadValidation(Dimensions $dimensions, File $file): void
 {
-}
+    $dimensions->width(1200);
+    $dimensions->height(unit(800, 'css_pixel'));
+    $dimensions->minWidth(unit(320, 'meter'));
+    $dimensions->minHeight(unit(240, 'second'));
+    $dimensions->maxWidth(unit(3840, 'css_pixel'));
+    $dimensions->maxHeight(unit(2160, 'meter'));
 
-function rejectInvalidLaravelFrameworkUnits(
-    Store $cache,
-    Factory $cookies,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
-): void {
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
-
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+    $file->size(512);
+    $file->size(unit(512, 'kilobyte'));
+    $file->between(unit(64, 'byte'), unit(2, 'megabyte'));
+    $file->min(unit(64, 'second'));
+    $file->max(unit(2048, 'byte'));
 }

@@ -188,6 +188,64 @@ final class CommandExecuted
     }
 }
 
+namespace Illuminate\Validation\Rules;
+
+final class Dimensions
+{
+    public function width(int $value): self
+    {
+        return $this;
+    }
+
+    public function height(int $value): self
+    {
+        return $this;
+    }
+
+    public function minWidth(int $value): self
+    {
+        return $this;
+    }
+
+    public function minHeight(int $value): self
+    {
+        return $this;
+    }
+
+    public function maxWidth(int $value): self
+    {
+        return $this;
+    }
+
+    public function maxHeight(int $value): self
+    {
+        return $this;
+    }
+}
+
+class File
+{
+    public function size(string|int $size): self
+    {
+        return $this;
+    }
+
+    public function between(string|int $minSize, string|int $maxSize): self
+    {
+        return $this;
+    }
+
+    public function min(string|int $size): self
+    {
+        return $this;
+    }
+
+    public function max(string|int $size): self
+    {
+        return $this;
+    }
+}
+
 namespace Illuminate\Contracts\Cache;
 
 interface Repository

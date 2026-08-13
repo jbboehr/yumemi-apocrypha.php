@@ -84,6 +84,7 @@ final readonly class PackageArchiveChecker
         'stubs/illuminate/queue.stub',
         'stubs/illuminate/redis.stub',
         'stubs/illuminate/support.stub',
+        'stubs/illuminate/validation.stub',
         'stubs/intervention-image/intervention-image-3.stub',
         'stubs/intervention-image/intervention-image-4.stub',
         'stubs/measurements/measurements.stub',

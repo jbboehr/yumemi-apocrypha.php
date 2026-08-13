@@ -20,15 +20,18 @@ upstream versions it claims to support and semantically accurate about the repre
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
 - `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
-  `illuminate/process`, `illuminate/queue`, and `illuminate/redis` cover stable unit-bearing APIs across Laravel 11
-  through 13.
+  `illuminate/process`, `illuminate/queue`, `illuminate/redis`, and `illuminate/validation` cover stable unit-bearing
+  APIs across Laravel 11 through 13. Validation covers raster dimensions and integer file-rule sizes while preserving
+  upstream string size expressions.
 - `intervention/image` covers nominal raster-pixel dimensions and coordinates plus degree rotations across Intervention
   Image 3 and 4. A metadata adapter preserves the package's complete interfaces, while version 4 retains its `Fraction`
   dimension alternatives. Resolution, quality, opacity, transparency, and lower-level geometry objects remain outside
   the bounded first surface.
 - Every Illuminate integration coexists automatically with Larastan 3. Standalone analysis uses the package stubs;
   Larastan analysis keeps Larastan's declarations and reproduces Apocrypha's unit boundaries through a metadata-driven
-  rule and type-extension adapter, with parity enforced against the canonical stubs.
+  rule and type-extension adapter, with parity enforced against the canonical stubs. Illuminate Validation additionally
+  has a combined profile with `jbboehr/phpstan-laravel-validation`; the extensions retain their separate Validator
+  inference and declaration surfaces while Apocrypha owns only the fluent rule units.
 - `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
   phpgeo 4 through 6 while leaving coordinate origins unbranded.
 - `nmarfurt/measurements` covers the complete fixed-unit magic-factory surfaces of `Length` and `Duration` from 1.4.0
@@ -88,6 +91,10 @@ unverified Larastan major is rejected until its combined behavior passes the sam
 currently coexists directly with the Symfony stubs because its active declarations do not overlap them. If an extension
 release begins owning any declaration in a selected integration, disable that integration's complete stub set and use a
 metadata adapter rather than loading both.
+
+The Illuminate Validation compatibility profile installs Larastan and `jbboehr/phpstan-laravel-validation` together.
+Keep validation-result inference and `Validator` stubs with those extensions; Apocrypha should claim only fixed-unit
+fluent rule boundaries unless a future overlap audit establishes a new ownership split.
 
 ## Release Gates
 

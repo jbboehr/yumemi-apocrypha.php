@@ -36,44 +36,18 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
-use Illuminate\Support\Sleep;
-use Illuminate\Validation\Rules\Dimensions;
-use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\Factory;
 
-use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
 
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
+function verifyValidationExtensionInference(Factory $factory): void
 {
-}
+    $validator = $factory->make([], [
+        'name' => 'required|string',
+        'age' => 'nullable|integer',
+    ]);
 
-function rejectInvalidLaravelFrameworkUnits(
-    Store $cache,
-    Factory $cookies,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
-): void {
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
-
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+    assertType('Illuminate\Support\ValidatedInput', $validator->safe());
+    $validated = $validator->validated();
+    assertType('array{name: string, age?: float|int|string|Stringable|true|null}', $validated);
 }

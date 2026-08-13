@@ -8,7 +8,7 @@
 	test-consumer-illuminate-cookie test-consumer-illuminate-filesystem test-consumer-illuminate-process \
 	test-consumer-illuminate-queue \
 	test-consumer-illuminate-redis \
-	test-consumer-illuminate-support test-consumer-laravel-framework \
+	test-consumer-illuminate-support test-consumer-illuminate-validation test-consumer-laravel-framework \
 	test-consumer-laravel-framework-archive test-consumer-phpgeo test-consumer-phpgeo-archive \
 	test-consumer-measurements test-consumer-measurements-archive \
 	test-consumer-symfony-http-foundation test-consumer-symfony-http-foundation-archive \
@@ -32,6 +32,7 @@ ILLUMINATE_PROCESS_MAJOR ?= 12
 ILLUMINATE_QUEUE_MAJOR ?= 12
 ILLUMINATE_REDIS_MAJOR ?= 12
 ILLUMINATE_SUPPORT_MAJOR ?= 12
+ILLUMINATE_VALIDATION_MAJOR ?= 12
 LARAVEL_FRAMEWORK_MAJOR ?= 12
 MEASUREMENTS_VERSION ?= 1
 PHPGEO_MAJOR ?= 6
@@ -114,6 +115,9 @@ test-consumer-illuminate-redis:
 
 test-consumer-illuminate-support:
 	tests/Consumer/run source illuminate-support $(ILLUMINATE_SUPPORT_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-validation:
+	tests/Consumer/run source illuminate-validation $(ILLUMINATE_VALIDATION_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-laravel-framework:
 	tests/Consumer/run source laravel-framework $(LARAVEL_FRAMEWORK_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)

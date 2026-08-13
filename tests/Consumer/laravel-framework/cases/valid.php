@@ -45,6 +45,8 @@ use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Redis\Limiters\DurationLimiterBuilder;
 use Illuminate\Support\Sleep;
+use Illuminate\Validation\Rules\Dimensions;
+use Illuminate\Validation\Rules\File;
 
 use function jbboehr\Yumemi\unit;
 use function PHPStan\Testing\assertType;
@@ -68,6 +70,8 @@ function exerciseLaravelFrameworkIntegrations(
     $queue->later($seconds, 'App\\Jobs\\RefreshReport');
     $redisLimiter->every($seconds)->block($seconds)->sleep(unit(250, 'millisecond'));
     Sleep::sleep($seconds);
+    (new Dimensions())->width(unit(1200, 'pixel'))->height(unit(800, 'pixel'));
+    (new File())->between(unit(64, '1024 * byte'), unit(2048, '1024 * byte'));
 
     new WorkerOptions(
         backoff: [unit(1, 'second'), unit(5, 'second')],

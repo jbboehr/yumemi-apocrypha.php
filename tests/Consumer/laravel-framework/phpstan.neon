@@ -13,3 +13,4 @@ parameters:
             - illuminate/queue
             - illuminate/redis
             - illuminate/support
+            - illuminate/validation

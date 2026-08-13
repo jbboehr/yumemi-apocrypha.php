@@ -62,6 +62,7 @@ $checks = [
     'illuminate/queue' => [Illuminate\Contracts\Queue\Queue::class, 'later', 'delay'],
     'illuminate/redis' => [Illuminate\Redis\Limiters\DurationLimiterBuilder::class, 'every', 'decay'],
     'illuminate/support' => [Illuminate\Support\Sleep::class, 'sleep', 'duration'],
+    'illuminate/validation' => [Illuminate\Validation\Rules\Dimensions::class, 'width', 'value'],
 ];
 
 foreach ($checks as $package => [$class, $method, $parameter]) {

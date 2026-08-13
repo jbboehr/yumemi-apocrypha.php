@@ -36,44 +36,36 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
-use Illuminate\Support\Sleep;
 use Illuminate\Validation\Rules\Dimensions;
 use Illuminate\Validation\Rules\File;
+use Illuminate\Validation\Rules\ImageFile;
 
 use function jbboehr\Yumemi\unit;
 
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
+function configureUploadValidation(Dimensions $dimensions, File $file): void
 {
-}
+    $dimensions
+        ->width(unit(1200, 'pixel'))
+        ->height(unit(800, 'pixel'))
+        ->minWidth(unit(320, 'pixel'))
+        ->minHeight(unit(240, 'pixel'))
+        ->maxWidth(unit(3840, 'pixel'))
+        ->maxHeight(unit(2160, 'pixel'))
+        ->ratio(1.5);
 
-function rejectInvalidLaravelFrameworkUnits(
-    Store $cache,
-    Factory $cookies,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
-): void {
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
+    $binaryKilobytes = unit(512, '1024 * byte');
+    $file
+        ->size($binaryKilobytes)
+        ->between(unit(64, '1024 * byte'), unit(2048, '1024 * byte'))
+        ->min(unit(64, '1024 * byte'))
+        ->max(unit(2048, '1024 * byte'));
 
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+    $file->min('64kb')->max('2mb');
+    (new ImageFile())->max(unit(2048, '1024 * byte'))->dimensions($dimensions);
+
+    (new Dimensions())->width(value: unit(640, 'pixel'));
+    (new File())->between(
+        minSize: unit(64, '1024 * byte'),
+        maxSize: unit(2048, '1024 * byte'),
+    );
 }

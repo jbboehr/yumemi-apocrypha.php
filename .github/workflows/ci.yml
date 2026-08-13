@@ -585,6 +585,7 @@ jobs:
                     - illuminate-queue
                     - illuminate-redis
                     - illuminate-support
+                    - illuminate-validation
                 illuminate-version:
                     - "11"
                     - "12"
@@ -641,6 +642,23 @@ jobs:
                       php-version: "8.3"
                     - integration: illuminate-support
                       integration-label: Illuminate Support
+                    - integration: illuminate-validation
+                      integration-label: Illuminate Validation
+                    - integration: illuminate-validation
+                      integration-label: Illuminate Validation + PHPStan Laravel Validation
+                      illuminate-version: "11"
+                      compatibility-mode: phpstan-laravel-validation
+                      php-version: "8.2"
+                    - integration: illuminate-validation
+                      integration-label: Illuminate Validation + PHPStan Laravel Validation
+                      illuminate-version: "12"
+                      compatibility-mode: phpstan-laravel-validation
+                      php-version: "8.2"
+                    - integration: illuminate-validation
+                      integration-label: Illuminate Validation + PHPStan Laravel Validation
+                      illuminate-version: "13"
+                      compatibility-mode: phpstan-laravel-validation
+                      php-version: "8.3"
         steps:
             - name: Checkout Apocrypha
               uses: actions/checkout@v7
