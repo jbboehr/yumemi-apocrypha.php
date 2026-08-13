@@ -46,6 +46,49 @@ final class Filesystem
     }
 }
 
+namespace Illuminate\Database;
+
+final class Connection
+{
+    public function logQuery(string $query, array $bindings, ?float $time = null): void
+    {
+    }
+
+    public function whenQueryingForLongerThan(\DateTimeInterface|\Carbon\CarbonInterval|float|int $threshold, callable $handler): void
+    {
+    }
+
+    public function totalQueryDuration(): float
+    {
+        return 1.0;
+    }
+}
+
+namespace Illuminate\Database\Events;
+
+final class QueryExecuted
+{
+    public ?float $time;
+
+    /** @param float|null $time */
+    public function __construct($sql, $bindings, $time, \Illuminate\Database\Connection $connection)
+    {
+        $this->time = $time;
+    }
+}
+
+namespace Illuminate\Database\Query;
+
+final class Builder
+{
+    public ?int $timeout = null;
+
+    public function timeout(?int $seconds): static
+    {
+        return $this;
+    }
+}
+
 namespace Illuminate\Contracts\Queue;
 
 interface Job

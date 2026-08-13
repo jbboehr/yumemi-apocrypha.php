@@ -157,6 +157,7 @@
         "test:consumer:illuminate-cache": "make test-consumer-illuminate-cache",
         "test:consumer:illuminate-cache:archive": "make test-consumer-illuminate-cache-archive",
         "test:consumer:illuminate-cookie": "make test-consumer-illuminate-cookie",
+        "test:consumer:illuminate-database": "make test-consumer-illuminate-database",
         "test:consumer:illuminate-filesystem": "make test-consumer-illuminate-filesystem",
         "test:consumer:illuminate-http": "make test-consumer-illuminate-http",
         "test:consumer:illuminate-http:archive": "make test-consumer-illuminate-http-archive",

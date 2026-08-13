@@ -59,8 +59,9 @@ PHPGEO_MAJOR=6 make test-consumer-phpgeo
 SYMFONY_STOPWATCH_MAJOR=7 make test-consumer-symfony-stopwatch
 ```
 
-Set `ILLUMINATE_COMPATIBILITY_MODE=larastan` on any Illuminate or Laravel framework command to exercise the adapter
-instead of the standalone stubs.
+Set `ILLUMINATE_COMPATIBILITY_MODE=larastan` on any Illuminate or Laravel framework command to exercise coexistence with
+Larastan. This switches most integrations from standalone stubs to the adapter; Illuminate Database already uses the
+adapter in plain mode.
 
 Set `ILLUMINATE_COMPATIBILITY_MODE=phpstan-laravel-validation` on the Illuminate Validation command to install Larastan
 and `jbboehr/phpstan-laravel-validation` together. This profile verifies Apocrypha's unit diagnostics and the validation
@@ -82,11 +83,16 @@ both directions: every expected fragment must occur, every emitted file diagnost
 general PHPStan errors fail the fixture. One fragment may deliberately cover repeated equivalent diagnostics. Test
 explicit selection and autodetection against the same cases.
 
-Illuminate stubs are the canonical standalone representation. Keep the Larastan metadata catalog in exact parity with
+Illuminate stubs are normally the canonical standalone representation. Keep the metadata catalog in exact parity with
 their `@yumemi-param`, `@yumemi-return`, and `@yumemi-var` tags, including every major restriction. The parity test is a
 guardrail, not a substitute for real consumer coverage: verify positional and named calls, finite unpacking, property
 reads and writes, return precision, and both direct-package and `laravel/framework` installs. Unknown unpack positions
 must not produce a speculative `apocrypha.unit` diagnostic.
+
+Illuminate Database is the exception: it always uses the metadata adapter because Laravel changed callback and
+event-constructor PHPDoc within supported majors. Keep its retained profile stubs as reviewable unit-semantic
+references, never enable them alongside the adapter, and verify that modern upstream callback types remain enforced in
+plain mode.
 
 Carbon always uses the metadata adapter because a partial `CarbonInterface` stub can replace unrelated upstream methods.
 Keep its retained profile stubs as reviewable semantic references, but never enable them alongside the adapter. Every
@@ -147,7 +153,8 @@ requires an explicit compatibility decision and, after the first tag, a changelo
 For Larastan, coexistence is an integration-wide choice rather than a declaration overlay. Loading even an apparently
 nonoverlapping stub can collide with a class Larastan adds in a later minor release. When a selected Illuminate
 integration and supported Larastan are both installed, disable all Apocrypha stubs for that integration and use the
-metadata adapter. Reject an unknown Larastan major until the complete matrix has been verified.
+metadata adapter. Illuminate Database makes the same whole-integration choice without Larastan so upstream PHPDoc
+remains authoritative in both modes. Reject an unknown Larastan major until the complete matrix has been verified.
 
 For `phpstan/phpstan-symfony`, direct coexistence remains acceptable only while the combined consumer matrix proves that
 its registered declarations do not overlap the selected Apocrypha integration. If an extension release begins owning any

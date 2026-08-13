@@ -1,0 +1,8 @@
+Connection::logQuery() expects unit_float<'1/1000 * second'>|null, float given
+Connection::logQuery() expects unit_float<'1/1000 * second'>|null, 1.0&unit_float<'second'> given
+Connection::whenQueryingForLongerThan() expects Carbon\CarbonInterval|DateTimeInterface|unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'>, int given
+Connection::whenQueryingForLongerThan() expects Carbon\CarbonInterval|DateTimeInterface|unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'>, 1&unit_int<'second'> given
+Parameter $time of class Illuminate\Database\Events\QueryExecuted constructor expects unit_float<'1/1000 * second'>|null, float given
+Parameter $time of class Illuminate\Database\Events\QueryExecuted constructor expects unit_float<'1/1000 * second'>|null, 1.0&unit_float<'second'> given
+Illuminate\Database\Events\QueryExecuted::$time expects unit_float<'1/1000 * second'>|null, float given
+Illuminate\Database\Events\QueryExecuted::$time expects unit_float<'1/1000 * second'>|null, 1.0&unit_float<'second'> given

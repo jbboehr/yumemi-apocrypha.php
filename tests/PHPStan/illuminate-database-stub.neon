@@ -1,0 +1,4 @@
+parameters:
+    stubFiles:
+        - ../../stubs/illuminate/database.stub
+        - ../../stubs/illuminate/database-timeout.stub

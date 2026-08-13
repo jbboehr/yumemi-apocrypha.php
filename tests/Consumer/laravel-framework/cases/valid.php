@@ -40,6 +40,7 @@ use Illuminate\Contracts\Cache\Store;
 use Illuminate\Contracts\Cookie\Factory;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Queue\Queue;
+use Illuminate\Database\Connection;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
@@ -54,6 +55,7 @@ use function PHPStan\Testing\assertType;
 function exerciseLaravelFrameworkIntegrations(
     Store $cache,
     Factory $cookies,
+    Connection $database,
     Filesystem $filesystem,
     PendingRequest $request,
     PendingProcess $process,
@@ -64,6 +66,9 @@ function exerciseLaravelFrameworkIntegrations(
 
     $cache->put('report', 'ready', $seconds);
     $cookies->make('session', 'token', unit(30, 'minute'));
+    $database->whenQueryingForLongerThan(unit(500, 'millisecond'), static function (): void {
+    });
+    assertType("unit_float<'1/1000 * second'>", $database->totalQueryDuration());
     assertType("unit_int<'octet'>", $filesystem->size('report.csv'));
     $request->timeout($seconds);
     $process->timeout($seconds);

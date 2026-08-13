@@ -47,6 +47,7 @@ final class LarastanCompatibilityTestExtensionFactory
         return new ConfiguredIntegrationStubFilesExtension(
             [
                 'illuminate/cache',
+                'illuminate/database',
                 'illuminate/filesystem',
                 'illuminate/queue',
                 'illuminate/redis',
@@ -59,6 +60,7 @@ final class LarastanCompatibilityTestExtensionFactory
             packageInstalledResolver: static fn (): bool => true,
             packageVersionResolver: static fn (string $package): string => match ($package) {
                 'larastan/larastan' => '3.10.0',
+                'illuminate/database' => '12.51.0',
                 'nesbot/carbon' => '3.2.0',
                 default => '12.0.0',
             },

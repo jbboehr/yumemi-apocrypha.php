@@ -36,48 +36,26 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
+namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan\Fixtures;
+
 use Illuminate\Database\Connection;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
-use Illuminate\Support\Sleep;
-use Illuminate\Validation\Rules\Dimensions;
-use Illuminate\Validation\Rules\File;
+use Illuminate\Database\Events\QueryExecuted;
+use Illuminate\Database\Query\Builder;
 
 use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
 
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
+function exerciseDatabaseLarastanCompatibility(Connection $connection, QueryExecuted $event, Builder $builder): void
 {
-}
-
-function rejectInvalidLaravelFrameworkUnits(
-    Store $cache,
-    Factory $cookies,
-    Connection $database,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
-): void {
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    $database->whenQueryingForLongerThan(unit(1, 'second'), static function (): void {
+    $connection->logQuery('select 1', [], unit(1.0, 'second'));
+    $connection->whenQueryingForLongerThan(unit(1, 'second'), static function (): void {
     });
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
+    new QueryExecuted('select 1', [], unit(1.0, 'second'), $connection);
+    $event->time = unit(1.0, 'second');
+    $builder->timeout(unit(500, 'millisecond'));
+    $builder->timeout = unit(500, 'millisecond');
 
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+    assertType("unit_float<'1/1000 * second'>", $connection->totalQueryDuration());
+    assertType("unit_float<'1/1000 * second'>|null", $event->time);
+    assertType("unit_int<'second'>|null", $builder->timeout);
 }

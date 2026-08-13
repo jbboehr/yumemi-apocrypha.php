@@ -258,6 +258,48 @@ final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
         );
     }
 
+    public function testDatabaseUnitBoundaryDiagnosticsRunInProcess(): void
+    {
+        $this->analyse(
+            [__DIR__ . '/fixtures/larastan-database-compatibility-cases.php'],
+            [
+                [
+                    "Illuminate\\Database\\Connection::logQuery() expects unit_float<'1/1000 * second'>|null, "
+                        . "1.0&unit_float<'second'> given at a Yumemi Apocrypha unit boundary.",
+                    50,
+                ],
+                [
+                    "Illuminate\\Database\\Connection::whenQueryingForLongerThan() expects "
+                        . "Carbon\\CarbonInterval|DateTimeInterface|unit_float<'1/1000 * second'>|"
+                        . "unit_int<'1/1000 * second'>, 1&unit_int<'second'> given at a Yumemi Apocrypha unit boundary.",
+                    51,
+                ],
+                [
+                    'Parameter $time of class Illuminate\\Database\\Events\\QueryExecuted constructor expects '
+                        . "unit_float<'1/1000 * second'>|null, 1.0&unit_float<'second'> given at a Yumemi Apocrypha "
+                        . 'unit boundary.',
+                    53,
+                ],
+                [
+                    "Illuminate\\Database\\Events\\QueryExecuted::\$time expects "
+                        . "unit_float<'1/1000 * second'>|null, "
+                        . "1.0&unit_float<'second'> given at a Yumemi Apocrypha unit boundary.",
+                    54,
+                ],
+                [
+                    "Illuminate\\Database\\Query\\Builder::timeout() expects unit_int<'second'>|null, "
+                        . "500&unit_int<'1/1000 * second'> given at a Yumemi Apocrypha unit boundary.",
+                    55,
+                ],
+                [
+                    "Illuminate\\Database\\Query\\Builder::\$timeout expects unit_int<'second'>|null, "
+                        . "500&unit_int<'1/1000 * second'> given at a Yumemi Apocrypha unit boundary.",
+                    56,
+                ],
+            ],
+        );
+    }
+
     public function testUnitBoundaryDiagnosticsUseStableIdentifier(): void
     {
         $errors = $this->gatherAnalyserErrors([

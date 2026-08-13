@@ -1,0 +1,22 @@
+<?php
+
+namespace Illuminate\Database\Query;
+
+class Builder
+{
+    /**
+     * @var int|null
+     * @yumemi-var unit_int<'second'>|null
+     */
+    public $timeout;
+
+    /**
+     * @param int|null $seconds
+     * @return $this
+     *
+     * @yumemi-param unit_int<'second'>|null $seconds
+     */
+    public function timeout(?int $seconds): static
+    {
+    }
+}

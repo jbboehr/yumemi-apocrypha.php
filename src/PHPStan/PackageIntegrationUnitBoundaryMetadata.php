@@ -149,6 +149,21 @@ final class PackageIntegrationUnitBoundaryMetadata
             'properties' => [],
             'returns' => [],
         ],
+        'illuminate/database' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Database\\Connection', 'kind' => 'method', 'method' => 'logQuery', 'position' => 2, 'name' => 'time', 'type' => "unit_float<'millisecond'>|null"],
+                ['class' => 'Illuminate\\Database\\Connection', 'kind' => 'method', 'method' => 'whenQueryingForLongerThan', 'position' => 0, 'name' => 'threshold', 'type' => "\\DateTimeInterface|\\Carbon\\CarbonInterval|unit_float<'millisecond'>|unit_int<'millisecond'>"],
+                ['class' => 'Illuminate\\Database\\Events\\QueryExecuted', 'kind' => 'constructor', 'method' => '__construct', 'position' => 2, 'name' => 'time', 'type' => "unit_float<'millisecond'>|null"],
+                ['class' => 'Illuminate\\Database\\Query\\Builder', 'kind' => 'method', 'method' => 'timeout', 'position' => 0, 'name' => 'seconds', 'type' => "unit_int<'second'>|null", 'majors' => [12, 13], 'minimumVersions' => [12 => '12.51.0']],
+            ],
+            'properties' => [
+                ['class' => 'Illuminate\\Database\\Events\\QueryExecuted', 'property' => 'time', 'type' => "unit_float<'millisecond'>|null"],
+                ['class' => 'Illuminate\\Database\\Query\\Builder', 'property' => 'timeout', 'type' => "unit_int<'second'>|null", 'majors' => [12, 13], 'minimumVersions' => [12 => '12.51.0']],
+            ],
+            'returns' => [
+                ['class' => 'Illuminate\\Database\\Connection', 'kind' => 'method', 'method' => 'totalQueryDuration', 'type' => "unit_float<'millisecond'>"],
+            ],
+        ],
         'illuminate/filesystem' => [
             'arguments' => [],
             'properties' => [],

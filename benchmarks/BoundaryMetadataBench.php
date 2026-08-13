@@ -56,6 +56,7 @@ final class BoundaryMetadataBench
     private const PINNED_PROFILES = [
         'illuminate/cache' => [13, '13.10.0'],
         'illuminate/cookie' => [13, '13.10.0'],
+        'illuminate/database' => [13, '13.25.0'],
         'illuminate/filesystem' => [13, '13.10.0'],
         'illuminate/http' => [13, '13.10.0'],
         'illuminate/process' => [13, '13.10.0'],

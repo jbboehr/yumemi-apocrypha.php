@@ -5,7 +5,7 @@
 	test-consumer-intervention-image test-consumer-intervention-image-archive \
 	test-consumer-illuminate-cache \
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
-	test-consumer-illuminate-cookie test-consumer-illuminate-filesystem test-consumer-illuminate-process \
+	test-consumer-illuminate-cookie test-consumer-illuminate-database test-consumer-illuminate-filesystem test-consumer-illuminate-process \
 	test-consumer-illuminate-queue \
 	test-consumer-illuminate-redis \
 	test-consumer-illuminate-support test-consumer-illuminate-validation test-consumer-laravel-framework \
@@ -26,6 +26,7 @@ GETID3_VERSION ?= 2
 GUZZLE_MAJOR ?= 8
 INTERVENTION_IMAGE_VERSION ?= 4
 ILLUMINATE_COOKIE_MAJOR ?= 12
+ILLUMINATE_DATABASE_MAJOR ?= 12
 ILLUMINATE_FILESYSTEM_MAJOR ?= 12
 ILLUMINATE_HTTP_MAJOR ?= 12
 ILLUMINATE_PROCESS_MAJOR ?= 12
@@ -94,6 +95,9 @@ test-consumer-illuminate-cache-archive:
 
 test-consumer-illuminate-cookie:
 	tests/Consumer/run source illuminate-cookie $(ILLUMINATE_COOKIE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-database:
+	tests/Consumer/run source illuminate-database $(ILLUMINATE_DATABASE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-filesystem:
 	tests/Consumer/run source illuminate-filesystem $(ILLUMINATE_FILESYSTEM_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)

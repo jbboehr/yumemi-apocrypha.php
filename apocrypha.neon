@@ -99,6 +99,15 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    packageIntegrationDatabaseConnectionReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/database
+            class: Illuminate\Database\Connection
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
     packageIntegrationHttpFileReturnTypeExtension:
         class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:

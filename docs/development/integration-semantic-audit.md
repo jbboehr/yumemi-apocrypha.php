@@ -12,9 +12,9 @@ package. `V` means a branded value is accepted or an inferred return is asserted
 `cases/invalid*.php` rejects a plain scalar, a differently scaled compatible unit, or a different dimension. `I-family`
 means the boundary is exercised directly by `V`, while rejection is tested on another boundary with the identical
 promoted type. Every integration runs explicit and autodetected registration; every Illuminate integration also runs
-through the package-boundary adapter, whose core catalog is mechanically compared with the selected canonical stub.
-Carbon and Intervention Image always use the same adapter so their partial verification stubs cannot replace complete
-upstream declarations.
+through the package-boundary adapter, whose core catalog is mechanically compared with its retained or selected
+reference stub. Carbon, Illuminate Database, Measurements, and Intervention Image always use the same adapter so their
+partial verification stubs cannot replace complete or more precise upstream declarations.
 
 The audit preserves upstream scalar alternatives and nullability, keeps dynamic result and option arrays open, and does
 not narrow plain upstream integers from implementation behavior alone. It distinguishes relative durations from Unix
@@ -22,22 +22,23 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 
 ## Verified Profiles
 
-| Package                       | Profiles and source snapshots                                          | Profile evidence                                                         |
-| ----------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| Carbon                        | 2.62.1–2.x; 3.0–3.1 `Real`; 3.2+ `UTC`                                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                  |
-| Guzzle                        | 7 through 7.10 integer request delay; 7.11+ numeric request delay; 8   | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                  |
-| getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                        |
-| Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.55.0`, `12.65.0`, `13.24.0`                    |
-| Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.55.0`, `12.0.0`, `12.65.0`, `13.0.0`, `13.24.0`            |
-| Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                |
-| Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`            |
-| Illuminate Validation         | 11–13 shared fluent-rule profile                                       | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`            |
-| Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                        |
-| Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                      |
-| Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                 |
-| phpgeo                        | 4–6                                                                    | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                              |
-| Symfony HttpFoundation        | 6.4+ base; 7.3+ SSE; 8+ IP byte counts                                 | `6.4.0`, `6.4.43`, `7.0.0`, `7.2.9`, `7.3.0`, `7.4.16`, `8.0.0`, `8.1.4` |
-| Symfony Stopwatch             | 6–8                                                                    | `6.0.0`, `6.4.24`, `7.0.0`, `7.4.8`, `8.0.0`, `8.1.0`                    |
+| Package                       | Profiles and source snapshots                                          | Profile evidence                                                                    |
+| ----------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Carbon                        | 2.62.1–2.x; 3.0–3.1 `Real`; 3.2+ `UTC`                                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                             |
+| Guzzle                        | 7 through 7.10 integer request delay; 7.11+ numeric request delay; 8   | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                             |
+| getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                   |
+| Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.55.0`, `12.65.0`, `13.24.0`                               |
+| Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.55.0`, `12.0.0`, `12.65.0`, `13.0.0`, `13.24.0`                       |
+| Illuminate Database           | 11–13 query timings; query timeout from 12.51.0                        | `11.0.0`, `11.51.0`, `12.0.0`, `12.50.0`, `12.51.0`, `12.66.0`, `13.0.0`, `13.25.0` |
+| Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                           |
+| Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
+| Illuminate Validation         | 11–13 shared fluent-rule profile                                       | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
+| Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                                   |
+| Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                                 |
+| Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                            |
+| phpgeo                        | 4–6                                                                    | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                         |
+| Symfony HttpFoundation        | 6.4+ base; 7.3+ SSE; 8+ IP byte counts                                 | `6.4.0`, `6.4.43`, `7.0.0`, `7.2.9`, `7.3.0`, `7.4.16`, `8.0.0`, `8.1.4`            |
+| Symfony Stopwatch             | 6–8                                                                    | `6.0.0`, `6.4.24`, `7.0.0`, `7.4.8`, `8.0.0`, `8.1.0`                               |
 
 The source links below point to a representative current snapshot. The profile table names the additional tags checked
 for signature changes.
@@ -130,6 +131,30 @@ initial and current release of Laravel 11–13.
 | Cookie factory contract and `CookieJar::make($minutes)`                                                                              | integer minutes                                                                           | S/V/I        |
 
 Cookie expiration timestamps and the variadic queue API remain unbranded.
+
+## Illuminate Database
+
+Evidence: Laravel's
+[`Connection`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Database/Connection.php),
+[`QueryExecuted`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Database/Events/QueryExecuted.php),
+and query [`Builder`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Database/Query/Builder.php). The
+timing surface was checked at the initial and current releases of Laravel 11–13. The query-timeout cutover was checked
+on both sides at Laravel 12.50.0 and 12.51.0.
+
+| Boundaries                                 | Promoted type                                                        | Coverage     |
+| ------------------------------------------ | -------------------------------------------------------------------- | ------------ |
+| `Connection::logQuery()`                   | nullable input milliseconds                                          | S/V/I-family |
+| `Connection::whenQueryingForLongerThan()`  | integer or float milliseconds, preserving date/interval alternatives | S/V/I-family |
+| `Connection::totalQueryDuration()`         | float milliseconds                                                   | S/V/I-family |
+| `QueryExecuted::__construct()` and `$time` | nullable input or stored milliseconds                                | S/V/I        |
+| Query `Builder::timeout()` and `$timeout`  | nullable integer seconds from Laravel 12.51.0                        | S/V/I-family |
+
+The framework calculates elapsed query time by multiplying seconds from `microtime(true)` by 1000. Query Builder's
+timeout is documented and forwarded as seconds. The active metadata adapter leaves the installed Laravel declarations
+authoritative: callback and event-constructor PHPDoc changed within the supported majors, so even a unit-only partial
+stub could erase more precise upstream types. Retained stubs exist only for metadata parity and are never loaded during
+consumer analysis. Query-log array entries remain unbranded because upstream publishes an open array rather than a fixed
+measurement-bearing result shape.
 
 ## Illuminate Filesystem and HTTP
 

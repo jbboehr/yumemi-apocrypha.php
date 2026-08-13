@@ -97,6 +97,24 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/cookie.stub'],
         ],
+        'illuminate/database' => [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../stubs/illuminate/database.stub'],
+            'filesByMajor' => [
+                13 => [
+                    __DIR__ . '/../../stubs/illuminate/database.stub',
+                    __DIR__ . '/../../stubs/illuminate/database-timeout.stub',
+                ],
+            ],
+            'filesByMinimumVersion' => [
+                12 => [
+                    '12.51.0' => [
+                        __DIR__ . '/../../stubs/illuminate/database.stub',
+                        __DIR__ . '/../../stubs/illuminate/database-timeout.stub',
+                    ],
+                ],
+            ],
+        ],
         'illuminate/filesystem' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/filesystem.stub'],
@@ -553,6 +571,12 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
     {
         if ($this->getSelectedMajor($integration) === null) {
             return false;
+        }
+
+        if ($integration === 'illuminate/database') {
+            $this->resolveLarastanMajor();
+
+            return true;
         }
 
         if (in_array($integration, ['intervention/image', 'nesbot/carbon', 'nmarfurt/measurements'], true)) {

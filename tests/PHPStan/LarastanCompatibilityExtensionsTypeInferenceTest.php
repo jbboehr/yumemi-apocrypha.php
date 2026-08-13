@@ -57,6 +57,7 @@ final class LarastanCompatibilityExtensionsTypeInferenceTest extends TypeInferen
         $reflectionProvider = self::createReflectionProvider();
 
         foreach ([
+            'Illuminate\\Database\\Connection',
             'Illuminate\\Filesystem\\Filesystem',
             'Illuminate\\Queue\\WorkerOptions',
             'Illuminate\\Redis\\Limiters\\DurationLimiterBuilder',
@@ -77,6 +78,13 @@ final class LarastanCompatibilityExtensionsTypeInferenceTest extends TypeInferen
     public function testRedisFileAsserts(): void
     {
         foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-redis-compatibility-cases.php') as $arguments) {
+            $this->assertFileAsserts(...$arguments);
+        }
+    }
+
+    public function testDatabaseFileAsserts(): void
+    {
+        foreach (self::gatherAssertTypes(__DIR__ . '/fixtures/larastan-database-compatibility-cases.php') as $arguments) {
             $this->assertFileAsserts(...$arguments);
         }
     }

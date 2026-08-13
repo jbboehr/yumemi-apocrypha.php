@@ -92,7 +92,7 @@ if [[ $PACKAGE_MODE == archive ]]; then
     git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar --output="$git_archive" HEAD
     php "$PACKAGE_CHECKER" "$git_archive"
 elif [[ $PACKAGE_MODE != source ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -588,12 +588,18 @@ run_simple_illuminate_integration() {
 
     if [[ $PACKAGE_MAJOR == *.* ]]; then
         if [[
-            $FIXTURE_SUITE != illuminate-queue
-            || ! $PACKAGE_MAJOR =~ ^(11\.(52|53)\.0|12\.(59|60)\.0|13\.(9|10)\.0)$
+            (
+                $FIXTURE_SUITE != illuminate-queue
+                || ! $PACKAGE_MAJOR =~ ^(11\.(52|53)\.0|12\.(59|60)\.0|13\.(9|10)\.0)$
+            )
+            && (
+                $FIXTURE_SUITE != illuminate-database
+                || ! $PACKAGE_MAJOR =~ ^12\.(50|51)\.0$
+            )
             || $COMPATIBILITY_MODE != plain
         ]]; then
             printf '%s\n' \
-                'Exact Illuminate component profiles are limited to illuminate/queue 11.52.0, 11.53.0, 12.59.0, 12.60.0, 13.9.0, and 13.10.0 in plain mode.' >&2
+                'Exact Illuminate component profiles are limited to the documented Queue cutovers and illuminate/database 12.50.0 or 12.51.0 in plain mode.' >&2
             exit 2
         fi
 
@@ -677,6 +683,37 @@ run_simple_illuminate_integration() {
         run_phpstan_case "$project_dir" phpstan.neon "valid-$profile_case.php"
         run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$profile_case.php"
     fi
+    if [[ $FIXTURE_SUITE == illuminate-database ]] && php -r "
+        require \$argv[1];
+        exit(method_exists(Illuminate\\Database\\Query\\Builder::class, 'timeout') ? 0 : 1);
+    " "$project_dir/vendor/autoload.php"; then
+        local timeout_property_diagnostic_prefix="Builder::\$timeout expects unit_int<'second'>|null,"
+        run_phpstan_case "$project_dir" phpstan.neon invalid-timeout.php \
+            "Builder::timeout() expects unit_int<'second'>|null, int given" \
+            "Builder::timeout() expects unit_int<'second'>|null, 500&unit_int<'1/1000 * second'> given" \
+            "$timeout_property_diagnostic_prefix int" \
+            "$timeout_property_diagnostic_prefix 500&unit_int<'1/1000 * second'>"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-timeout.php \
+            "Builder::timeout() expects unit_int<'second'>|null, int given" \
+            "Builder::timeout() expects unit_int<'second'>|null, 500&unit_int<'1/1000 * second'> given" \
+            "$timeout_property_diagnostic_prefix int" \
+            "$timeout_property_diagnostic_prefix 500&unit_int<'1/1000 * second'>"
+        run_phpstan_case "$project_dir" phpstan.neon valid-timeout.php
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-timeout.php
+    fi
+    # The single-quoted argument is a PHP program, not a shell expression.
+    # shellcheck disable=SC2016
+    if [[ $FIXTURE_SUITE == illuminate-database && $COMPATIBILITY_MODE == plain ]] && php -r '
+        require $argv[1];
+        $doc = (new ReflectionMethod(Illuminate\Database\Connection::class, "whenQueryingForLongerThan"))
+            ->getDocComment();
+        exit(is_string($doc) && str_contains($doc, "\\Illuminate\\Database\\Events\\QueryExecuted): mixed") ? 0 : 1);
+    ' "$project_dir/vendor/autoload.php"; then
+        run_phpstan_case "$project_dir" phpstan.neon invalid-callback.php \
+            'whenQueryingForLongerThan() expects callable(Illuminate\Database\Connection, Illuminate\Database\Events\QueryExecuted): mixed, Closure(string): void given'
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-callback.php \
+            'whenQueryingForLongerThan() expects callable(Illuminate\Database\Connection, Illuminate\Database\Events\QueryExecuted): mixed, Closure(string): void given'
+    fi
     if [[ $FIXTURE_SUITE == illuminate-queue && $COMPATIBILITY_MODE == larastan ]]; then
         run_phpstan_without_apocrypha_diagnostic "$project_dir" phpstan.neon unknown-unpack.php
         run_phpstan_without_apocrypha_diagnostic "$project_dir" phpstan-autodetect.neon unknown-unpack.php
@@ -689,6 +726,10 @@ run_simple_illuminate_integration() {
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-redis "$project_dir" phpstan.neon "$documentation_case" illuminate-redis-invalid
     fi
+    if [[ $FIXTURE_SUITE == illuminate-database ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case illuminate-database "$project_dir" phpstan.neon "$documentation_case" illuminate-database-invalid
+    fi
     if [[ $FIXTURE_SUITE == illuminate-validation ]]; then
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-validation "$project_dir" phpstan.neon "$documentation_case" illuminate-validation-invalid
@@ -700,6 +741,7 @@ run_laravel_framework() {
     local expected_diagnostics=(
         "Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given"
         "Factory::make() expects unit_int<'minute'>, 30&unit_int<'second'> given"
+        "Connection::whenQueryingForLongerThan() expects Carbon\\CarbonInterval|DateTimeInterface|unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
         "acceptFrameworkMeters expects unit_int<'meter'>, unit_int<'octet'> given"
         "timeout() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
         "Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
@@ -1159,7 +1201,7 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-cookie | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-support | illuminate-validation)
+    illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-support | illuminate-validation)
         run_simple_illuminate_integration
         ;;
     intervention-image)
@@ -1184,7 +1226,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

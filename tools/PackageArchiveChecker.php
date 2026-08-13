@@ -74,6 +74,8 @@ final readonly class PackageArchiveChecker
         'stubs/guzzle/guzzle.stub',
         'stubs/illuminate/cache.stub',
         'stubs/illuminate/cookie.stub',
+        'stubs/illuminate/database.stub',
+        'stubs/illuminate/database-timeout.stub',
         'stubs/illuminate/filesystem.stub',
         'stubs/illuminate/http-11.stub',
         'stubs/illuminate/http.stub',

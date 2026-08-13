@@ -580,6 +580,7 @@ jobs:
             matrix:
                 integration:
                     - illuminate-cookie
+                    - illuminate-database
                     - illuminate-filesystem
                     - illuminate-process
                     - illuminate-queue
@@ -602,6 +603,18 @@ jobs:
                       php-version: "8.3"
                     - integration: illuminate-cookie
                       integration-label: Illuminate Cookie
+                    - integration: illuminate-database
+                      integration-label: Illuminate Database
+                    - integration: illuminate-database
+                      integration-label: Illuminate Database
+                      illuminate-version: "12.50.0"
+                      compatibility-mode: plain
+                      php-version: "8.2"
+                    - integration: illuminate-database
+                      integration-label: Illuminate Database
+                      illuminate-version: "12.51.0"
+                      compatibility-mode: plain
+                      php-version: "8.2"
                     - integration: illuminate-filesystem
                       integration-label: Illuminate Filesystem
                     - integration: illuminate-process

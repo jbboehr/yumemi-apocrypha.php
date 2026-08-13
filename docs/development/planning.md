@@ -19,19 +19,22 @@ upstream versions it claims to support and semantically accurate about the repre
   releases.
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
-- `illuminate/cache`, `illuminate/cookie`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`,
-  `illuminate/process`, `illuminate/queue`, `illuminate/redis`, and `illuminate/validation` cover stable unit-bearing
-  APIs across Laravel 11 through 13. Validation covers raster dimensions and integer file-rule sizes while preserving
-  upstream string size expressions.
+- `illuminate/cache`, `illuminate/cookie`, `illuminate/database`, `illuminate/filesystem`, `illuminate/http`,
+  `illuminate/support`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`, and `illuminate/validation` cover
+  stable unit-bearing APIs across Laravel 11 through 13. Database distinguishes millisecond query timings from
+  second-valued query execution timeouts where that API exists. Validation covers raster dimensions and integer
+  file-rule sizes while preserving upstream string size expressions.
 - `intervention/image` covers nominal raster-pixel dimensions and coordinates plus degree rotations across Intervention
   Image 3 and 4. A metadata adapter preserves the package's complete interfaces, while version 4 retains its `Fraction`
   dimension alternatives. Resolution, quality, opacity, transparency, and lower-level geometry objects remain outside
   the bounded first surface.
-- Every Illuminate integration coexists automatically with Larastan 3. Standalone analysis uses the package stubs;
-  Larastan analysis keeps Larastan's declarations and reproduces Apocrypha's unit boundaries through a metadata-driven
-  rule and type-extension adapter, with parity enforced against the canonical stubs. Illuminate Validation additionally
-  has a combined profile with `jbboehr/phpstan-laravel-validation`; the extensions retain their separate Validator
-  inference and declaration surfaces while Apocrypha owns only the fluent rule units.
+- Every Illuminate integration coexists automatically with Larastan 3. Most use package stubs during standalone
+  analysis, then keep Larastan's declarations and reproduce Apocrypha's unit boundaries through a metadata-driven rule
+  and type-extension adapter when Larastan is present. Illuminate Database uses that adapter in both modes so its unit
+  annotations cannot overwrite upstream callback or event-constructor PHPDoc that changed within supported majors. Its
+  retained stubs are review references whose promoted tags remain in parity with the metadata catalog. Illuminate
+  Validation additionally has a combined profile with `jbboehr/phpstan-laravel-validation`; the extensions retain their
+  separate Validator inference and declaration surfaces while Apocrypha owns only the fluent rule units.
 - `mjaschen/phpgeo` covers selected meter distances and tolerances, square-meter areas, and degree bearings across
   phpgeo 4 through 6 while leaving coordinate origins unbranded.
 - `nmarfurt/measurements` covers the complete fixed-unit magic-factory surfaces of `Length` and `Duration` from 1.4.0
@@ -45,8 +48,9 @@ upstream versions it claims to support and semantically accurate about the repre
 - The loader can enforce a minimum release within a major and select major- or minor-version-specific stub files when a
   supported upstream signature differs. Carbon uses three release profiles; Illuminate HTTP distinguishes Laravel 11
   before and after 11.35.1; Illuminate Queue uses cutovers at Laravel 11.53.0, 12.60.0, and 13.10.0; Guzzle
-  distinguishes request delays before and after 7.11.0; getID3 uses minimum and major selection for its global 1.x and
-  namespaced 2.x APIs; Illuminate Process and Guzzle also use major-specific files.
+  distinguishes request delays before and after 7.11.0; Illuminate Database adds query execution timeouts at Laravel
+  12.51.0; getID3 uses minimum and major selection for its global 1.x and namespaced 2.x APIs; Illuminate Process and
+  Guzzle also use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   default symlinked path installs, a representative Composer archive, and Laravel 11 through 13 replacement metadata for
   every Illuminate integration. Every Illuminate subpackage and the combined framework fixture run both with and without
@@ -87,10 +91,12 @@ The supported-version table is descriptive rather than a promise to support ever
 New majors should normally be added after their reflected signatures and PHPStan behavior pass the complete consumer
 suite. Integration scope remains curated: add APIs only when their physical unit is stable, useful, and unambiguous.
 Larastan compatibility is selected for an entire Illuminate integration rather than as a partial stub overlay, and an
-unverified Larastan major is rejected until its combined behavior passes the same matrix. `phpstan/phpstan-symfony` 2
-currently coexists directly with the Symfony stubs because its active declarations do not overlap them. If an extension
-release begins owning any declaration in a selected integration, disable that integration's complete stub set and use a
-metadata adapter rather than loading both.
+unverified Larastan major is rejected until its combined behavior passes the same matrix. Illuminate Database uses the
+same whole-integration adapter even without Larastan because preserving its installed upstream declaration PHPDoc is
+safer than maintaining ordinary signature copies across mid-major changes. `phpstan/phpstan-symfony` 2 currently
+coexists directly with the Symfony stubs because its active declarations do not overlap them. If an extension release
+begins owning any declaration in a selected integration, disable that integration's complete stub set and use a metadata
+adapter rather than loading both.
 
 The Illuminate Validation compatibility profile installs Larastan and `jbboehr/phpstan-laravel-validation` together.
 Keep validation-result inference and `Validator` stubs with those extensions; Apocrypha should claim only fixed-unit

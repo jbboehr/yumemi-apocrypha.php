@@ -7,6 +7,7 @@ parameters:
         integrations:
             - illuminate/cache
             - illuminate/cookie
+            - illuminate/database
             - illuminate/filesystem
             - illuminate/http
             - illuminate/process

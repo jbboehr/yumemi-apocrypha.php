@@ -88,6 +88,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-cache',
         ],
+        'illuminate-database-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'illuminate-database',
+        ],
         'illuminate-http-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-http',

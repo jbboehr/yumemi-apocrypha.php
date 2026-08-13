@@ -855,6 +855,34 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         );
     }
 
+    /** @return iterable<string, array{non-empty-string, int}> */
+    public static function databaseVersions(): iterable
+    {
+        yield 'before query timeout' => ['12.50.0', 12];
+        yield 'with query timeout' => ['12.51.0', 12];
+        yield 'Laravel 13' => ['13.25.0', 13];
+    }
+
+    #[DataProvider('databaseVersions')]
+    public function testDatabaseAlwaysUsesTheAdapterInsteadOfItsReferenceStubs(
+        string $version,
+        int $major,
+    ): void {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/database'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'illuminate/database',
+            static fn (): string => $version,
+        );
+
+        self::assertSame([], $extension->getFiles());
+        self::assertSame($major, $extension->getSelectedMajor('illuminate/database'));
+        self::assertSame($version, $extension->getSelectedVersion('illuminate/database'));
+        self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/database'));
+    }
+
     /** @return iterable<string, array{string, list<string>}> */
     public static function symfonyHttpFoundationProfiles(): iterable
     {

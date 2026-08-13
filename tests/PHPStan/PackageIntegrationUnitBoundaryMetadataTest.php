@@ -74,6 +74,10 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         yield 'illuminate/http v11.35.1' => ['illuminate/http', 11, 'v11.35.1'];
         yield 'illuminate/http normalized 11.35.1' => ['illuminate/http', 11, '11.35.1.0'];
         yield 'illuminate/http 11.x-dev' => ['illuminate/http', 11, '11.x-dev'];
+        yield 'illuminate/database 12.50.0' => ['illuminate/database', 12, '12.50.0'];
+        yield 'illuminate/database 12.51.0' => ['illuminate/database', 12, '12.51.0'];
+        yield 'illuminate/database v12.51.0' => ['illuminate/database', 12, 'v12.51.0'];
+        yield 'illuminate/database 12.x-dev' => ['illuminate/database', 12, '12.x-dev'];
         yield 'Intervention Image 3' => ['intervention/image', 3, '3.0.0'];
         yield 'Intervention Image 4' => ['intervention/image', 4, '4.0.0'];
     }
@@ -290,6 +294,13 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         return match ($integration) {
             'illuminate/cache' => [$base . 'cache.stub'],
             'illuminate/cookie' => [$base . 'cookie.stub'],
+            'illuminate/database' => [
+                $base . 'database.stub',
+                ...($major === 13 || (
+                    $major === 12
+                    && ($version === '12.x-dev' || version_compare(ltrim($version, 'v'), '12.51.0', '>='))
+                ) ? [$base . 'database-timeout.stub'] : []),
+            ],
             'illuminate/filesystem' => [$base . 'filesystem.stub'],
             'illuminate/http' => [$base . (
                 $major === 11

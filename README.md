@@ -20,6 +20,7 @@ No tagged release exists. The current supported integration matrix is:
 | `guzzlehttp/guzzle`       | 7, 8                                |
 | `illuminate/cache`        | 11, 12, 13                          |
 | `illuminate/cookie`       | 11, 12, 13                          |
+| `illuminate/database`     | 11, 12, 13                          |
 | `illuminate/filesystem`   | 11, 12, 13                          |
 | `illuminate/http`         | 11, 12, 13                          |
 | `illuminate/process`      | 11, 12, 13                          |

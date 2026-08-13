@@ -56,6 +56,7 @@ if (
 $checks = [
     'illuminate/cache' => [Illuminate\Contracts\Cache\Store::class, 'put', 'seconds'],
     'illuminate/cookie' => [Illuminate\Contracts\Cookie\Factory::class, 'make', 'minutes'],
+    'illuminate/database' => [Illuminate\Database\Connection::class, 'whenQueryingForLongerThan', 'threshold'],
     'illuminate/filesystem' => [Illuminate\Contracts\Filesystem\Filesystem::class, 'size', 'path'],
     'illuminate/http' => [Illuminate\Http\Client\PendingRequest::class, 'timeout', 'seconds'],
     'illuminate/process' => [Illuminate\Process\PendingProcess::class, 'timeout', 'timeout'],
