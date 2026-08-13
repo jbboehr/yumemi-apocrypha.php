@@ -17,7 +17,7 @@ readonly FIXTURE_SUITE=${2:-illuminate-cache}
 readonly PACKAGE_MAJOR=${3:-12}
 readonly COMPATIBILITY_MODE=${4:-plain}
 readonly CONSUMER_VENDOR_DIR=${CONSUMER_VENDOR_DIR:-vendor}
-readonly YUMEMI_PACKAGE_DIR=${YUMEMI_PACKAGE_DIR:-$PROJECT_ROOT/..}
+readonly YUMEMI_PACKAGE_DIR=${YUMEMI_PACKAGE_DIR:-}
 
 if [[ ! -x $AKASHI ]]; then
     printf 'Akashi is not installed; run composer install in %s.\n' "$PROJECT_ROOT" >&2
@@ -113,7 +113,7 @@ readonly repository_json
 yumemi_repository_json=''
 # The single-quoted argument is a PHP program, not a shell expression.
 # shellcheck disable=SC2016
-if [[ -f $YUMEMI_PACKAGE_DIR/composer.json ]] && php -r '
+if [[ -n $YUMEMI_PACKAGE_DIR && -f $YUMEMI_PACKAGE_DIR/composer.json ]] && php -r '
 $metadata = json_decode(file_get_contents($argv[1]), true, flags: JSON_THROW_ON_ERROR);
 exit(($metadata["name"] ?? null) === "jbboehr/yumemi" ? 0 : 1);
 ' "$YUMEMI_PACKAGE_DIR/composer.json"; then

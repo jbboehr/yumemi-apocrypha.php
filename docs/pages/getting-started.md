@@ -16,17 +16,16 @@ check, and confirm that an incorrectly scaled value is rejected.
 
 ## Installation
 
-Yumemi and Apocrypha do not yet have tagged releases. Install their development branches with PHPStan's extension
-installer:
+Yumemi has a tagged `0.1` release, while Apocrypha has not yet published its first release. Install Apocrypha's
+development branch with PHPStan's extension installer; Composer installs the compatible Yumemi release transitively:
 
 ```shell
-composer require --dev jbboehr/yumemi:dev-master jbboehr/yumemi-apocrypha:dev-master \
-    phpstan/extension-installer
+composer require --dev jbboehr/yumemi-apocrypha:dev-master phpstan/extension-installer
 ```
 
 Use this command when the application references Yumemi only during analysis. If runtime code calls Yumemi functions or
-classes, install `jbboehr/yumemi:dev-master` as a normal dependency first. Then install Apocrypha and the extension
-installer with `--dev`.
+classes, install `jbboehr/yumemi:^0.1` as a normal dependency first. Then install Apocrypha and the extension installer
+with `--dev`.
 
 ## Automatic Registration
 

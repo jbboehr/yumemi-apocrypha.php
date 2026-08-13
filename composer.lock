@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bfd1d268310ca282222531f2d01252c4",
+    "content-hash": "68fddc8caa7929eea6ad1920786d8e1f",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -89,12 +89,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jbboehr/yumemi.php.git",
-                "reference": "e6cd8cd3c8837ee0c764ebd708974f7f6551d2a9"
+                "reference": "80d022de4ee0b5d5f7a9656ad307c09602d85452"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/e6cd8cd3c8837ee0c764ebd708974f7f6551d2a9",
-                "reference": "e6cd8cd3c8837ee0c764ebd708974f7f6551d2a9",
+                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/80d022de4ee0b5d5f7a9656ad307c09602d85452",
+                "reference": "80d022de4ee0b5d5f7a9656ad307c09602d85452",
                 "shasum": ""
             },
             "require": {
@@ -133,6 +133,9 @@
                     "includes": [
                         "extension.neon"
                     ]
+                },
+                "branch-alias": {
+                    "dev-master": "0.1.x-dev"
                 }
             },
             "autoload": {
@@ -162,7 +165,7 @@
                 "issues": "https://github.com/jbboehr/yumemi.php/issues",
                 "source": "https://github.com/jbboehr/yumemi.php"
             },
-            "time": "2026-08-10T09:25:03+00:00"
+            "time": "2026-08-13T01:01:10+00:00"
         },
         {
             "name": "phpstan/phpstan",
@@ -7197,12 +7200,11 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "stability-flags": {
         "jbboehr/akashi": 20,
         "jbboehr/doctrine-of-the-second-sun": 20,
-        "jbboehr/phpbench-perfidious": 20,
-        "jbboehr/yumemi": 20
+        "jbboehr/phpbench-perfidious": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

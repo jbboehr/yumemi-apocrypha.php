@@ -66,7 +66,7 @@
     "require": {
         "php": "^8.2",
         "composer-runtime-api": "^2.0",
-        "jbboehr/yumemi": "dev-master",
+        "jbboehr/yumemi": "^0.1",
         "phpstan/phpstan": "^2.2.5"
     },
     "suggest": {
@@ -186,5 +186,6 @@
         },
         "sort-packages": true
     },
+    "minimum-stability": "dev",
     "prefer-stable": true
 }

@@ -41,8 +41,7 @@ No tagged release exists. The current supported integration matrix is:
 `illuminate/*` integration name; no separate component installation is required.
 
 ```shell
-composer require --dev jbboehr/yumemi:dev-master jbboehr/yumemi-apocrypha:dev-master \
-    phpstan/extension-installer
+composer require --dev jbboehr/yumemi-apocrypha:dev-master phpstan/extension-installer
 ```
 
 Select an integration in `phpstan.neon`:
