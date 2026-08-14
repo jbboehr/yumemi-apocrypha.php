@@ -262,6 +262,19 @@
           )
           ++ consumerProfiles.stable-release-artifact
           ++ consumerProfiles.yumemi-development-head;
+        # Isolate Composer writes while resolving four balanced profile groups concurrently, then merge them below.
+        consumerCacheShardCount = 4;
+        indexedDependencyConsumerProfiles = lib.imap0 (index: consumerProfile: {
+          inherit index consumerProfile;
+        }) dependencyConsumerProfiles;
+        consumerCacheShards = lib.genList (
+          shardIndex:
+          map (indexedProfile: indexedProfile.consumerProfile) (
+            builtins.filter (
+              indexedProfile: lib.mod indexedProfile.index consumerCacheShardCount == shardIndex
+            ) indexedDependencyConsumerProfiles
+          )
+        ) consumerCacheShardCount;
         consumerDependencyFiles = lib.fileset.unions [
           ./composer.json
           ./tests/Consumer
@@ -272,7 +285,7 @@
         };
         consumerCacheFingerprint = builtins.substring 0 12 (
           builtins.hashString "sha256" (
-            "consumer-cache-v1"
+            "consumer-cache-v2"
             + builtins.toJSON dependencyConsumerProfiles
             + toString consumerDependencySource
             + toString phpstan-laravel-validation-development-head
@@ -331,6 +344,16 @@
                 ${lib.escapeShellArg consumerProfile.compatibility}
             )
           '';
+        consumerCacheShardCommand = shardIndex: consumerProfilesInShard: ''
+          (
+            export COMPOSER_CACHE_DIR="$NIX_BUILD_TOP/composer-cache-shards/${toString shardIndex}"
+            export COMPOSER_HOME="$NIX_BUILD_TOP/composer-home-shards/${toString shardIndex}"
+            export XDG_CACHE_HOME="$NIX_BUILD_TOP/xdg-cache-shards/${toString shardIndex}"
+            mkdir -p -- "$COMPOSER_CACHE_DIR" "$COMPOSER_HOME" "$XDG_CACHE_HOME"
+            ${lib.concatMapStringsSep "\n" (profileCommand true) consumerProfilesInShard}
+          ) &
+          consumer_cache_pids+=("$!")
+        '';
 
         consumerComposerCache = pkgs.stdenvNoCC.mkDerivation {
           pname = "yumemi-apocrypha-consumer-composer-cache-${consumerCacheFingerprint}";
@@ -347,11 +370,22 @@
             cp -R -- ${consumerDependencySource}/. "$NIX_BUILD_TOP/project"
             chmod -R u+w -- "$NIX_BUILD_TOP/project"
             cd -- "$NIX_BUILD_TOP/project"
-            export COMPOSER_CACHE_DIR="$out"
-            export COMPOSER_HOME="$NIX_BUILD_TOP/composer-home"
-            export XDG_CACHE_HOME="$NIX_BUILD_TOP/xdg-cache"
             ${prepareVendor}
-            ${lib.concatMapStringsSep "\n" (profileCommand true) dependencyConsumerProfiles}
+            consumer_cache_pids=()
+            consumer_cache_status=0
+            ${lib.concatStringsSep "\n" (lib.imap0 consumerCacheShardCommand consumerCacheShards)}
+            for pid in "''${consumer_cache_pids[@]}"; do
+              if ! wait "$pid"; then
+                consumer_cache_status=1
+              fi
+            done
+            if ((consumer_cache_status != 0)); then
+              exit "$consumer_cache_status"
+            fi
+            # The numeric shard paths give conflicting metadata files a stable merge order.
+            for cache_dir in "$NIX_BUILD_TOP"/composer-cache-shards/*; do
+              cp -R -- "$cache_dir"/. "$out"/
+            done
             runHook postInstall
           '';
           outputHashMode = "recursive";
