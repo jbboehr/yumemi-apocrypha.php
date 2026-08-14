@@ -114,10 +114,11 @@ fluent rule boundaries unless a future overlap audit establishes a new ownership
 
 - Keep Apocrypha's public Yumemi constraint on the compatible `0.1` release line and its full consumer matrix on
   released Yumemi. The repository development lock and a focused consumer canary track Yumemi `dev-master` so upstream
-  incompatibilities surface without making unreleased behavior part of the consumer contract. Before tagging, prove that
-  a clean project with stable minimum stability can install the built artifact without a root development-version
-  exception. Exercise extension-installer and manual registration, an ordinary package integration, and Laravel with
-  Larastan from the artifact.
+  incompatibilities surface without making unreleased behavior part of the consumer contract. A weekly dependency
+  freshness audit temporarily updates the development-head inputs, rebuilds the open-version consumer snapshot, and runs
+  normal validation so the checked-in lock does not silently freeze the canary. The `composer release:check` gate
+  installs a prospectively versioned archive into clean stable-minimum projects and exercises extension-installer,
+  manual registration, Symfony Stopwatch, and Laravel with Larastan. Rerun it before tagging.
 - Rerun the complete integration semantic audit against the advertised minima, every signature cutover, and the latest
   compatible release of every supported major. Require the Linux matrix to pass and inspect the first real macOS and
   Windows portability runs for package defects before tagging.

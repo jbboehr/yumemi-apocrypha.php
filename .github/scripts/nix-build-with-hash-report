@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly LOG_ROOT=${RUNNER_TEMP:-${TMPDIR:-/tmp}}
+log_file=$(mktemp "$LOG_ROOT/yumemi-apocrypha-nix-build.XXXXXXXX.log")
+readonly log_file
+
+set +e
+nix build -L "$@" 2>&1 | tee "$log_file"
+build_status=${PIPESTATUS[0]}
+set -e
+
+if ((build_status != 0)); then
+    mismatches=()
+    # The single-quoted argument is an awk program, not a shell expression.
+    # shellcheck disable=SC2016
+    mapfile -t mismatches < <(
+        awk '
+/hash mismatch in fixed-output derivation/ {
+    derivation = $0
+    sub(/^.*fixed-output derivation .\/nix\/store\//, "", derivation)
+    sub(/\.drv.*$/, "", derivation)
+    next
+}
+
+derivation != "" && /^[[:space:]]*got:[[:space:]]+sha256-/ {
+    hash = $0
+    sub(/^[[:space:]]*got:[[:space:]]+/, "", hash)
+    sub(/[[:space:]].*$/, "", hash)
+    print derivation "\t" hash
+    derivation = ""
+}
+' "$log_file"
+    )
+
+    if ((${#mismatches[@]} > 0)); then
+        printf '\nNix reported a fixed-output hash mismatch.\n'
+
+        if [[ -n ${GITHUB_STEP_SUMMARY:-} ]]; then
+            printf '## Nix fixed-output hash mismatch\n\n' >> "$GITHUB_STEP_SUMMARY"
+        fi
+
+        for mismatch in "${mismatches[@]}"; do
+            derivation=${mismatch%%$'\t'*}
+            replacement_hash=${mismatch#*$'\t'}
+            hash_file='the hash file named by the failing derivation'
+
+            case $derivation in
+                *consumer-composer-cache*) hash_file='nix/consumer-cache-hash.nix' ;;
+                *lowest-dependencies*) hash_file='nix/lowest-dependencies-hash.nix' ;;
+                *composer-repository*) hash_file='nix/vendor-hash.nix' ;;
+            esac
+
+            printf '%s: replace the stale hash with %s\n' "$hash_file" "$replacement_hash"
+
+            if [[ -n ${GITHUB_STEP_SUMMARY:-} ]]; then
+                # The backticks are literal Markdown, not shell substitutions.
+                # shellcheck disable=SC2016
+                printf -- '- `%s`: replace the stale hash with `%s`.\n' \
+                    "$hash_file" "$replacement_hash" >> "$GITHUB_STEP_SUMMARY"
+            fi
+        done
+
+        if [[ -n ${GITHUB_STEP_SUMMARY:-} ]]; then
+            printf '\nThe raw build log remains authoritative about each failing derivation.\n' \
+                >> "$GITHUB_STEP_SUMMARY"
+        fi
+    fi
+fi
+
+exit "$build_status"

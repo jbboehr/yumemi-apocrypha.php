@@ -50,6 +50,7 @@
             "/flake.nix",
             "/infection.json5.dist",
             "/*.log",
+            "/nix",
             "/phpbench-perfidious.json",
             "/phpbench.json",
             "/phpstan.neon.dist",
@@ -144,6 +145,10 @@
         "infection": "infection --no-progress",
         "infection:ci": "infection --no-progress --min-msi=90 --min-covered-msi=90",
         "package:check": "php tools/check-package.php",
+        "release:check": [
+            "Composer\\Config::disableProcessTimeout",
+            "tests/Release/run"
+        ],
         "survey:candidates": "php tools/stub-candidate-survey.php",
         "test": "phpunit --colors=never --no-coverage",
         "test:consumer:carbon": "make test-consumer-carbon",

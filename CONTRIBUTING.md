@@ -20,6 +20,47 @@ See [`docs/development/mutation-testing.md`](docs/development/mutation-testing.m
 workflow and guidance on interpreting escaped mutants. Changes to an integration must identify the upstream package
 versions and signatures used for verification.
 
+## Development and Nix validation
+
+Enter the reproducible development shell, then use Composer normally with the repository's mutable `vendor/` directory:
+
+```shell
+nix develop
+composer install
+vendor/bin/phpunit
+vendor/bin/phpstan analyse
+```
+
+Run the normal authoritative validation suite with:
+
+```shell
+nix flake check --keep-going -L
+```
+
+This runs the supported-PHP PHPUnit checks, static analysis, formatting, lint, documentation, package, and
+benchmark-smoke checks. On Linux it also runs the isolated consumer checks. Mutation testing is deliberately excluded;
+build `.#mutation` explicitly when it is needed.
+
+### Updating Composer dependency hashes
+
+The locked development dependencies are prepared once with nixpkgs' Composer repository support. Their `vendorHash`
+lives in [`nix/vendor-hash.nix`](nix/vendor-hash.nix). When `composer.json` or `composer.lock` changes:
+
+1. update the Composer files normally;
+2. run `nix flake check --keep-going -L`;
+3. if Nix reports a fixed-output hash mismatch, copy its `got: sha256-...` value into `nix/vendor-hash.nix`; and
+4. run the flake check again.
+
+Without local Nix, push the dependency change and copy the replacement hash from the failed Nix job. The job repeats it
+near the end of the log and in its step summary while preserving the original failure. Consumer-profile dependency
+changes can similarly require the reported value in `nix/consumer-cache-hash.nix`; the failing derivation identifies
+which file applies. A lowest-supported-dependency refresh uses `nix/lowest-dependencies-hash.nix` in the same way.
+
+The consumer hash snapshots the package archives and Packagist metadata used by open-version consumer profiles. A
+scheduled GitHub Actions audit rebuilds that snapshot weekly and checks the current Yumemi and Laravel Validation
+development heads. A newly published compatible release can therefore produce an expected hash mismatch; update the
+reported consumer hash and rerun the full flake check to admit the refreshed dependency set.
+
 ## Documentation
 
 The public mdBook sources live under [`docs/pages`](docs/pages). Internal engineering documents live under

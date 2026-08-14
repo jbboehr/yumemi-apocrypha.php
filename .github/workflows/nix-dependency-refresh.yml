@@ -1,0 +1,47 @@
+name: nix-dependency-refresh
+
+on:
+    schedule:
+        - cron: "17 8 * * 1"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    refresh:
+        name: Refresh Nix dependency snapshot
+        runs-on: ubuntu-latest
+        timeout-minutes: 90
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Install Nix
+              uses: cachix/install-nix-action@v31
+              with:
+                  github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Restore Nix store
+              uses: nix-community/cache-nix-action@v7
+              with:
+                  primary-key: nix-${{ runner.os }}-${{ hashFiles('composer.lock', '**/*.nix', '**/flake.lock') }}
+                  restore-prefixes-first-match: nix-${{ runner.os }}-
+                  save: false
+
+            - name: Refresh development-head inputs
+              run: |
+                  nix flake update \
+                    yumemi-development-head \
+                    phpstan-laravel-validation-development-head
+                  if ! git diff --quiet -- flake.lock; then
+                      printf 'Development-head inputs changed during the scheduled audit.\n' \
+                        >> "$GITHUB_STEP_SUMMARY"
+                      git diff -- flake.lock
+                  fi
+
+            - name: Refresh compatible consumer dependencies
+              run: bash .github/scripts/nix-build-with-hash-report --rebuild .#consumer-composer-cache
+
+            - name: Run normal validation against refreshed dependencies
+              run: nix flake check --keep-going -L

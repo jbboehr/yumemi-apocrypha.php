@@ -1,0 +1,93 @@
+name: nix
+
+on:
+    push:
+        branches:
+            - master
+            - develop
+            - ci
+    pull_request:
+        branches:
+            - master
+
+permissions:
+    contents: read
+
+jobs:
+    matrix:
+        name: Generate Nix matrix
+        runs-on: ubuntu-latest
+        outputs:
+            matrix: ${{ steps.matrix.outputs.matrix }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Install Nix
+              uses: cachix/install-nix-action@v31
+              with:
+                  github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Generate matrix from flake outputs
+              id: matrix
+              run: |
+                  nix build -L .#github-actions-matrix
+                  echo "matrix=$(tr -d '\n' < result)" >> "$GITHUB_OUTPUT"
+
+    dependencies:
+        name: Prepare Nix dependency closures
+        runs-on: ubuntu-latest
+        timeout-minutes: 45
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Install Nix
+              uses: cachix/install-nix-action@v31
+              with:
+                  github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Restore and save Nix store
+              uses: nix-community/cache-nix-action@v7
+              with:
+                  primary-key: nix-${{ runner.os }}-${{ hashFiles('composer.lock', '**/*.nix', '**/flake.lock') }}
+                  restore-prefixes-first-match: nix-${{ runner.os }}-
+                  gc-max-store-size-linux: 6G
+
+            - name: Prepare locked Composer dependencies
+              run: bash .github/scripts/nix-build-with-hash-report .#composer-dependencies
+
+            - name: Prepare consumer dependencies
+              run: bash .github/scripts/nix-build-with-hash-report .#consumer-composer-cache
+
+            - name: Prepare lowest supported dependencies
+              run: bash .github/scripts/nix-build-with-hash-report .#lowest-dependencies
+
+    check:
+        name: ${{ matrix.name }} / ${{ matrix.system }}
+        needs:
+            - matrix
+            - dependencies
+        runs-on: ${{ matrix.os }}
+        timeout-minutes: 45
+        strategy:
+            fail-fast: false
+            matrix: ${{ fromJSON(needs.matrix.outputs.matrix) }}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v7
+
+            - name: Install Nix
+              uses: cachix/install-nix-action@v31
+              with:
+                  github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Restore Nix store
+              uses: nix-community/cache-nix-action@v7
+              with:
+                  primary-key: nix-${{ runner.os }}-${{ hashFiles('composer.lock', '**/*.nix', '**/flake.lock') }}
+                  restore-prefixes-first-match: nix-${{ runner.os }}-
+                  save: false
+
+            - name: Build ${{ matrix.attr }}
+              run: bash .github/scripts/nix-build-with-hash-report ".#${{ matrix.attr }}"

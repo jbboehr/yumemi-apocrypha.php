@@ -3,7 +3,14 @@
 Mutation testing is an occasional audit of loader decisions and version-policy branches, not a substitute for running
 consumer projects against real upstream packages.
 
-Enter the development shell, install dependencies, and run:
+Mutation testing is an explicit Nix package used by exhaustive CI, not a normal `nix flake check` check. Run the same
+target locally with:
+
+```shell
+nix build -L .#mutation
+```
+
+For an interactive investigation, enter the development shell, install dependencies, and run:
 
 ```shell
 composer infection

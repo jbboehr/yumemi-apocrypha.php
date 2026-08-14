@@ -27,6 +27,7 @@ docs/theme export-ignore
 flake.lock export-ignore
 flake.nix export-ignore
 infection.json5.dist export-ignore
+nix export-ignore
 phpbench-perfidious.json export-ignore
 phpbench.json export-ignore
 phpstan.neon.dist export-ignore

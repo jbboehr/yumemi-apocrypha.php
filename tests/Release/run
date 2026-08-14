@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+readonly SCRIPT_DIR
+PROJECT_ROOT=$(cd -- "$SCRIPT_DIR/../.." && pwd)
+readonly PROJECT_ROOT
+CONSUMER_RUNNER=$PROJECT_ROOT/tests/Consumer/run
+readonly CONSUMER_RUNNER
+
+default_release_version=$(<"$PROJECT_ROOT/nix/release-version")
+readonly default_release_version
+
+export APOCRYPHA_PACKAGE_VERSION=${APOCRYPHA_PACKAGE_VERSION:-$default_release_version}
+export CONSUMER_MINIMUM_STABILITY=stable
+export CONSUMER_DEPENDENCIES_ONLY=0
+export CONSUMER_VENDOR_DIR=vendor
+export VERIFY_GIT_ARCHIVE=1
+unset PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR
+unset YUMEMI_PACKAGE_DIR
+
+printf 'Testing prospective Apocrypha %s with stable Composer resolution.\n' "$APOCRYPHA_PACKAGE_VERSION"
+
+"$CONSUMER_RUNNER" archive symfony-stopwatch 7 plain
+"$CONSUMER_RUNNER" archive manual 12 plain
+"$CONSUMER_RUNNER" archive laravel-framework 12 larastan
+
+printf 'Prospective Apocrypha %s passed the stable-install release gate.\n' "$APOCRYPHA_PACKAGE_VERSION"

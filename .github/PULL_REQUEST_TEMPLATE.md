@@ -6,6 +6,9 @@
 
 <!-- How was this tested? Include relevant commands or manual verification. -->
 
+- [ ] If `composer.lock` changed, I updated `nix/vendor-hash.nix` from the hash reported by Nix or the failed Nix CI
+      job.
+
 ## Additional context
 
 <!-- Compatibility concerns, screenshots, related issues, or implementation notes. -->

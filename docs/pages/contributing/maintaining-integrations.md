@@ -22,9 +22,11 @@ coverage solely because a parameter name resembles a duration or size.
 
 ## Verify Upstream Signatures
 
-The consumer fixture installs the latest compatible release of each selected major. Its `verify.php` script reflects
-every annotated class, method, parameter, and property before PHPStan runs. Add reflection assertions whenever a stub
-gains coverage; a missing or renamed upstream declaration must fail before semantic assertions run.
+The consumer fixture installs the latest compatible release of each selected major available in the periodically
+refreshed Nix dependency snapshot. A weekly CI audit checks for newer compatible releases and reports the replacement
+snapshot hash when one appears. Its `verify.php` script reflects every annotated class, method, parameter, and property
+before PHPStan runs. Add reflection assertions whenever a stub gains coverage; a missing or renamed upstream declaration
+must fail before semantic assertions run.
 
 Preserve the upstream type structure exactly and change only the unit-bearing scalar. In particular, retain integer
 ranges and literal types when upstream publishes them, but do not infer a narrower type merely because the
@@ -116,9 +118,15 @@ Symfony compatibility currently keeps Apocrypha's stubs enabled because `phpstan
 the same declarations for supported HttpFoundation and Stopwatch releases. Exercise every supported Symfony major in
 both modes so a change in its version-conditional stub loader cannot pass unnoticed.
 
-At least one supported matrix entry uses a Composer archive. Each archive-mode run also verifies the corresponding Git
-archive. Both payload checks must confirm that runtime source, NEON entry points, legal notices, and stubs are present
-while tests, local state, and development tooling are excluded.
+Supported matrix entries exercise Composer archives, while conventional CI separately builds and verifies the Git
+archive from a real checkout. Both payload checks must confirm that runtime source, NEON entry points, legal notices,
+and stubs are present while tests, local state, and development tooling are excluded.
+
+Before tagging a release, run `composer release:check`. The release gate assigns the built Composer archive a
+prospective stable version, installs it into clean stable-minimum projects, and confirms that Composer selects a tagged
+Yumemi `0.1` release. It exercises extension-installer with Symfony Stopwatch, manual PHPStan registration with
+Illuminate Cache, and Laravel with Larastan. Set `APOCRYPHA_PACKAGE_VERSION` when preparing a version other than the
+default prospective `0.1.0`.
 
 Source-mode consumers use Composer's default symlinked path-repository layout; archive-mode consumers use a mirrored
 path. Keep both modes because package-relative NEON includes and registered stub paths can behave differently after
