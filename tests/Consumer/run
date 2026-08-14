@@ -20,11 +20,14 @@ readonly CONSUMER_VENDOR_DIR=${CONSUMER_VENDOR_DIR:-vendor}
 readonly APOCRYPHA_PACKAGE_VERSION=${APOCRYPHA_PACKAGE_VERSION:-dev-consumer}
 readonly CONSUMER_MINIMUM_STABILITY=${CONSUMER_MINIMUM_STABILITY:-dev}
 readonly CONSUMER_DEPENDENCIES_ONLY=${CONSUMER_DEPENDENCIES_ONLY:-0}
+readonly CONSUMER_DOWNLOAD_ONLY=${CONSUMER_DOWNLOAD_ONLY:-0}
+readonly CONSUMER_LOCK_FILE=${CONSUMER_LOCK_FILE:-}
+readonly CONSUMER_LOCK_OUTPUT=${CONSUMER_LOCK_OUTPUT:-}
 readonly VERIFY_GIT_ARCHIVE=${VERIFY_GIT_ARCHIVE:-1}
 readonly PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR=${PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR:-}
 readonly YUMEMI_PACKAGE_DIR=${YUMEMI_PACKAGE_DIR:-}
 
-if [[ ! -x $AKASHI ]]; then
+if [[ $CONSUMER_DEPENDENCIES_ONLY != 1 && ! -x $AKASHI ]]; then
     printf 'Akashi is not installed; run composer install in %s.\n' "$PROJECT_ROOT" >&2
     exit 1
 fi
@@ -51,6 +54,21 @@ fi
 
 if [[ $CONSUMER_DEPENDENCIES_ONLY != 0 && $CONSUMER_DEPENDENCIES_ONLY != 1 ]]; then
     printf 'Consumer dependency-only mode must be 0 or 1; received %s.\n' "$CONSUMER_DEPENDENCIES_ONLY" >&2
+    exit 2
+fi
+
+if [[ $CONSUMER_DOWNLOAD_ONLY != 0 && $CONSUMER_DOWNLOAD_ONLY != 1 ]]; then
+    printf 'Consumer download-only mode must be 0 or 1; received %s.\n' "$CONSUMER_DOWNLOAD_ONLY" >&2
+    exit 2
+fi
+
+if [[ $CONSUMER_DOWNLOAD_ONLY == 1 && -z $CONSUMER_LOCK_FILE ]]; then
+    printf 'Consumer download-only mode requires a lock input.\n' >&2
+    exit 2
+fi
+
+if [[ -n $CONSUMER_LOCK_FILE && -n $CONSUMER_LOCK_OUTPUT ]]; then
+    printf 'Consumer lock input and output cannot be used together.\n' >&2
     exit 2
 fi
 
@@ -92,7 +110,7 @@ trap 'rm -rf -- "$WORK_DIR"' EXIT
 
 package_dir=$PROJECT_ROOT
 
-if [[ $PACKAGE_MODE == archive ]]; then
+if [[ $PACKAGE_MODE == archive && $CONSUMER_DEPENDENCIES_ONLY != 1 ]]; then
     archive_dir=$WORK_DIR/archive
     package_dir=$WORK_DIR/package
     mkdir -p -- "$archive_dir" "$package_dir"
@@ -113,24 +131,10 @@ if [[ $PACKAGE_MODE == archive ]]; then
         git -C "$PROJECT_ROOT" archive --worktree-attributes --format=tar --output="$git_archive" HEAD
         php "$PACKAGE_CHECKER" "$git_archive"
     fi
-elif [[ $PACKAGE_MODE != source ]]; then
+elif [[ $PACKAGE_MODE != source && $PACKAGE_MODE != archive ]]; then
     printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
-
-# The single-quoted argument is a PHP program, not a shell expression.
-# shellcheck disable=SC2016
-repository_json=$(php -r '
-echo json_encode([
-    "type" => "path",
-    "url" => $argv[1],
-    "options" => [
-        "symlink" => $argv[2] === "source",
-        "versions" => ["jbboehr/yumemi-apocrypha" => $argv[3]],
-    ],
-], JSON_THROW_ON_ERROR);
-' "$package_dir" "$PACKAGE_MODE" "$APOCRYPHA_PACKAGE_VERSION")
-readonly repository_json
 
 yumemi_repository_json=''
 # The single-quoted argument is a PHP program, not a shell expression.
@@ -143,19 +147,45 @@ exit(($metadata["name"] ?? null) === "jbboehr/yumemi" ? 0 : 1);
     yumemi_repository_json=$(php -r '
 echo json_encode([
     "type" => "path",
-    "url" => $argv[1],
+    "url" => ".yumemi-package",
     "options" => [
-        "symlink" => $argv[2] === "source",
+        "symlink" => $argv[1] === "source",
+        "reference" => "none",
         "versions" => ["jbboehr/yumemi" => "dev-master"],
     ],
 ], JSON_THROW_ON_ERROR);
-' "$YUMEMI_PACKAGE_DIR" "$PACKAGE_MODE")
+' "$PACKAGE_MODE")
 fi
 readonly yumemi_repository_json
 export COMPOSER_VENDOR_DIR=$CONSUMER_VENDOR_DIR
 
 configure_apocrypha_repository() {
     local project_dir=$1
+    local repository_json
+    local repository_mode=$PACKAGE_MODE
+
+    # Lock generation and locked installs must use identical, cheap path transport. Archive-mode tests still build and
+    # inspect the archive before symlinking its extracted payload.
+    if [[ $CONSUMER_DEPENDENCIES_ONLY == 1 || -n $CONSUMER_LOCK_FILE ]]; then
+        repository_mode=source
+    fi
+
+    ln -s -- "$package_dir" "$project_dir/.apocrypha-package"
+
+    # Keep the path repository URL stable so generated consumer locks work in independent build directories.
+    # The single-quoted argument is a PHP program, not a shell expression.
+    # shellcheck disable=SC2016
+    repository_json=$(php -r '
+echo json_encode([
+    "type" => "path",
+    "url" => ".apocrypha-package",
+    "options" => [
+        "symlink" => $argv[1] === "source",
+        "reference" => "none",
+        "versions" => ["jbboehr/yumemi-apocrypha" => $argv[2]],
+    ],
+], JSON_THROW_ON_ERROR);
+' "$repository_mode" "$APOCRYPHA_PACKAGE_VERSION")
 
     composer --working-dir="$project_dir" repo add apocrypha "$repository_json" --no-interaction
     composer --working-dir="$project_dir" config minimum-stability "$CONSUMER_MINIMUM_STABILITY" --no-interaction
@@ -163,12 +193,49 @@ configure_apocrypha_repository() {
         "jbboehr/yumemi-apocrypha:$APOCRYPHA_PACKAGE_VERSION" --no-update --no-interaction
 }
 
-install_consumer_dependencies() {
+configure_yumemi_repository() {
     local project_dir=$1
 
-    composer --working-dir="$project_dir" update --prefer-dist --no-interaction --no-progress
+    if [[ -z $yumemi_repository_json ]]; then
+        return
+    fi
 
-    if [[ $CONSUMER_MINIMUM_STABILITY == stable ]]; then
+    ln -s -- "$YUMEMI_PACKAGE_DIR" "$project_dir/.yumemi-package"
+    composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
+}
+
+install_consumer_dependencies() {
+    local project_dir=$1
+    local lock_output_dir
+    local composer_install_options=(--prefer-dist --no-interaction --no-progress)
+    local composer_update_options=(--prefer-dist --no-interaction --no-progress)
+
+    if [[ $CONSUMER_DOWNLOAD_ONLY == 1 ]]; then
+        composer_install_options+=(--download-only)
+    fi
+    if [[ -n $CONSUMER_LOCK_OUTPUT ]]; then
+        composer_update_options+=(--no-install)
+    fi
+
+    if [[ -n $CONSUMER_LOCK_FILE ]]; then
+        if [[ ! -f $CONSUMER_LOCK_FILE ]]; then
+            printf 'Consumer lock file does not exist: %s.\n' "$CONSUMER_LOCK_FILE" >&2
+            exit 2
+        fi
+        cp -- "$CONSUMER_LOCK_FILE" "$project_dir/composer.lock"
+        composer --working-dir="$project_dir" validate --strict --no-check-publish --no-interaction
+        composer --working-dir="$project_dir" install "${composer_install_options[@]}"
+    else
+        composer --working-dir="$project_dir" update "${composer_update_options[@]}"
+    fi
+
+    if [[ -n $CONSUMER_LOCK_OUTPUT ]]; then
+        lock_output_dir=$(dirname -- "$CONSUMER_LOCK_OUTPUT")
+        mkdir -p -- "$lock_output_dir"
+        cp -- "$project_dir/composer.lock" "$CONSUMER_LOCK_OUTPUT"
+    fi
+
+    if [[ $CONSUMER_MINIMUM_STABILITY == stable && $CONSUMER_DOWNLOAD_ONLY != 1 && -z $CONSUMER_LOCK_OUTPUT ]]; then
         # The single-quoted argument is a PHP program, not a shell expression.
         # shellcheck disable=SC2016
         php -r '
@@ -249,13 +316,16 @@ exit(($metadata["name"] ?? null) === "jbboehr/phpstan-laravel-validation" ? 0 : 
             validation_repository_json=$(php -r '
 echo json_encode([
     "type" => "path",
-    "url" => $argv[1],
+    "url" => ".phpstan-laravel-validation-package",
     "options" => [
         "symlink" => true,
+        "reference" => "none",
         "versions" => ["jbboehr/phpstan-laravel-validation" => "dev-master"],
     ],
 ], JSON_THROW_ON_ERROR);
-' "$PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR")
+')
+            ln -s -- "$PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR" \
+                "$project_dir/.phpstan-laravel-validation-package"
             composer --working-dir="$project_dir" repo add phpstan-laravel-validation \
                 "$validation_repository_json" --no-interaction
         else
@@ -490,9 +560,7 @@ run_carbon() {
     cp -R -- "$FIXTURES_DIR/carbon/." "$project_dir/"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "nesbot/carbon:$package_constraint" --no-update --no-interaction
     if [[ $PACKAGE_MAJOR == *.* ]]; then
@@ -579,9 +647,7 @@ run_illuminate_cache() {
     cp -R -- "$FIXTURES_DIR/illuminate-cache/." "$project_dir/"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev "illuminate/cache:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     enable_larastan "$project_dir"
     install_consumer_dependencies "$project_dir"
@@ -660,9 +726,7 @@ run_illuminate_http() {
     cp -R -- "$FIXTURES_DIR/illuminate-http/." "$project_dir/"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "illuminate/http:$package_constraint" --no-update --no-interaction
     enable_larastan "$project_dir"
@@ -758,9 +822,7 @@ run_simple_illuminate_integration() {
     fi
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev "$package:$package_constraint" --no-update --no-interaction
     if [[ $FIXTURE_SUITE == illuminate-session ]]; then
         composer --working-dir="$project_dir" require --dev "illuminate/database:$package_constraint" --no-update --no-interaction
@@ -899,9 +961,7 @@ run_laravel_framework() {
     cp -R -- "$FIXTURES_DIR/laravel-framework/." "$project_dir/"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "laravel/framework:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     enable_larastan "$project_dir"
@@ -929,9 +989,7 @@ run_symfony_stopwatch() {
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev "symfony/stopwatch:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     enable_phpstan_symfony "$project_dir"
     install_consumer_dependencies "$project_dir"
@@ -993,9 +1051,7 @@ run_symfony_http_foundation() {
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "symfony/http-foundation:$package_constraint" --no-update --no-interaction
     enable_phpstan_symfony "$project_dir"
@@ -1055,9 +1111,7 @@ run_guzzle() {
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "guzzlehttp/guzzle:$package_constraint" --no-update --no-interaction
     if [[ $PACKAGE_MAJOR == *.* ]]; then
@@ -1103,9 +1157,7 @@ run_phpgeo() {
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev "mjaschen/phpgeo:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     install_consumer_dependencies "$project_dir"
 
@@ -1141,9 +1193,7 @@ run_measurements() {
     mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "nmarfurt/measurements:$package_constraint" --no-update --no-interaction
     install_consumer_dependencies "$project_dir"
@@ -1188,9 +1238,7 @@ run_intervention_image() {
     cp -R -- "$FIXTURES_DIR/intervention-image/." "$project_dir/"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "intervention/image:$package_constraint" --no-update --no-interaction
     install_consumer_dependencies "$project_dir"
@@ -1272,9 +1320,7 @@ run_getid3() {
     mapfile -t expected_diagnostics < "$project_dir/$expected_diagnostics_file"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "james-heinrich/getid3:$package_constraint" --no-update --no-interaction
     install_consumer_dependencies "$project_dir"
@@ -1302,9 +1348,7 @@ run_manual() {
     cp -R -- "$FIXTURES_DIR/manual/." "$project_dir/"
 
     configure_apocrypha_repository "$project_dir"
-    if [[ -n $yumemi_repository_json ]]; then
-        composer --working-dir="$project_dir" repo add yumemi "$yumemi_repository_json" --no-interaction
-    fi
+    configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev "illuminate/cache:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     install_consumer_dependencies "$project_dir"
 

@@ -241,28 +241,27 @@
 
         releaseVersion = lib.strings.removeSuffix "\n" (builtins.readFile ./nix/release-version);
         consumerProfiles = import ./nix/consumer-profiles.nix { inherit releaseVersion; };
-        routineConsumerProfiles = lib.concatLists (
-          lib.attrValues (
-            removeAttrs consumerProfiles [
-              "stable-release-artifact"
-              "yumemi-development-head"
-            ]
-          )
-        );
-        dependencyConsumerProfiles =
-          builtins.filter (consumerProfile: consumerProfile.compatibility == "plain") routineConsumerProfiles
-          ++ builtins.filter (
-            consumerProfile: consumerProfile.compatibility == "larastan"
-          ) consumerProfiles.laravel-framework
-          ++ builtins.filter (
-            consumerProfile: consumerProfile.compatibility == "phpstan-laravel-validation"
-          ) consumerProfiles.illuminate-validation
-          ++ builtins.filter (consumerProfile: consumerProfile.compatibility == "phpstan-symfony") (
-            consumerProfiles.symfony-http-foundation ++ consumerProfiles.symfony-stopwatch
-          )
-          ++ consumerProfiles.stable-release-artifact
-          ++ consumerProfiles.yumemi-development-head;
-        # Isolate Composer writes while resolving four balanced profile groups concurrently, then merge them below.
+        dependencyConsumerProfiles = lib.concatLists (lib.attrValues consumerProfiles);
+        consumerProfileLockName =
+          consumerProfile:
+          let
+            readableName = lib.concatStringsSep "-" [
+              consumerProfile.suite
+              "php${consumerProfile.php}"
+              consumerProfile.mode
+              "v${consumerProfile.version}"
+              consumerProfile.compatibility
+            ];
+            profileFingerprint = builtins.substring 0 10 (
+              builtins.hashString "sha256" (builtins.toJSON consumerProfile)
+            );
+          in
+          "${lib.strings.sanitizeDerivationName readableName}-${profileFingerprint}.lock";
+        consumerLockNames = map consumerProfileLockName dependencyConsumerProfiles;
+        validationDevelopmentHeadConsumerProfiles = builtins.filter (
+          consumerProfile: consumerProfile.phpstanLaravelValidationDevelopmentHead or false
+        ) consumerProfiles.illuminate-validation;
+        # Isolate Composer writes while preparing four balanced lock groups concurrently, then merge their archives.
         consumerCacheShardCount = 4;
         indexedDependencyConsumerProfiles = lib.imap0 (index: consumerProfile: {
           inherit index consumerProfile;
@@ -285,7 +284,7 @@
         };
         consumerCacheFingerprint = builtins.substring 0 12 (
           builtins.hashString "sha256" (
-            "consumer-cache-v2"
+            "consumer-cache-v3"
             + builtins.toJSON dependencyConsumerProfiles
             + toString consumerDependencySource
             + toString phpstan-laravel-validation-development-head
@@ -304,12 +303,33 @@
               name: value: "export ${name}=${lib.escapeShellArg value}"
             ) consumerProfile.environment
           );
+        sanitizeConsumerEnvironment = ''
+          unset \
+            APOCRYPHA_PACKAGE_VERSION \
+            COMPOSER_AUTH \
+            COMPOSER_ROOT_VERSION \
+            CONSUMER_DEPENDENCIES_ONLY \
+            CONSUMER_DOWNLOAD_ONLY \
+            CONSUMER_LOCK_FILE \
+            CONSUMER_LOCK_OUTPUT \
+            CONSUMER_MINIMUM_STABILITY \
+            CONSUMER_VENDOR_DIR \
+            PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR \
+            VERIFY_GIT_ARCHIVE \
+            YUMEMI_PACKAGE_DIR
+        '';
         profileCommand =
-          dependencyOnly: consumerProfile:
+          {
+            consumerProfile,
+            dependencyOnly ? false,
+            downloadOnly ? false,
+            lockDirection ? "input",
+            offline ? false,
+          }:
           let
             selectedPhp = php.${consumerProfile.php};
             selectedComposer = php-unwrapped.${consumerProfile.php}.packages.composer;
-            mode = if dependencyOnly then "source" else consumerProfile.mode;
+            lockName = consumerProfileLockName consumerProfile;
           in
           ''
             (
@@ -331,14 +351,35 @@
               ${lib.optionalString (consumerProfile.phpstanLaravelValidationDevelopmentHead or false) (
                 "export PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR=${lib.escapeShellArg (toString phpstan-laravel-validation-development-head)}"
               )}
-              ${lib.optionalString dependencyOnly "export CONSUMER_DEPENDENCIES_ONLY=1"}
-              ${lib.optionalString (!dependencyOnly) ''
-                export COMPOSER_CACHE_READ_ONLY=1
-                export COMPOSER_DISABLE_NETWORK=1
-                export VERIFY_GIT_ARCHIVE=0
-              ''}
+              ${
+                if lockDirection == "output" then
+                  ''
+                    unset CONSUMER_LOCK_FILE
+                    export CONSUMER_LOCK_OUTPUT="$consumer_lock_output_dir/${lockName}"
+                  ''
+                else
+                  ''
+                    unset CONSUMER_LOCK_OUTPUT
+                    export CONSUMER_LOCK_FILE=${lib.escapeShellArg "${consumerDependencySource}/tests/Consumer/locks/${lockName}"}
+                  ''
+              }
+              export CONSUMER_DEPENDENCIES_ONLY=${if dependencyOnly then "1" else "0"}
+              export CONSUMER_DOWNLOAD_ONLY=${if downloadOnly then "1" else "0"}
+              ${
+                if offline then
+                  ''
+                    export COMPOSER_CACHE_READ_ONLY=1
+                    export COMPOSER_DISABLE_NETWORK=1
+                  ''
+                else
+                  ''
+                    unset COMPOSER_CACHE_READ_ONLY
+                    unset COMPOSER_DISABLE_NETWORK
+                  ''
+              }
+              export VERIFY_GIT_ARCHIVE=0
               bash tests/Consumer/run \
-                ${lib.escapeShellArg mode} \
+                ${lib.escapeShellArg consumerProfile.mode} \
                 ${lib.escapeShellArg consumerProfile.suite} \
                 ${lib.escapeShellArg consumerProfile.version} \
                 ${lib.escapeShellArg consumerProfile.compatibility}
@@ -346,14 +387,119 @@
           '';
         consumerCacheShardCommand = shardIndex: consumerProfilesInShard: ''
           (
+            ${sanitizeConsumerEnvironment}
             export COMPOSER_CACHE_DIR="$NIX_BUILD_TOP/composer-cache-shards/${toString shardIndex}"
             export COMPOSER_HOME="$NIX_BUILD_TOP/composer-home-shards/${toString shardIndex}"
             export XDG_CACHE_HOME="$NIX_BUILD_TOP/xdg-cache-shards/${toString shardIndex}"
             mkdir -p -- "$COMPOSER_CACHE_DIR" "$COMPOSER_HOME" "$XDG_CACHE_HOME"
-            ${lib.concatMapStringsSep "\n" (profileCommand true) consumerProfilesInShard}
+            ${lib.concatMapStringsSep "\n" (
+              consumerProfile:
+              profileCommand {
+                inherit consumerProfile;
+                dependencyOnly = true;
+                downloadOnly = true;
+              }
+            ) consumerProfilesInShard}
           ) &
           consumer_cache_pids+=("$!")
         '';
+        consumerLockRefreshShardCommand = shardIndex: consumerProfilesInShard: ''
+          (
+            ${sanitizeConsumerEnvironment}
+            export COMPOSER_CACHE_DIR="$consumer_lock_stage/composer-cache-shards/${toString shardIndex}"
+            export COMPOSER_HOME="$consumer_lock_stage/composer-home-shards/${toString shardIndex}"
+            export XDG_CACHE_HOME="$consumer_lock_stage/xdg-cache-shards/${toString shardIndex}"
+            mkdir -p -- "$COMPOSER_CACHE_DIR" "$COMPOSER_HOME" "$XDG_CACHE_HOME"
+            ${lib.concatMapStringsSep "\n" (
+              consumerProfile:
+              profileCommand {
+                inherit consumerProfile;
+                dependencyOnly = true;
+                lockDirection = "output";
+              }
+            ) consumerProfilesInShard}
+          ) &
+          consumer_lock_pids+=("$!")
+        '';
+
+        refreshConsumerLocks = pkgs.writeShellApplication {
+          name = "refresh-consumer-locks";
+          excludeShellChecks = [
+            "SC2030"
+            "SC2031"
+          ];
+          runtimeInputs = [
+            pkgs.coreutils
+            pkgs.findutils
+          ];
+          text = ''
+            if [[ ! -f flake.nix || ! -x tests/Consumer/run ]]; then
+              printf 'Run refresh-consumer-locks from the repository root.\n' >&2
+              exit 2
+            fi
+
+            consumer_lock_stage=$(mktemp -d "''${TMPDIR:-/tmp}/yumemi-apocrypha-locks.XXXXXXXX")
+            readonly consumer_lock_stage
+            consumer_lock_replacement=""
+            consumer_lock_backup=""
+            cleanup() {
+              local cleanup_path
+              local cleanup_status
+
+              cleanup_status=$1
+              trap - EXIT
+              for cleanup_path in "$consumer_lock_stage" "$consumer_lock_replacement" "$consumer_lock_backup"; do
+                if [[ -n $cleanup_path && -e $cleanup_path ]]; then
+                  find "$cleanup_path" -depth -delete || true
+                fi
+              done
+              exit "$cleanup_status"
+            }
+            trap 'cleanup "$?"' EXIT
+
+            consumer_lock_output_dir="$consumer_lock_stage/locks"
+            readonly consumer_lock_output_dir
+            mkdir -p -- "$consumer_lock_output_dir"
+
+            consumer_lock_pids=()
+            consumer_lock_status=0
+            ${lib.concatStringsSep "\n" (lib.imap0 consumerLockRefreshShardCommand consumerCacheShards)}
+            for pid in "''${consumer_lock_pids[@]}"; do
+              if ! wait "$pid"; then
+                consumer_lock_status=1
+              fi
+            done
+            if ((consumer_lock_status != 0)); then
+              exit "$consumer_lock_status"
+            fi
+
+            generated_lock_count=$(find "$consumer_lock_output_dir" -maxdepth 1 -type f -name '*.lock' | wc -l)
+            if [[ $generated_lock_count -ne ${toString (builtins.length consumerLockNames)} ]]; then
+              printf 'Expected ${toString (builtins.length consumerLockNames)} consumer locks, generated %s.\n' \
+                "$generated_lock_count" >&2
+              exit 1
+            fi
+
+            consumer_lock_replacement=$(mktemp -d "tests/Consumer/.locks-refresh.XXXXXXXX")
+            if [[ -d tests/Consumer/locks ]]; then
+              cp -R -- tests/Consumer/locks/. "$consumer_lock_replacement/"
+              find "$consumer_lock_replacement" -maxdepth 1 -type f -name '*.lock' -delete
+            fi
+            cp -- "$consumer_lock_output_dir"/*.lock "$consumer_lock_replacement/"
+
+            consumer_lock_backup="$consumer_lock_replacement.previous"
+            if [[ -d tests/Consumer/locks ]]; then
+              mv -- tests/Consumer/locks "$consumer_lock_backup"
+            fi
+            if ! mv -- "$consumer_lock_replacement" tests/Consumer/locks; then
+              if [[ -d $consumer_lock_backup ]]; then
+                mv -- "$consumer_lock_backup" tests/Consumer/locks
+              fi
+              exit 1
+            fi
+            printf 'Refreshed %s consumer dependency locks.\n' "$generated_lock_count"
+          '';
+        };
 
         consumerComposerCache = pkgs.stdenvNoCC.mkDerivation {
           pname = "yumemi-apocrypha-consumer-composer-cache-${consumerCacheFingerprint}";
@@ -370,7 +516,6 @@
             cp -R -- ${consumerDependencySource}/. "$NIX_BUILD_TOP/project"
             chmod -R u+w -- "$NIX_BUILD_TOP/project"
             cd -- "$NIX_BUILD_TOP/project"
-            ${prepareVendor}
             consumer_cache_pids=()
             consumer_cache_status=0
             ${lib.concatStringsSep "\n" (lib.imap0 consumerCacheShardCommand consumerCacheShards)}
@@ -382,15 +527,64 @@
             if ((consumer_cache_status != 0)); then
               exit "$consumer_cache_status"
             fi
-            # The numeric shard paths give conflicting metadata files a stable merge order.
+            mkdir -p -- "$out/files"
+            # Locked installs need only immutable dist archives; volatile repository metadata is deliberately omitted.
             for cache_dir in "$NIX_BUILD_TOP"/composer-cache-shards/*; do
-              cp -R -- "$cache_dir"/. "$out"/
+              if [[ -d "$cache_dir/files" ]]; then
+                cp -R -- "$cache_dir/files"/. "$out/files"/
+              fi
             done
             runHook postInstall
           '';
           outputHashMode = "recursive";
           outputHash = import ./nix/consumer-cache-hash.nix;
         };
+        expectedConsumerLocks = pkgs.writeText "yumemi-apocrypha-expected-consumer-locks" (
+          lib.concatMapStrings (lockName: "${lockName}\n") (lib.sort builtins.lessThan consumerLockNames)
+        );
+        assertLockedPackageMetadata =
+          packageName: composerFile: profiles:
+          let
+            lockArguments = lib.concatMapStringsSep " " (
+              consumerProfile:
+              lib.escapeShellArg "${src}/tests/Consumer/locks/${consumerProfileLockName consumerProfile}"
+            ) profiles;
+          in
+          ''
+            php ${src}/tests/Consumer/assert-lock-package-metadata.php \
+              ${lib.escapeShellArg packageName} \
+              ${lib.escapeShellArg (toString composerFile)} \
+              ${lockArguments}
+          '';
+        consumerLocksCheck =
+          assert builtins.length consumerLockNames == builtins.length (lib.unique consumerLockNames);
+          pkgs.runCommand "yumemi-apocrypha-consumer-locks"
+            {
+              nativeBuildInputs = [
+                canonicalPhp
+                pkgs.findutils
+              ];
+            }
+            ''
+              if [[ ! -d ${src}/tests/Consumer/locks ]]; then
+                printf 'Consumer locks are missing; run nix run .#refresh-consumer-locks.\n' >&2
+                exit 1
+              fi
+              find ${src}/tests/Consumer/locks -maxdepth 1 -type f -name '*.lock' -printf '%f\n' \
+                | LC_ALL=C sort > actual-consumer-locks
+              diff -u ${expectedConsumerLocks} actual-consumer-locks
+              ${assertLockedPackageMetadata "jbboehr/yumemi-apocrypha" "${src}/composer.json"
+                dependencyConsumerProfiles
+              }
+              ${assertLockedPackageMetadata "jbboehr/yumemi" "${yumemi-development-head}/composer.json"
+                consumerProfiles.yumemi-development-head
+              }
+              ${assertLockedPackageMetadata "jbboehr/phpstan-laravel-validation"
+                "${phpstan-laravel-validation-development-head}/composer.json"
+                validationDevelopmentHeadConsumerProfiles
+              }
+              touch "$out"
+            '';
 
         lowestDependencies = pkgs.stdenvNoCC.mkDerivation {
           pname = "yumemi-apocrypha-lowest-dependencies-${composerLockFingerprint}";
@@ -466,9 +660,16 @@
             name = "consumer-${name}";
             extraNativeBuildInputs = consumerTools;
             command = ''
+              ${sanitizeConsumerEnvironment}
               export COMPOSER_CACHE_DIR=${lib.escapeShellArg (toString consumerComposerCache)}
               export XDG_CACHE_HOME="$NIX_BUILD_TOP/xdg-cache"
-              ${lib.concatMapStringsSep "\n" (profileCommand false) profiles}
+              ${lib.concatMapStringsSep "\n" (
+                consumerProfile:
+                profileCommand {
+                  inherit consumerProfile;
+                  offline = true;
+                }
+              ) profiles}
             '';
           };
         consumerChecks = lib.mapAttrs' (
@@ -528,6 +729,7 @@
       rec {
         checks = {
           inherit documentation pre-commit-check;
+          consumer-locks = consumerLocksCheck;
           phpunit-php82 = mkProjectCheck {
             name = "phpunit-php82";
             phpPackage = php."82";
@@ -586,6 +788,7 @@
           composer-dependencies = composerDependencies;
           consumer-composer-cache = consumerComposerCache;
           lowest-dependencies = lowestDependencies;
+          refresh-consumer-locks = refreshConsumerLocks;
           github-actions-matrix =
             let
               checksMatrix = nix-github-actions.lib.mkGithubMatrix {

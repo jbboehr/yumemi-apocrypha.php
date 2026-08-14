@@ -52,14 +52,23 @@ lives in [`nix/vendor-hash.nix`](nix/vendor-hash.nix). When `composer.json` or `
 4. run the flake check again.
 
 Without local Nix, push the dependency change and copy the replacement hash from the failed Nix job. The job repeats it
-near the end of the log and in its step summary while preserving the original failure. Consumer-profile dependency
-changes can similarly require the reported value in `nix/consumer-cache-hash.nix`; the failing derivation identifies
-which file applies. A lowest-supported-dependency refresh uses `nix/lowest-dependencies-hash.nix` in the same way.
+near the end of the log and in its step summary while preserving the original failure. A lowest-supported-dependency
+refresh uses `nix/lowest-dependencies-hash.nix` in the same way.
 
-The consumer hash snapshots the package archives and Packagist metadata used by open-version consumer profiles. A
-scheduled GitHub Actions audit rebuilds that snapshot weekly and checks the current Yumemi and Laravel Validation
-development heads. A newly published compatible release can therefore produce an expected hash mismatch; update the
-reported consumer hash and rerun the full flake check to admit the refreshed dependency set.
+Each isolated consumer profile has a committed Composer lock beneath [`tests/Consumer/locks`](tests/Consumer/locks).
+When a profile or its dependency policy changes, or when intentionally admitting newly compatible upstream releases,
+refresh every lock from the repository root:
+
+```shell
+nix run .#refresh-consumer-locks
+```
+
+Review the resulting lock diff, then build `path:.#consumer-composer-cache` so newly created lock files are included.
+The hash in [`nix/consumer-cache-hash.nix`](nix/consumer-cache-hash.nix) covers only the immutable package archives
+selected by those locks; Nix reports the replacement hash when that archive set changes. Ordinary checks install from
+the committed locks without contacting Packagist. The lock-manifest check also rejects stale install metadata for
+Apocrypha and the development-head path packages. The weekly dependency audit updates those inputs, refreshes the locks,
+and reports any lock or archive-hash change for review.
 
 ## Documentation
 

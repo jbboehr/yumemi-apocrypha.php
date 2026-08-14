@@ -22,11 +22,12 @@ coverage solely because a parameter name resembles a duration or size.
 
 ## Verify Upstream Signatures
 
-The consumer fixture installs the latest compatible release of each selected major available in the periodically
-refreshed Nix dependency snapshot. A weekly CI audit checks for newer compatible releases and reports the replacement
-snapshot hash when one appears. Its `verify.php` script reflects every annotated class, method, parameter, and property
-before PHPStan runs. Add reflection assertions whenever a stub gains coverage; a missing or renamed upstream declaration
-must fail before semantic assertions run.
+The consumer fixture installs the release recorded in its committed profile lock. A weekly CI audit refreshes those
+locks to detect newer compatible releases and reports any resulting archive-hash change for review. A separate lock
+check rejects stale install metadata for Apocrypha, Yumemi's development head, and Laravel Validation's development
+head. The fixture's `verify.php` script then reflects every annotated class, method, parameter, and property before
+PHPStan runs. Add reflection assertions whenever a stub gains coverage; a missing or renamed upstream declaration must
+fail before semantic assertions run.
 
 Preserve the upstream type structure exactly and change only the unit-bearing scalar. In particular, retain integer
 ranges and literal types when upstream publishes them, but do not infer a narrower type merely because the

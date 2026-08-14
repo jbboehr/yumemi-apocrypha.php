@@ -8,6 +8,8 @@
 
 - [ ] If `composer.lock` changed, I updated `nix/vendor-hash.nix` from the hash reported by Nix or the failed Nix CI
       job.
+- [ ] If consumer profiles or their dependencies changed, I refreshed `tests/Consumer/locks` and updated
+      `nix/consumer-cache-hash.nix` when Nix reported a replacement hash.
 
 ## Additional context
 

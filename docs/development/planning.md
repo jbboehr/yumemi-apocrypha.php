@@ -115,8 +115,8 @@ fluent rule boundaries unless a future overlap audit establishes a new ownership
 - Keep Apocrypha's public Yumemi constraint on the compatible `0.1` release line and its full consumer matrix on
   released Yumemi. The repository development lock and a focused consumer canary track Yumemi `dev-master` so upstream
   incompatibilities surface without making unreleased behavior part of the consumer contract. A weekly dependency
-  freshness audit temporarily updates the development-head inputs, rebuilds the open-version consumer snapshot, and runs
-  normal validation so the checked-in lock does not silently freeze the canary. The `composer release:check` gate
+  freshness audit temporarily updates the development-head inputs, refreshes the committed consumer-profile locks, and
+  runs normal validation so dependency resolution does not silently freeze the canary. The `composer release:check` gate
   installs a prospectively versioned archive into clean stable-minimum projects and exercises extension-installer,
   manual registration, Symfony Stopwatch, and Laravel with Larastan. Rerun it before tagging.
 - Rerun the complete integration semantic audit against the advertised minima, every signature cutover, and the latest

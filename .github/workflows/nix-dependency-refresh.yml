@@ -40,8 +40,19 @@ jobs:
                       git diff -- flake.lock
                   fi
 
-            - name: Refresh compatible consumer dependencies
-              run: bash .github/scripts/nix-build-with-hash-report --rebuild .#consumer-composer-cache
+            - name: Refresh compatible consumer dependency locks
+              run: |
+                  nix run -L .#refresh-consumer-locks
+                  if ! git diff --quiet -- tests/Consumer/locks; then
+                      printf 'Compatible consumer dependency locks changed during the scheduled audit.\n' \
+                        >> "$GITHUB_STEP_SUMMARY"
+                      git diff --name-status -- tests/Consumer/locks
+                  fi
+
+            - name: Prepare and verify refreshed consumer dependencies
+              run: |
+                  bash .github/scripts/nix-build-with-hash-report .#consumer-composer-cache
+                  bash .github/scripts/nix-build-with-hash-report --rebuild .#consumer-composer-cache
 
             - name: Run normal validation against refreshed dependencies
               run: nix flake check --keep-going -L
