@@ -583,6 +583,26 @@
                 "${phpstan-laravel-validation-development-head}/composer.json"
                 validationDevelopmentHeadConsumerProfiles
               }
+              php -r '
+              foreach (array_slice($argv, 1) as $lockFile) {
+                  $lock = json_decode(file_get_contents($lockFile), true, flags: JSON_THROW_ON_ERROR);
+                  $packages = array_merge($lock["packages"] ?? [], $lock["packages-dev"] ?? []);
+                  foreach ($packages as $package) {
+                      if (($package["name"] ?? null) !== "laravel/framework") {
+                          continue;
+                      }
+                      $version = $package["version"] ?? null;
+                      if (!is_string($version) || preg_match("/^v?[0-9]+\\.[0-9]+\\.[0-9]+$/D", $version) !== 1) {
+                          fwrite(STDERR, sprintf(
+                              "Consumer lock %s resolved laravel/framework to non-tagged version %s.\n",
+                              $lockFile,
+                              var_export($version, true),
+                          ));
+                          exit(1);
+                      }
+                  }
+              }
+              ' ${src}/tests/Consumer/locks/*.lock
               touch "$out"
             '';
 

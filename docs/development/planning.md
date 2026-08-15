@@ -151,9 +151,6 @@ stable, documented compatibility contract for the integrations already shipped.
 
 ## Maintenance Backlog
 
-- Add scheduled CI that resolves and tests the latest compatible upstream releases. The consumer matrix currently
-  exercises those releases when CI runs, but push- and pull-request-only triggers cannot detect upstream drift while the
-  repository is otherwise idle. This is strongly preferred before 0.1 and required before 1.0.
 - Keep the [integration semantic audit](integration-semantic-audit.md) current when an integration or verified version
   profile changes. Re-run its source, structure, valid-case, and invalid-case checks before the first public release.
 

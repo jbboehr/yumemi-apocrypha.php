@@ -54,6 +54,10 @@ derivation != "" && /^[[:space:]]*got:[[:space:]]+sha256-/ {
 
             printf '%s: replace the stale hash with %s\n' "$hash_file" "$replacement_hash"
 
+            if [[ -n ${NIX_HASH_REPORT_PATH:-} ]]; then
+                printf '%s\t%s\n' "$hash_file" "$replacement_hash" >> "$NIX_HASH_REPORT_PATH"
+            fi
+
             if [[ -n ${GITHUB_STEP_SUMMARY:-} ]]; then
                 # The backticks are literal Markdown, not shell substitutions.
                 # shellcheck disable=SC2016

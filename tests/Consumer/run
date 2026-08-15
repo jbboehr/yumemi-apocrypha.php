@@ -272,6 +272,16 @@ printf("Stable dependency resolution: Apocrypha %s, Yumemi %s.\n", $apocryphaVer
     fi
 }
 
+configure_laravel_advisory_whitelist() {
+    local project_dir=$1
+
+    # Laravel 11 has no tagged release outside these advisory ranges. The fixtures exercise package metadata and static
+    # analysis only, so whitelist the known advisories to keep Composer on the latest tagged framework release instead
+    # of silently preferring the 11.x development branch.
+    composer --working-dir="$project_dir" config policy.advisories.ignore-id \
+        PKSA-m5cs-t1y6-qpcs PKSA-3r5d-mb8f-1qw9 PKSA-mdq4-51ck-6kdq
+}
+
 enable_larastan() {
     local project_dir=$1
     local testbench_major
@@ -649,6 +659,9 @@ run_illuminate_cache() {
     configure_apocrypha_repository "$project_dir"
     configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev "illuminate/cache:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    if [[ $COMPATIBILITY_MODE == larastan ]]; then
+        configure_laravel_advisory_whitelist "$project_dir"
+    fi
     enable_larastan "$project_dir"
     install_consumer_dependencies "$project_dir"
 
@@ -729,6 +742,9 @@ run_illuminate_http() {
     configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "illuminate/http:$package_constraint" --no-update --no-interaction
+    if [[ $COMPATIBILITY_MODE == larastan ]]; then
+        configure_laravel_advisory_whitelist "$project_dir"
+    fi
     enable_larastan "$project_dir"
     install_consumer_dependencies "$project_dir"
 
@@ -827,9 +843,8 @@ run_simple_illuminate_integration() {
     if [[ $FIXTURE_SUITE == illuminate-session ]]; then
         composer --working-dir="$project_dir" require --dev "illuminate/database:$package_constraint" --no-update --no-interaction
     fi
-    if [[ $PACKAGE_MAJOR == *.* ]]; then
-        composer --working-dir="$project_dir" config policy.advisories.ignore-id \
-            PKSA-m5cs-t1y6-qpcs PKSA-3r5d-mb8f-1qw9 PKSA-mdq4-51ck-6kdq
+    if [[ $PACKAGE_MAJOR == *.* || $COMPATIBILITY_MODE != plain ]]; then
+        configure_laravel_advisory_whitelist "$project_dir"
     fi
     enable_larastan "$project_dir"
     enable_phpstan_laravel_validation "$project_dir"
@@ -964,6 +979,7 @@ run_laravel_framework() {
     configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "laravel/framework:^$PACKAGE_MAJOR.0" --no-update --no-interaction
+    configure_laravel_advisory_whitelist "$project_dir"
     enable_larastan "$project_dir"
     install_consumer_dependencies "$project_dir"
 

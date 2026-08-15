@@ -68,7 +68,8 @@ The hash in [`nix/consumer-cache-hash.nix`](nix/consumer-cache-hash.nix) covers 
 selected by those locks; Nix reports the replacement hash when that archive set changes. Ordinary checks install from
 the committed locks without contacting Packagist. The lock-manifest check also rejects stale install metadata for
 Apocrypha and the development-head path packages. The weekly dependency audit updates those inputs, refreshes the locks,
-and reports any lock or archive-hash change for review.
+temporarily applies any reported consumer-cache hash in its disposable checkout, runs normal validation against the
+refreshed dependency set, and reports the resulting lock and hash changes for review.
 
 ## Documentation
 

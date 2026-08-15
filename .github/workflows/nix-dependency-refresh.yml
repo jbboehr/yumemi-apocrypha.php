@@ -51,6 +51,36 @@ jobs:
 
             - name: Prepare and verify refreshed consumer dependencies
               run: |
+                  hash_report="$RUNNER_TEMP/consumer-composer-cache-hash-report"
+                  : > "$hash_report"
+
+                  set +e
+                  NIX_HASH_REPORT_PATH="$hash_report" \
+                      bash .github/scripts/nix-build-with-hash-report .#consumer-composer-cache
+                  build_status=$?
+                  set -e
+
+                  if ((build_status != 0)); then
+                      mapfile -t reported_hashes < "$hash_report"
+                      if ((${#reported_hashes[@]} != 1)); then
+                          printf 'The refreshed cache failed without exactly one actionable hash report.\n' >&2
+                          exit "$build_status"
+                      fi
+
+                      IFS=$'\t' read -r hash_file replacement_hash extra <<< "${reported_hashes[0]}"
+                      if [[ $hash_file != nix/consumer-cache-hash.nix \
+                          || ! $replacement_hash =~ ^sha256-[A-Za-z0-9+/=]+$ \
+                          || -n $extra ]]; then
+                          printf 'The refreshed cache produced an unexpected hash report: %s\n' \
+                              "${reported_hashes[0]}" >&2
+                          exit "$build_status"
+                      fi
+
+                      printf '"%s"\n' "$replacement_hash" > "$hash_file"
+                      printf 'Temporarily applied the refreshed consumer-cache hash so validation can continue.\n' \
+                          >> "$GITHUB_STEP_SUMMARY"
+                  fi
+
                   bash .github/scripts/nix-build-with-hash-report .#consumer-composer-cache
                   bash .github/scripts/nix-build-with-hash-report --rebuild .#consumer-composer-cache
 

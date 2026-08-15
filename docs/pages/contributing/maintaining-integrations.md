@@ -29,6 +29,11 @@ head. The fixture's `verify.php` script then reflects every annotated class, met
 PHPStan runs. Add reflection assertions whenever a stub gains coverage; a missing or renamed upstream declaration must
 fail before semantic assertions run.
 
+Laravel 11 has no tagged framework release outside its known advisory ranges. Its temporary consumer projects whitelist
+those advisories because they install source only for reflection and static analysis; this is not a recommendation to
+run an affected release. The lock check rejects a development-branch `laravel/framework` resolution so Composer cannot
+silently substitute `11.x-dev` for the latest reviewed tag.
+
 Preserve the upstream type structure exactly and change only the unit-bearing scalar. In particular, retain integer
 ranges and literal types when upstream publishes them, but do not infer a narrower type merely because the
 implementation normally produces or accepts values in that range:

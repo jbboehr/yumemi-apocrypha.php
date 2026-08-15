@@ -1,7 +1,7 @@
 # Integration Semantic Audit
 
 This ledger records the source evidence and consumer coverage behind every branded third-party boundary. It was last
-reviewed on 2026-08-12. The public supported-version matrix remains in
+reviewed on 2026-08-14. The public supported-version matrix remains in
 [`docs/pages/integrations.md`](../pages/integrations.md); this document is the maintainer-facing evidence behind it.
 
 ## Method
@@ -20,6 +20,12 @@ The audit preserves upstream scalar alternatives and nullability, keeps dynamic 
 not narrow plain upstream integers from implementation behavior alone. It distinguishes relative durations from Unix
 timestamps and records byte scales from the actual arithmetic rather than from friendly parameter names.
 
+The 2026-08-14 re-audit reproduced all 138 committed consumer locks, ran the complete 38-check Linux flake matrix, and
+compared the Laravel releases added since the previous source review. Those upstream diffs changed no branded boundary.
+The audit did find that Composer's security policy selected `11.x-dev` after every tagged Laravel 11 framework release
+entered an advisory range. Consumer fixtures now whitelist those known advisories for static-analysis testing, pin
+`v11.55.1`, and reject any non-tagged `laravel/framework` version in committed locks.
+
 ## Verified Profiles
 
 | Package                       | Profiles and source snapshots                                          | Profile evidence                                                                    |
@@ -27,8 +33,8 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 | Carbon                        | 2.62.1–2.x; 3.0–3.1 `Real`; 3.2+ `UTC`                                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                             |
 | Guzzle                        | 7 through 7.10 integer request delay; 7.11+ numeric request delay; 8   | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                             |
 | getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                   |
-| Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.55.0`, `12.65.0`, `13.24.0`                               |
-| Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.55.0`, `12.0.0`, `12.65.0`, `13.0.0`, `13.24.0`                       |
+| Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.51.0`, `12.66.0`, `13.25.0`                               |
+| Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
 | Illuminate Database           | 11–13 query timings; query timeout from 12.51.0                        | `11.0.0`, `11.51.0`, `12.0.0`, `12.50.0`, `12.51.0`, `12.66.0`, `13.0.0`, `13.25.0` |
 | Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                           |
 | Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
@@ -36,6 +42,7 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 | Illuminate Session            | 11–13 shared handler and lock-lifetime profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
 | Illuminate Validation         | 11–13 shared fluent-rule profile                                       | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
 | Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                                   |
+| Laravel framework replacement | 11–13                                                                  | `11.55.1`, `12.66.0`, `13.25.0`                                                     |
 | Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                                 |
 | Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                            |
 | phpgeo                        | 4–6                                                                    | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                         |
@@ -116,11 +123,11 @@ format-specific image dimensions remain unbranded.
 ## Illuminate Cache and Cookie
 
 Evidence: Laravel's
-[`Repository`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cache/Repository.php),
-[`RateLimiter`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cache/RateLimiter.php),
-[`Lock`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cache/Lock.php),
-[`Limit`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cache/RateLimiting/Limit.php), and
-[`CookieJar`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Cookie/CookieJar.php), checked at the
+[`Repository`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Cache/Repository.php),
+[`RateLimiter`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Cache/RateLimiter.php),
+[`Lock`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Cache/Lock.php),
+[`Limit`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Cache/RateLimiting/Limit.php), and
+[`CookieJar`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Cookie/CookieJar.php), checked at the
 initial and current release of Laravel 11–13.
 
 | Boundaries                                                                                                                           | Promoted type                                                                             | Coverage     |
@@ -161,10 +168,10 @@ measurement-bearing result shape.
 ## Illuminate Filesystem and HTTP
 
 Evidence: Laravel's
-[`Filesystem`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Filesystem/Filesystem.php),
-[`PendingRequest`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Http/Client/PendingRequest.php),
-and fake-upload [`File`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Http/Testing/File.php) and
-[`FileFactory`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Http/Testing/FileFactory.php).
+[`Filesystem`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Filesystem/Filesystem.php),
+[`PendingRequest`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Http/Client/PendingRequest.php),
+and fake-upload [`File`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Http/Testing/File.php) and
+[`FileFactory`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Http/Testing/FileFactory.php).
 
 | Boundaries                                                                  | Promoted type                                                                    | Coverage     |
 | --------------------------------------------------------------------------- | -------------------------------------------------------------------------------- | ------------ |
@@ -205,15 +212,15 @@ and lower-level geometry objects remain unbranded.
 ## Illuminate Process, Queue, Redis, and Support
 
 Evidence: Laravel's
-[`PendingProcess`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Process/PendingProcess.php),
-[`WorkerOptions`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Queue/WorkerOptions.php), Redis's
+[`PendingProcess`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Process/PendingProcess.php),
+[`WorkerOptions`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Queue/WorkerOptions.php), Redis's
 [`DurationLimiterBuilder`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Redis/Limiters/DurationLimiterBuilder.php),
 [`ConcurrencyLimiterBuilder`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Redis/Limiters/ConcurrencyLimiterBuilder.php),
 concrete limiters, and
 [`CommandExecuted`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Redis/Events/CommandExecuted.php),
-[`Benchmark`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Benchmark.php),
-[`Sleep`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Sleep.php), and
-[`Timebox`](https://github.com/laravel/framework/blob/v13.24.0/src/Illuminate/Support/Timebox.php).
+[`Benchmark`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Support/Benchmark.php),
+[`Sleep`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Support/Sleep.php), and
+[`Timebox`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Support/Timebox.php).
 
 | Boundaries                                                                     | Promoted type                                                                     | Coverage     |
 | ------------------------------------------------------------------------------ | --------------------------------------------------------------------------------- | ------------ |
