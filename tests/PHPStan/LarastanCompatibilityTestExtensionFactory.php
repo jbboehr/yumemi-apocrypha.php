@@ -47,6 +47,7 @@ final class LarastanCompatibilityTestExtensionFactory
         return new ConfiguredIntegrationStubFilesExtension(
             [
                 'illuminate/auth',
+                'illuminate/bus',
                 'illuminate/cache',
                 'illuminate/console',
                 'illuminate/database',

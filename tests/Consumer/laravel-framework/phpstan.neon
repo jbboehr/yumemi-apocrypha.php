@@ -6,6 +6,7 @@ parameters:
     yumemiApocrypha:
         integrations:
             - illuminate/auth
+            - illuminate/bus
             - illuminate/cache
             - illuminate/console
             - illuminate/cookie

@@ -1,0 +1,4 @@
+Illuminate\Bus\Queueable::delay() expects array|DateInterval|DateTimeInterface|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Bus\Queueable::delay() expects array|DateInterval|DateTimeInterface|unit_int<'second'>|null, int given
+Illuminate\Bus\Queueable::$delay expects array|DateInterval|DateTimeInterface|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Bus\Queueable::$delay expects array|DateInterval|DateTimeInterface|unit_int<'second'>|null, int given

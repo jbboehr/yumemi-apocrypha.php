@@ -61,6 +61,10 @@ in
     (withEnvironment { CONSUMER_VENDOR_DIR = "dependencies"; } (plain "82" "source" "guzzle" "8"))
   ];
 
+  illuminate-bus = (illuminateIntegrationProfiles "illuminate-bus") ++ [
+    (plain "82" "source" "illuminate-bus" "12.51.0")
+    (plain "82" "source" "illuminate-bus" "12.52.0")
+  ];
   illuminate-cache = illuminateProfiles "illuminate-cache";
   illuminate-console = (illuminateIntegrationProfiles "illuminate-console") ++ [
     (plain "83" "source" "illuminate-console" "13.1.1")

@@ -971,6 +971,21 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/database'));
     }
 
+    public function testBusAlwaysUsesTheAdapterInsteadOfItsReferenceStubs(): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/bus'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'illuminate/bus',
+            static fn (): string => '12.66.0',
+        );
+
+        self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/bus'));
+        self::assertSame([], $extension->getFiles());
+    }
+
     /** @return iterable<string, array{non-empty-string, int}> */
     public static function routingVersions(): iterable
     {

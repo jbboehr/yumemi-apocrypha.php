@@ -45,6 +45,15 @@ services:
         tags:
             - phpstan.broker.dynamicMethodReturnTypeExtension
             - phpstan.broker.dynamicStaticMethodReturnTypeExtension
+    packageIntegrationBusBatchReturnTypeExtension:
+        class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
+        arguments:
+            selection: @configuredIntegrationStubFilesExtension
+            integration: illuminate/bus
+            class: Illuminate\Bus\Batch
+        tags:
+            - phpstan.broker.dynamicMethodReturnTypeExtension
+            - phpstan.broker.dynamicStaticMethodReturnTypeExtension
     packageIntegrationCacheRateLimiterReturnTypeExtension:
         class: jbboehr\Yumemi\Apocrypha\PHPStan\PackageIntegrationUnitReturnTypeExtension
         arguments:

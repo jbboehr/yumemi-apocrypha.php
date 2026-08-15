@@ -88,6 +88,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-auth',
         ],
+        'illuminate-bus-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'illuminate-bus',
+        ],
         'illuminate-cache-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-cache',

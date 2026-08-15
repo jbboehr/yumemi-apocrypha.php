@@ -571,7 +571,7 @@ final class PackageIntegrationUnitBoundaryExtension implements Rule, ExpressionT
         }
 
         foreach ($receiver->getObjectClassReflections() as $reflection) {
-            if ($reflection->hasTraitUse($class)) {
+            if (isset($reflection->getTraits(true)[$class])) {
                 return true;
             }
         }

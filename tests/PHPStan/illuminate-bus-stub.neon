@@ -1,0 +1,4 @@
+parameters:
+    stubFiles:
+        - ../../stubs/illuminate/bus.stub
+        - ../../stubs/illuminate/bus-12.52.stub

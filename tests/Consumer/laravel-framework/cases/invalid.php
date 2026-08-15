@@ -38,11 +38,14 @@ declare(strict_types=1);
 
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Auth\SessionGuard;
+use Illuminate\Bus\Batch;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Cookie\Factory;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Connection;
+use Illuminate\Foundation\Queue\Queueable as FoundationQueueable;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
@@ -60,8 +63,28 @@ function acceptFrameworkMeters(int $meters): void
 {
 }
 
+final class InvalidFrameworkBusJob
+{
+    use Queueable;
+}
+
+abstract class InvalidFrameworkBaseBusJob
+{
+    use FoundationQueueable;
+}
+
+final class InvalidInheritedFrameworkBusJob extends InvalidFrameworkBaseBusJob
+{
+}
+
+/** @param unit_int<'second'> $seconds */
+function acceptFrameworkBusSeconds(int $seconds): void
+{
+}
+
 function rejectInvalidLaravelFrameworkUnits(
     SessionGuard $guard,
+    Batch $batch,
     Store $cache,
     Event $event,
     Factory $cookies,
@@ -73,6 +96,11 @@ function rejectInvalidLaravelFrameworkUnits(
     DurationLimiterBuilder $redisLimiter,
 ): void {
     $guard->setRememberDuration(unit(30, 'second'));
+    (new InvalidFrameworkBusJob())->delay(unit(1, 'minute'));
+    $inheritedJob = new InvalidInheritedFrameworkBusJob();
+    $inheritedJob->delay(unit(2, 'minute'));
+    $inheritedJob->delay = unit(3, 'minute');
+    acceptFrameworkBusSeconds($batch->progress());
     $cache->put('report', 'ready', unit(1, 'minute'));
     $event->withoutOverlapping(unit(30, 'second'));
     $cookies->make('session', 'token', unit(30, 'second'));

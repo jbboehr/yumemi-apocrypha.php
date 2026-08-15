@@ -55,6 +55,7 @@ if (
 
 $checks = [
     'illuminate/auth' => [Illuminate\Auth\SessionGuard::class, 'setRememberDuration', 'minutes'],
+    'illuminate/bus' => [Illuminate\Bus\Queueable::class, 'delay', 'delay'],
     'illuminate/cache' => [Illuminate\Contracts\Cache\Store::class, 'put', 'seconds'],
     'illuminate/console' => [Illuminate\Console\Scheduling\Event::class, 'withoutOverlapping', 'expiresAt'],
     'illuminate/cookie' => [Illuminate\Contracts\Cookie\Factory::class, 'make', 'minutes'],
@@ -96,4 +97,12 @@ foreach ($checks as $package => [$class, $method, $parameter]) {
     if (!in_array($parameter, $parameterNames, true)) {
         throw new RuntimeException(sprintf('%s::%s() does not have parameter $%s.', $class, $method, $parameter));
     }
+}
+
+$bus = new ReflectionClass(Illuminate\Bus\Queueable::class);
+if (!$bus->isTrait() || !$bus->hasProperty('delay')) {
+    throw new RuntimeException('Illuminate Bus Queueable does not expose the expected $delay property.');
+}
+if ((new ReflectionMethod(Illuminate\Bus\Batch::class, 'progress'))->getNumberOfParameters() !== 0) {
+    throw new RuntimeException('Illuminate Bus Batch::progress() unexpectedly accepts parameters.');
 }

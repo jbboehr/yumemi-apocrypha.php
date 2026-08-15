@@ -1,0 +1,33 @@
+<?php
+
+namespace Illuminate\Bus;
+
+trait Queueable
+{
+    /**
+     * @var \DateTimeInterface|\DateInterval|array|int|null
+     * @yumemi-var \DateTimeInterface|\DateInterval|array|unit_int<'second'>|null
+     */
+    public $delay;
+
+    /**
+     * @param \DateTimeInterface|\DateInterval|array|int|null $delay
+     * @return $this
+     *
+     * @yumemi-param \DateTimeInterface|\DateInterval|array|unit_int<'second'>|null $delay
+     */
+    public function delay($delay)
+    {
+    }
+}
+
+class Batch
+{
+    /**
+     * @return int
+     * @yumemi-return unit_int<'percent'>
+     */
+    public function progress()
+    {
+    }
+}

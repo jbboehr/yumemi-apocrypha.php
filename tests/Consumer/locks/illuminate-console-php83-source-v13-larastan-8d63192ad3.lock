@@ -369,6 +369,12 @@
                 "test:consumer:illuminate-auth:archive": [
                     "make test-consumer-illuminate-auth-archive"
                 ],
+                "test:consumer:illuminate-bus": [
+                    "make test-consumer-illuminate-bus"
+                ],
+                "test:consumer:illuminate-bus:archive": [
+                    "make test-consumer-illuminate-bus-archive"
+                ],
                 "test:consumer:illuminate-cache": [
                     "make test-consumer-illuminate-cache"
                 ],
@@ -377,6 +383,9 @@
                 ],
                 "test:consumer:illuminate-console": [
                     "make test-consumer-illuminate-console"
+                ],
+                "test:consumer:illuminate-console:archive": [
+                    "make test-consumer-illuminate-console-archive"
                 ],
                 "test:consumer:illuminate-cookie": [
                     "make test-consumer-illuminate-cookie"

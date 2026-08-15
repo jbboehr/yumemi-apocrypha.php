@@ -81,6 +81,8 @@ final readonly class PackageArchiveChecker
         'stubs/illuminate/auth-session-guard-timebox-hash-key.stub',
         'stubs/illuminate/auth-session-guard.stub',
         'stubs/illuminate/auth.stub',
+        'stubs/illuminate/bus-12.52.stub',
+        'stubs/illuminate/bus.stub',
         'stubs/illuminate/cache.stub',
         'stubs/illuminate/console-11.stub',
         'stubs/illuminate/console-13.stub',

@@ -112,6 +112,18 @@ final class PackageIntegrationUnitBoundaryMetadata
             'properties' => [],
             'returns' => [],
         ],
+        'illuminate/bus' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Bus\\Queueable', 'kind' => 'method', 'method' => 'delay', 'position' => 0, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|array|unit_int<'second'>|null"],
+            ],
+            'properties' => [
+                ['class' => 'Illuminate\\Bus\\Queueable', 'property' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|array|unit_int<'second'>|null"],
+            ],
+            'returns' => [
+                ['class' => 'Illuminate\\Bus\\Batch', 'kind' => 'method', 'method' => 'progress', 'type' => "unit_int<'percent'>", 'majors' => [11, 12], 'beforeVersions' => [12 => '12.52.0']],
+                ['class' => 'Illuminate\\Bus\\Batch', 'kind' => 'method', 'method' => 'progress', 'type' => "int<0, 100>&unit_int<'percent'>", 'majors' => [12, 13], 'minimumVersions' => [12 => '12.52.0']],
+            ],
+        ],
         'illuminate/cache' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Contracts\\Cache\\Repository', 'kind' => 'method', 'method' => 'put', 'position' => 2, 'name' => 'ttl', 'type' => "unit_int<'second'>|\\DateTimeInterface|\\DateInterval|null"],

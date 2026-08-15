@@ -3,7 +3,8 @@
 	test-consumer-getid3 test-consumer-getid3-archive \
 	test-consumer-guzzle test-consumer-guzzle-archive \
 	test-consumer-intervention-image test-consumer-intervention-image-archive \
-	test-consumer-illuminate-auth test-consumer-illuminate-auth-archive test-consumer-illuminate-cache \
+	test-consumer-illuminate-auth test-consumer-illuminate-auth-archive test-consumer-illuminate-bus \
+	test-consumer-illuminate-bus-archive test-consumer-illuminate-cache \
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-console test-consumer-illuminate-console-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-database test-consumer-illuminate-filesystem \
 	test-consumer-illuminate-http test-consumer-illuminate-http-archive \
@@ -25,6 +26,7 @@ BRANCH_COVERAGE_TESTS ?=
 BRANCH_COVERAGE_XDEBUG_ERROR := Xdebug is not loaded; enter nix develop .\#xdebug.
 CARBON_VERSION ?= 3
 ILLUMINATE_AUTH_MAJOR ?= 12
+ILLUMINATE_BUS_MAJOR ?= 12
 ILLUMINATE_CACHE_MAJOR ?= 12
 ILLUMINATE_CONSOLE_MAJOR ?= 12
 ILLUMINATE_COMPATIBILITY_MODE ?= plain
@@ -100,6 +102,12 @@ test-consumer-illuminate-auth:
 
 test-consumer-illuminate-auth-archive:
 	tests/Consumer/run archive illuminate-auth $(ILLUMINATE_AUTH_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-bus:
+	tests/Consumer/run source illuminate-bus $(ILLUMINATE_BUS_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-bus-archive:
+	tests/Consumer/run archive illuminate-bus $(ILLUMINATE_BUS_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-cache:
 	tests/Consumer/run source illuminate-cache $(ILLUMINATE_CACHE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)

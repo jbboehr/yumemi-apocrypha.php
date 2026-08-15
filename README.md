@@ -61,6 +61,7 @@ function cacheReportForOneMinute(Store $cache): void
 | `james-heinrich/getid3`             | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x |
 | `guzzlehttp/guzzle`                 | 7, 8                                |
 | `illuminate/auth`                   | 11, 12, 13                          |
+| `illuminate/bus`                    | 11, 12, 13                          |
 | `illuminate/cache`                  | 11, 12, 13                          |
 | `illuminate/console`                | 11, 12, 13                          |
 | `illuminate/cookie`                 | 11, 12, 13                          |

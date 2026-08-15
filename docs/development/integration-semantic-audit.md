@@ -13,8 +13,9 @@ package. `V` means a branded value is accepted or an inferred return is asserted
 means the boundary is exercised directly by `V`, while rejection is tested on another boundary with the identical
 promoted type. Every integration runs explicit and autodetected registration; every Illuminate integration also runs
 through the package-boundary adapter, whose core catalog is mechanically compared with its retained or selected
-reference stub. Carbon, Illuminate Database, Illuminate Routing, Measurements, and Intervention Image always use the
-same adapter so their partial verification stubs cannot replace complete or more precise upstream declarations.
+reference stub. Carbon, Illuminate Bus, Illuminate Database, Illuminate Routing, Measurements, and Intervention Image
+always use the same adapter so their partial verification stubs cannot replace complete or more precise upstream
+declarations.
 
 The audit preserves upstream scalar alternatives and nullability, keeps dynamic result and option arrays open, and does
 not narrow plain upstream integers from implementation behavior alone. It distinguishes relative durations from Unix
@@ -28,7 +29,8 @@ entered an advisory range. Consumer fixtures now whitelist those known advisorie
 
 The 2026-08-15 Auth audit added 16 committed profiles around the component's cache, timebox, prefix, and hash-key
 cutovers. The Console audit then added eight profiles for the shared scheduler surface and its Laravel 13.2 signature
-cutover. The resulting 162-lock, 40-check Linux flake matrix covers both integrations.
+cutover. The Bus audit added eight profiles across Laravel 11–13 and both sides of its Laravel 12.52 progress-range
+cutover. The resulting 170-lock, 41-check Linux flake matrix covers all three integrations.
 
 ## Verified Profiles
 
@@ -38,6 +40,7 @@ cutover. The resulting 162-lock, 40-check Linux flake matrix covers both integra
 | Guzzle                        | 7 through 7.10 integer request delay; 7.11+ numeric request delay; 8   | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                                                                        |
 | getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                                                              |
 | Illuminate Auth               | 11–13, with cache, timebox, prefix, and hash-key cutovers              | `11.30.0`, `11.31.0`, `11.44.0`, `11.45.0`, `12.13.0`, `12.14.0`, `12.19.3`, `12.20.0`, `12.44.0`, `12.45.0`, and latest 11–13 |
+| Illuminate Bus                | 11–13 delays and progress; ranged progress from Laravel 12.52          | `11.51.0`, `11.55.1`, `12.51.0`, `12.52.0`, `12.66.0`, `13.25.0`                                                               |
 | Illuminate Console            | 11–13 shared scheduler units; Laravel 13.2 adds an unrelated flag      | `11.51.0`, `11.55.1`, `12.66.0`, `13.1.1`, `13.2.0`, `13.25.0`                                                                 |
 | Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.51.0`, `12.66.0`, `13.25.0`                                                                          |
 | Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                                                                  |
@@ -152,6 +155,29 @@ seconds directly. Cache expiry and both throttle parameters are already second-v
 boundaries but performs no conversion. Profile reflection verifies the constructor changes and the Laravel 11 runtime
 multiplication. Plain consumers exercise the retained upstream signatures at each cutover; Larastan consumers for every
 supported major disable the complete Auth stub set and reproduce only these unit boundaries through metadata.
+
+## Illuminate Bus
+
+Evidence: Laravel's [`Queueable`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Bus/Queueable.php)
+trait and [`Batch`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Bus/Batch.php), checked at the
+current releases of Laravel 11–13 and immediately before and after Laravel 12.52.0.
+
+| Boundaries                         | Promoted type                                                                | Coverage |
+| ---------------------------------- | ---------------------------------------------------------------------------- | -------- |
+| `Queueable::$delay` and `delay()`  | integer seconds; date-time, interval, array, and null alternatives preserved | S/V/I    |
+| `Batch::progress()` before 12.52.0 | integer percent                                                              | S/V/I    |
+| `Batch::progress()` from 12.52.0   | `int<0, 100>` percent                                                        | S/V/I    |
+
+`Queueable::delay()` assigns its argument directly to the public property; the scalar integer is documented as seconds.
+The array alternative remains open because upstream publishes no element shape. `Batch::progress()` calculates a
+percentage by multiplying the processed fraction by 100. Laravel 12.52 casts that result and publishes its integer
+range. Earlier versions declare an integer but return `round()`'s float for nonzero totals; Apocrypha preserves the
+published scalar type and records the runtime mismatch rather than silently widening the upstream signature.
+
+Bus always uses the metadata adapter because a trait stub does not propagate its annotations to arbitrary consuming job
+classes. The adapter explicitly matches trait use and intersects the progress unit with Laravel's selected return type.
+Retained stubs cover both sides of the 12.52 cutover and remain in exact metadata parity. Total, pending, failed, and
+processed job counts remain unbranded dimensionless counts.
 
 ## Illuminate Cache and Cookie
 

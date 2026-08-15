@@ -19,16 +19,18 @@ upstream versions it claims to support and semantically accurate about the repre
   releases.
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
-- `illuminate/auth`, `illuminate/cache`, `illuminate/console`, `illuminate/cookie`, `illuminate/database`,
-  `illuminate/filesystem`, `illuminate/http`, `illuminate/support`, `illuminate/process`, `illuminate/queue`,
-  `illuminate/redis`, `illuminate/routing`, `illuminate/session`, and `illuminate/validation` cover stable unit-bearing
-  APIs across Laravel 11 through 13. Auth distinguishes remember-cookie minutes, authentication timebox microseconds,
-  and version-specific token expiry. Database distinguishes millisecond query timings from second-valued query execution
-  timeouts where that API exists. Console distinguishes sub-minute repeat seconds from overlap-lock expiration minutes
-  and preserves the Laravel 13.2 overlap signature cutover. Validation covers raster dimensions and integer file-rule
-  sizes while preserving upstream string size expressions. Routing distinguishes minute-valued throttle decay from
-  second-valued route locks and signed-URL expirations. Session distinguishes minute-valued handler retention from
-  second-valued garbage collection, route locks, and decorator lifetimes.
+- `illuminate/auth`, `illuminate/bus`, `illuminate/cache`, `illuminate/console`, `illuminate/cookie`,
+  `illuminate/database`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`, `illuminate/process`,
+  `illuminate/queue`, `illuminate/redis`, `illuminate/routing`, `illuminate/session`, and `illuminate/validation` cover
+  stable unit-bearing APIs across Laravel 11 through 13. Auth distinguishes remember-cookie minutes, authentication
+  timebox microseconds, and version-specific token expiry. Database distinguishes millisecond query timings from
+  second-valued query execution timeouts where that API exists. Bus distinguishes scalar job-delay seconds from batch
+  progress percentages and preserves the progress range added in Laravel 12.52. Console distinguishes sub-minute repeat
+  seconds from overlap-lock expiration minutes and preserves the Laravel 13.2 overlap signature cutover. Validation
+  covers raster dimensions and integer file-rule sizes while preserving upstream string size expressions. Routing
+  distinguishes minute-valued throttle decay from second-valued route locks and signed-URL expirations. Session
+  distinguishes minute-valued handler retention from second-valued garbage collection, route locks, and decorator
+  lifetimes.
 - `intervention/image` covers nominal raster-pixel dimensions and coordinates plus degree rotations across Intervention
   Image 3 and 4. A metadata adapter preserves the package's complete interfaces, while version 4 retains its `Fraction`
   dimension alternatives. Resolution, quality, opacity, transparency, and lower-level geometry objects remain outside
@@ -37,7 +39,8 @@ upstream versions it claims to support and semantically accurate about the repre
   analysis, then keep Larastan's declarations and reproduce Apocrypha's unit boundaries through a metadata-driven rule
   and type-extension adapter when Larastan is present. Illuminate Database uses that adapter in both modes so its unit
   annotations cannot overwrite upstream callback or event-constructor PHPDoc that changed within supported majors.
-  Illuminate Routing also uses the adapter in both modes so its partial reference stub cannot replace the complete
+  Illuminate Bus also uses the adapter in both modes because trait stub annotations do not propagate to arbitrary job
+  classes. Illuminate Routing uses the adapter in both modes so its partial reference stub cannot replace the complete
   upstream `Route` surface or Larastan's added metadata. Their retained stubs are review references whose promoted tags
   remain in parity with the metadata catalog. Illuminate Validation additionally has a combined profile with
   `jbboehr/phpstan-laravel-validation`; the extensions retain their separate Validator inference and declaration
@@ -55,10 +58,10 @@ upstream versions it claims to support and semantically accurate about the repre
 - The loader can enforce a minimum release within a major and select major- or minor-version-specific stub files when a
   supported upstream signature differs. Carbon uses three release profiles; Illuminate HTTP distinguishes Laravel 11
   before and after 11.35.1; Illuminate Auth selects its CacheTokenRepository, timebox, cache-prefix, and hash-key
-  constructor cutovers; Illuminate Queue uses cutovers at Laravel 11.53.0, 12.60.0, and 13.10.0; Guzzle distinguishes
-  request delays before and after 7.11.0; Illuminate Database adds query execution timeouts at Laravel 12.51.0; getID3
-  uses minimum and major selection for its global 1.x and namespaced 2.x APIs; Illuminate Process and Guzzle also use
-  major-specific files.
+  constructor cutovers; Illuminate Bus preserves the `Batch::progress()` range added in Laravel 12.52.0; Illuminate
+  Queue uses cutovers at Laravel 11.53.0, 12.60.0, and 13.10.0; Guzzle distinguishes request delays before and after
+  7.11.0; Illuminate Database adds query execution timeouts at Laravel 12.51.0; getID3 uses minimum and major selection
+  for its global 1.x and namespaced 2.x APIs; Illuminate Process and Guzzle also use major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   default symlinked path installs, a representative Composer archive, and Laravel 11 through 13 replacement metadata for
   every Illuminate integration. Every Illuminate subpackage and the combined framework fixture run both with and without
@@ -101,11 +104,11 @@ suite. Integration scope remains curated: add APIs only when their physical unit
 Larastan compatibility is selected for an entire Illuminate integration rather than as a partial stub overlay, and an
 unverified Larastan major is rejected until its combined behavior passes the same matrix. Illuminate Database uses the
 same whole-integration adapter even without Larastan because preserving its installed upstream declaration PHPDoc is
-safer than maintaining ordinary signature copies across mid-major changes. Illuminate Routing does the same because a
-partial `Route` stub would hide unrelated upstream methods. `phpstan/phpstan-symfony` 2 currently coexists directly with
-the Symfony stubs because its active declarations do not overlap them. If an extension release begins owning any
-declaration in a selected integration, disable that integration's complete stub set and use a metadata adapter rather
-than loading both.
+safer than maintaining ordinary signature copies across mid-major changes. Illuminate Bus does the same because a trait
+stub does not annotate arbitrary job classes; Illuminate Routing does so because a partial `Route` stub would hide
+unrelated upstream methods. `phpstan/phpstan-symfony` 2 currently coexists directly with the Symfony stubs because its
+active declarations do not overlap them. If an extension release begins owning any declaration in a selected
+integration, disable that integration's complete stub set and use a metadata adapter rather than loading both.
 
 The Illuminate Validation compatibility profile installs Larastan and `jbboehr/phpstan-laravel-validation` together.
 Keep validation-result inference and `Validator` stubs with those extensions; Apocrypha should claim only fixed-unit

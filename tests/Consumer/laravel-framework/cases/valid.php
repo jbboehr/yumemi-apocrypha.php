@@ -38,11 +38,14 @@ declare(strict_types=1);
 
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Auth\SessionGuard;
+use Illuminate\Bus\Batch;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Cookie\Factory;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Connection;
+use Illuminate\Foundation\Queue\Queueable as FoundationQueueable;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
@@ -56,8 +59,28 @@ use Illuminate\Validation\Rules\File;
 use function jbboehr\Yumemi\unit;
 use function PHPStan\Testing\assertType;
 
+final class FrameworkBusJob
+{
+    use Queueable;
+}
+
+abstract class FrameworkBaseBusJob
+{
+    use FoundationQueueable;
+}
+
+final class InheritedFrameworkBusJob extends FrameworkBaseBusJob
+{
+}
+
+/** @param unit_int<'percent'> $percent */
+function recordFrameworkBusProgress(int $percent): void
+{
+}
+
 function exerciseLaravelFrameworkIntegrations(
     SessionGuard $guard,
+    Batch $batch,
     Store $cache,
     Event $event,
     Factory $cookies,
@@ -71,6 +94,11 @@ function exerciseLaravelFrameworkIntegrations(
     $seconds = unit(30, 'second');
 
     $guard->setRememberDuration(unit(30, 'minute'));
+    (new FrameworkBusJob())->delay($seconds);
+    $inheritedJob = new InheritedFrameworkBusJob();
+    $inheritedJob->delay(unit(2, 'second'));
+    $inheritedJob->delay = unit(3, 'second');
+    recordFrameworkBusProgress($batch->progress());
     $cache->put('report', 'ready', $seconds);
     $event->withoutOverlapping(unit(30, 'minute'));
     $cookies->make('session', 'token', unit(30, 'minute'));

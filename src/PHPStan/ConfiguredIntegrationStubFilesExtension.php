@@ -152,6 +152,18 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 ],
             ],
         ],
+        'illuminate/bus' => [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../stubs/illuminate/bus.stub'],
+            'filesByMajor' => [
+                13 => [__DIR__ . '/../../stubs/illuminate/bus-12.52.stub'],
+            ],
+            'filesByMinimumVersion' => [
+                12 => [
+                    '12.52.0' => [__DIR__ . '/../../stubs/illuminate/bus-12.52.stub'],
+                ],
+            ],
+        ],
         'illuminate/cache' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
@@ -653,7 +665,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             return false;
         }
 
-        if (in_array($integration, ['illuminate/database', 'illuminate/routing'], true)) {
+        if (in_array($integration, ['illuminate/bus', 'illuminate/database', 'illuminate/routing'], true)) {
             $this->resolveLarastanMajor();
 
             return true;

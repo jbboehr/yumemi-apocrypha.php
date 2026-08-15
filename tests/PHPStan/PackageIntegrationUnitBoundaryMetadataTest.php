@@ -93,6 +93,9 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         yield 'illuminate/console 13.1.1' => ['illuminate/console', 13, '13.1.1'];
         yield 'illuminate/console 13.2.0' => ['illuminate/console', 13, '13.2.0'];
         yield 'illuminate/console 13.x-dev' => ['illuminate/console', 13, '13.x-dev'];
+        yield 'illuminate/bus 12.51.0' => ['illuminate/bus', 12, '12.51.0'];
+        yield 'illuminate/bus 12.52.0' => ['illuminate/bus', 12, '12.52.0'];
+        yield 'illuminate/bus 12.x-dev' => ['illuminate/bus', 12, '12.x-dev'];
         yield 'Intervention Image 3' => ['intervention/image', 3, '3.0.0'];
         yield 'Intervention Image 4' => ['intervention/image', 4, '4.0.0'];
     }
@@ -308,6 +311,15 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
 
         return match ($integration) {
             'illuminate/auth' => $this->authStubFiles($base, $major, $version),
+            'illuminate/bus' => [$base . (
+                $major === 13
+                || ($major === 12 && (
+                    $version === '12.x-dev'
+                    || version_compare(ltrim($version, 'v'), '12.52.0', '>=')
+                ))
+                    ? 'bus-12.52.stub'
+                    : 'bus.stub'
+            )],
             'illuminate/cache' => [$base . 'cache.stub'],
             'illuminate/console' => [$base . (
                 $major === 13
