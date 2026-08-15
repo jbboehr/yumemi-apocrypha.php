@@ -141,11 +141,14 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         $temporaryPath = tempnam(sys_get_temp_dir(), 'yumemi-apocrypha-install-');
         self::assertNotFalse($temporaryPath);
         self::assertTrue(unlink($temporaryPath));
-        $packageRoot = $temporaryPath . '/vendor/jbboehr/yumemi-apocrypha';
-        $stubRoot = $packageRoot . '/stubs/guzzle';
+        $packageRoot = $temporaryPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'jbboehr'
+            . DIRECTORY_SEPARATOR . 'yumemi-apocrypha';
+        $stubRoot = $packageRoot . DIRECTORY_SEPARATOR . 'stubs' . DIRECTORY_SEPARATOR . 'guzzle';
+        $baseStub = $stubRoot . DIRECTORY_SEPARATOR . 'guzzle.stub';
+        $majorStub = $stubRoot . DIRECTORY_SEPARATOR . 'guzzle-7.stub';
         self::assertTrue(mkdir($stubRoot, 0o777, true));
-        self::assertTrue(copy(__DIR__ . '/../../stubs/guzzle/guzzle.stub', $stubRoot . '/guzzle.stub'));
-        self::assertTrue(copy(__DIR__ . '/../../stubs/guzzle/guzzle-7.stub', $stubRoot . '/guzzle-7.stub'));
+        self::assertTrue(copy(__DIR__ . '/../../stubs/guzzle/guzzle.stub', $baseStub));
+        self::assertTrue(copy(__DIR__ . '/../../stubs/guzzle/guzzle-7.stub', $majorStub));
 
         try {
             $this->reloadInstalledPackageMetadata(
@@ -159,12 +162,12 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
             $extension = new ConfiguredIntegrationStubFilesExtension(['guzzlehttp/guzzle'], false, true);
 
             self::assertSame([
-                $stubRoot . '/guzzle.stub',
-                $stubRoot . '/guzzle-7.stub',
+                $baseStub,
+                $majorStub,
             ], $extension->getFiles());
         } finally {
-            self::assertTrue(unlink($stubRoot . '/guzzle.stub'));
-            self::assertTrue(unlink($stubRoot . '/guzzle-7.stub'));
+            self::assertTrue(unlink($baseStub));
+            self::assertTrue(unlink($majorStub));
             self::assertTrue(rmdir($stubRoot));
             self::assertTrue(rmdir(dirname($stubRoot)));
             self::assertTrue(rmdir(dirname($stubRoot, 2)));
@@ -229,9 +232,10 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         $temporaryPath = tempnam(sys_get_temp_dir(), 'yumemi-apocrypha-external-stub-');
         self::assertNotFalse($temporaryPath);
         self::assertTrue(unlink($temporaryPath));
-        $packageRoot = $temporaryPath . '/vendor/jbboehr/yumemi-apocrypha';
+        $packageRoot = $temporaryPath . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'jbboehr'
+            . DIRECTORY_SEPARATOR . 'yumemi-apocrypha';
         self::assertTrue(mkdir($packageRoot, 0o777, true));
-        $externalStub = $temporaryPath . '/external.stub';
+        $externalStub = $temporaryPath . DIRECTORY_SEPARATOR . 'external.stub';
         self::assertNotFalse(file_put_contents($externalStub, "<?php\n"));
 
         try {

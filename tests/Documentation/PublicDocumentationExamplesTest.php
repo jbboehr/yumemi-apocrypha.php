@@ -108,7 +108,7 @@ final class PublicDocumentationExamplesTest extends TestCase
 
         $matched = preg_match_all(
             '/^[ \t]*run_documentation_phpstan_case[ \t]+([a-z0-9-]+)[^\r\n]*[ \t]+'
-                . '([a-z0-9-]+)[ \t]*$/m',
+                . '([a-z0-9-]+)[ \t]*\r?$/m',
             $contents,
             $matches,
             PREG_SET_ORDER,

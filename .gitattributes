@@ -1,6 +1,8 @@
 * text=auto
 
+.codex/agents/*.toml text eol=lf
 composer.lock linguist-generated
+docs/pages/assets/doctrine-web/** text eol=lf
 docs/pages/assets/doctrine-web/document-looks-back.* linguist-vendored
 docs/pages/assets/doctrine-web/heliogenesis-* linguist-vendored
 docs/pages/assets/doctrine-web/heliogenesis.* linguist-vendored

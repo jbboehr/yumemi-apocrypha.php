@@ -109,7 +109,7 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         $neon = (string) file_get_contents(__DIR__ . '/../../apocrypha.neon');
         self::assertSame(
             count($expected),
-            preg_match_all('/^ {12}class: ((?:Carbon|Illuminate|Intervention)\\\\[^\r\n]+)$/m', $neon, $matches),
+            preg_match_all('/^ {12}class: ((?:Carbon|Illuminate|Intervention)\\\\[^\r\n]+)\r?$/m', $neon, $matches),
         );
         $actual = array_values(array_unique($matches[1]));
         sort($actual);
