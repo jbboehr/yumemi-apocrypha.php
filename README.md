@@ -74,7 +74,9 @@ function cacheReportForOneMinute(Store $cache): void
 
 ## Documentation
 
-See the [documentation index](docs/pages/README.md) for installation, integration coverage, and maintenance policy.
+Start with [Getting Started](docs/pages/getting-started.md), then consult the
+[integration reference](docs/pages/integrations.md) for exact units, versions, and limitations. The
+[documentation index](docs/pages/README.md) also links maintainer guidance.
 
 ## License
 

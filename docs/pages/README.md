@@ -4,10 +4,10 @@
 
 # Yumemi Apocrypha
 
-Yumemi Apocrypha extends [Yumemi](https://github.com/jbboehr/yumemi.php)'s PHPStan unit checking to verified third-party
-APIs. It supplies analysis metadata only: upstream packages retain their runtime behavior, and branded native values
-remain ordinary PHP scalars. Third-party dependencies and integration release policy remain outside Yumemi's core
-package.
+[Yumemi](https://github.com/jbboehr/yumemi.php) defines branded native values; Yumemi Apocrypha maps them onto verified
+third-party APIs. Apocrypha supplies PHPStan metadata only: upstream packages keep their runtime behavior, and branded
+native values remain ordinary PHP scalars. Apocrypha owns integration selection and version policy; Yumemi owns unit
+semantics and optional `@yumemi-*` tag promotion.
 
 ## Start Here
 

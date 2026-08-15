@@ -14,7 +14,8 @@ green island rose within it.</p>
 </figure>
 
 Apocrypha deliberately covers a small set of stable, useful, and unambiguous unit-bearing boundaries. The table below is
-a record of verified behavior, not a promise to support every future or historical package major indefinitely.
+a record of verified behavior, not a promise to support every future or historical package major indefinitely. Every
+integration changes PHPStan's view of an upstream API only; it does not wrap calls or convert values at runtime.
 
 ## Version Policy
 
@@ -48,6 +49,8 @@ a partial Illuminate stub over Larastan. Illuminate Database and Routing use the
 Larastan so their installed package declarations remain authoritative. An installed Larastan major other than 3 is
 rejected while an Illuminate integration is selected.
 
+Both Symfony integrations are tested alongside `phpstan/phpstan-symfony` 2.
+
 ## Compatibility Before 1.0
 
 The first releases treat the following surfaces as deliberate but provisional. A change during the 0.x series remains
@@ -64,9 +67,7 @@ compatibility-relevant and should be documented, even when Semantic Versioning p
 
 ## Carbon
 
-Enable `nesbot/carbon` to brand fixed-duration calculations and waits. A branded native value remains an ordinary PHP
-integer or float at runtime; Apocrypha describes Carbon's existing boundaries to PHPStan and does not change how Carbon
-calculates dates.
+Enable `nesbot/carbon` to brand fixed-duration calculations and waits.
 
 | API concern                                           | Unit                          |
 | ----------------------------------------------------- | ----------------------------- |
@@ -510,9 +511,8 @@ inference and their `Validator` declarations; Apocrypha adds only the unit-beari
 
 ## Intervention Image
 
-Enable `intervention/image` to distinguish raster dimensions and coordinates from rotation angles. These values remain
-ordinary PHP integers and floats at runtime; Apocrypha adds units only to PHPStan's view of Intervention Image's public
-manager and image APIs.
+Enable `intervention/image` to distinguish raster dimensions and coordinates from rotation angles in its public manager
+and image APIs.
 
 | API concern                                                  | Unit     |
 | ------------------------------------------------------------ | -------- |
@@ -550,9 +550,7 @@ validation or convention alone.
 
 ## Measurements
 
-Enable `nmarfurt/measurements` to require the unit named by each `Length` and `Duration` magic factory. The scalar
-passed to a factory remains an ordinary PHP float at runtime; Apocrypha adds the unit requirement only to PHPStan's view
-of the existing call.
+Enable `nmarfurt/measurements` to require the unit named by each `Length` and `Duration` magic factory.
 
 | Factory family | Covered units                                                                                 |
 | -------------- | --------------------------------------------------------------------------------------------- |
@@ -594,9 +592,9 @@ Enable `mjaschen/phpgeo` to brand phpgeo's selected distance, area, bearing, and
 | Polygon area                                   | `meter ^ 2` |
 | Bearings and destination-bearing inputs        | `degree`    |
 
-This covers the distance calculators and their coordinate convenience method; line, polyline, and polygon measurements;
-cardinal-direction components; destination calculations; bounds expansion; perpendicular-distance utilities; polyline
-simplification tolerance.
+This covers distance calculators and `Coordinate::getDistance()`; line, polyline, and polygon measurements;
+cardinal-direction components; destination calculations; bounds expansion; perpendicular-distance utilities; and
+polyline simplification tolerances.
 
 <!-- yumemi-example: phpgeo-invalid -->
 
@@ -631,8 +629,7 @@ branded float ranges are not yet available.
 ## Symfony HttpFoundation
 
 Enable `symfony/http-foundation` to catch cache durations, session lifetimes, and SSE reconnect delays that use adjacent
-time units. Apocrypha describes the existing HttpFoundation calls to PHPStan; the values remain ordinary PHP integers at
-runtime and no cache value is converted automatically.
+time units.
 
 | API concern                                 | Unit          | Availability |
 | ------------------------------------------- | ------------- | ------------ |

@@ -23,11 +23,11 @@ coverage solely because a parameter name resembles a duration or size.
 ## Verify Upstream Signatures
 
 The consumer fixture installs the release recorded in its committed profile lock. A weekly CI audit refreshes those
-locks to detect newer compatible releases and reports any resulting archive-hash change for review. A separate lock
-check rejects stale install metadata for Apocrypha, Yumemi's development head, and Laravel Validation's development
-head. The fixture's `verify.php` script then reflects every annotated class, method, parameter, and property before
-PHPStan runs. Add reflection assertions whenever a stub gains coverage; a missing or renamed upstream declaration must
-fail before semantic assertions run.
+locks, temporarily applies any reported consumer-cache hash, runs the complete matrix, and reports dependency changes
+for review. A separate lock check rejects stale install metadata for Apocrypha, Yumemi's development head, and Laravel
+Validation's development head. The fixture's `verify.php` script then reflects every annotated class, method, parameter,
+and property before PHPStan runs. Add reflection assertions whenever a stub gains coverage; a missing or renamed
+upstream declaration must fail before semantic assertions run.
 
 Laravel 11 has no tagged framework release outside its known advisory ranges. Its temporary consumer projects whitelist
 those advisories because they install source only for reflection and static analysis; this is not a recommendation to
@@ -53,7 +53,7 @@ package as an exact replacement rather than a directly installed package. Each I
 Larastan 3. In that mode Larastan owns the upstream declarations, while Apocrypha reproduces only its unit semantics
 through rules and type extensions.
 
-Run one major locally with:
+Every integration has a `test-consumer-*` Make target. Version variables are listed at the top of `Makefile`. Examples:
 
 ```shell
 GETID3_VERSION=2 make test-consumer-getid3

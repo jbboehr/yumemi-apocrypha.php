@@ -16,6 +16,9 @@ check, and confirm that an incorrectly scaled value is rejected.
 
 ## Installation
 
+Apocrypha requires PHP `^8.2`, PHPStan `^2.2.5`, and Yumemi `^0.1`. It does not install an integration's third-party
+package; that package must already be installed in the project.
+
 Yumemi has a tagged `0.1` release, while Apocrypha has not yet published its first release. Install Apocrypha's
 development branch with PHPStan's extension installer; Composer installs the compatible Yumemi release transitively:
 
@@ -23,9 +26,8 @@ development branch with PHPStan's extension installer; Composer installs the com
 composer require --dev jbboehr/yumemi-apocrypha:dev-master phpstan/extension-installer
 ```
 
-Use this command when the application references Yumemi only during analysis. If runtime code calls Yumemi functions or
-classes, install `jbboehr/yumemi:^0.1` as a normal dependency first. Then install Apocrypha and the extension installer
-with `--dev`.
+Apocrypha itself is analysis-only. If runtime code calls Yumemi functions or classes, install `jbboehr/yumemi:^0.1`
+without `--dev`; then install Apocrypha and the extension installer with `--dev`.
 
 ## Automatic Registration
 
@@ -72,8 +74,8 @@ parameters:
         autoDetect: true
 ```
 
-Autodetection is strict by default. If a known package is installed at an unverified or unparseable version, analysis
-stops. Applications that prefer to lose that integration silently may opt out:
+Autodetection is strict by default: analysis stops when a known package has an unverified or unparseable version. To
+skip only those autodetected packages, disable strict autodetection:
 
 ```neon
 parameters:

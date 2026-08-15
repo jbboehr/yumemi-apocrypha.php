@@ -9,8 +9,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- Initial PHPStan extension for PHP 8.2 or later and PHPStan 2.2.5 or later, using Yumemi 0.1 branded native types to
-  describe third-party unit-bearing boundaries without runtime wrappers or conversion.
+- Initial PHPStan extension for PHP `^8.2` and PHPStan `^2.2.5`, using Yumemi `^0.1` branded native types to describe
+  third-party unit-bearing boundaries without runtime wrappers or conversion.
 - Unit-aware integrations for Carbon, getID3, Guzzle, Intervention Image, phpgeo, Measurements, Symfony HttpFoundation
   and Stopwatch, and Laravel 11–13 Cache, Cookie, Database, Filesystem, HTTP, Process, Queue, Redis, Routing, Session,
   Support, and Validation APIs.
