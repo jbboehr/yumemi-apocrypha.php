@@ -986,6 +986,43 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([], $extension->getFiles());
     }
 
+    public function testUnselectedAlwaysAdapterIntegrationDoesNotUseTheAdapter(): void
+    {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            [],
+            false,
+            true,
+        );
+
+        self::assertFalse($extension->usesUnitBoundaryAdapter('illuminate/bus'));
+    }
+
+    #[DataProvider('unsupportedLarastanVersions')]
+    public function testAlwaysAdapterIntegrationRejectsUnsupportedLarastanVersion(
+        ?string $larastanVersion,
+        string $message,
+    ): void {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/bus'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => in_array(
+                $package,
+                ['illuminate/bus', 'larastan/larastan'],
+                true,
+            ),
+            static fn (string $package): ?string => $package === 'larastan/larastan'
+                ? $larastanVersion
+                : '12.66.0',
+        );
+
+        $this->expectException(InvalidConfigurationException::class);
+        $this->expectExceptionMessage($message);
+
+        $extension->usesUnitBoundaryAdapter('illuminate/bus');
+    }
+
     /** @return iterable<string, array{non-empty-string, int}> */
     public static function routingVersions(): iterable
     {

@@ -123,3 +123,24 @@ function exerciseIndexedArgumentBoundaryLookup(
     $cache->put('key', 'value', unit(1, 'minute'));
     $carbon->addUTCSeconds(unit(1, 'minute'));
 }
+
+function exerciseInheritedQueueableBoundary(): void
+{
+    $job = new InheritedQueueableJob();
+    $job->delay(unit(1, 'minute'));
+    $job->delay = unit(1, 'minute');
+}
+
+function exerciseDefaultStaticReturnBoundary(): void
+{
+    assertType("unit_int<'second'>|null", \Illuminate\Support\Facades\Cache::getDefaultCacheTime());
+}
+
+function exerciseCacheHelperBoundary(\Illuminate\Cache\Repository $repository): void
+{
+    \cache()->put('cache-key', 'value', unit(1, 'minute'));
+    \cache('cache-key')->put('cache-key', 'value', unit(1, 'minute'));
+
+    $factory = static fn (): \Illuminate\Cache\Repository => $repository;
+    $factory()->put('cache-key', 'value', unit(1, 'minute'));
+}

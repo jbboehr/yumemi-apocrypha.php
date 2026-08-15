@@ -89,6 +89,38 @@ final class Builder
     }
 }
 
+namespace Illuminate\Bus;
+
+trait Queueable
+{
+    public \DateTimeInterface|\DateInterval|array|int|null $delay = null;
+
+    public function delay(\DateTimeInterface|\DateInterval|array|int|null $delay = null): static
+    {
+        $this->delay = $delay;
+
+        return $this;
+    }
+}
+
+namespace Illuminate\Foundation\Queue;
+
+trait Queueable
+{
+    use \Illuminate\Bus\Queueable;
+}
+
+namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan\Fixtures;
+
+abstract class InheritedQueueableBaseJob
+{
+    use \Illuminate\Foundation\Queue\Queueable;
+}
+
+final class InheritedQueueableJob extends InheritedQueueableBaseJob
+{
+}
+
 namespace Illuminate\Contracts\Queue;
 
 interface Job
@@ -355,6 +387,14 @@ final class ThrottleRequests
 }
 
 namespace Illuminate\Support\Facades;
+
+final class Cache
+{
+    public static function getDefaultCacheTime(): ?int
+    {
+        return null;
+    }
+}
 
 final class URL
 {

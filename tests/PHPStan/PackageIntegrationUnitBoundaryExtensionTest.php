@@ -184,6 +184,26 @@ final class PackageIntegrationUnitBoundaryExtensionTest extends RuleTestCase
                         . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
                     124,
                 ],
+                [
+                    "Illuminate\\Bus\\Queueable::delay() expects array|DateInterval|DateTimeInterface|"
+                        . "unit_int<'second'>|null, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    130,
+                ],
+                [
+                    "Illuminate\\Bus\\Queueable::\$delay expects array|DateInterval|DateTimeInterface|"
+                        . "unit_int<'second'>|null, 1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    131,
+                ],
+                [
+                    "Illuminate\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    141,
+                ],
+                [
+                    "Illuminate\\Cache\\Repository::put() expects DateInterval|DateTimeInterface|unit_int<'second'>|null, "
+                        . "1&unit_int<'minute'> given at a Yumemi Apocrypha unit boundary.",
+                    145,
+                ],
             ],
         );
     }
