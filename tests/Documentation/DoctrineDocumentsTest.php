@@ -54,6 +54,7 @@ final class DoctrineDocumentsTest extends TestCase
             'DOCTRINE-IMAGE-GUIDE.md',
             'MEASURE-OF-WORDS.md',
             'RUINENWERT.md',
+            'CODE_OF_SOVEREIGNTY.md',
         ];
 
         foreach ($documents as $document) {
@@ -87,6 +88,28 @@ final class DoctrineDocumentsTest extends TestCase
                 sprintf('Codex Doctrine agent differs from the installed package: %s', $agent),
             );
         }
+    }
+
+    public function testCodeOfConductAdoptsCodeOfSovereignty(): void
+    {
+        $packageDirectory = $this->doctrinePackageDirectory();
+        $repositoryDirectory = dirname(__DIR__, 2);
+        $canonical = file_get_contents($packageDirectory . '/CODE_OF_SOVEREIGNTY.md');
+        $local = file_get_contents($repositoryDirectory . '/CODE_OF_CONDUCT.md');
+
+        self::assertNotFalse($canonical);
+        self::assertNotFalse($local);
+
+        $canonical = str_replace(["\r\n", "\r"], "\n", $canonical);
+        $local = str_replace(["\r\n", "\r"], "\n", $local);
+        $canonical = preg_replace(
+            '/^!\[[^\n]+]\(assets\/banners\/code-of-sovereignty\.webp\)\n\n/m',
+            '',
+            $canonical,
+        );
+
+        self::assertNotNull($canonical);
+        self::assertSame($canonical, $local);
     }
 
     private function doctrinePackageDirectory(): string

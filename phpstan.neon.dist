@@ -1,4 +1,5 @@
 includes:
+    - vendor/jbboehr/doctrine-of-the-second-sun/integrations/phpstan/extension.neon
     - vendor/jbboehr/yumemi/extension.neon
     - vendor/jbboehr/yumemi/yumemi-tags.neon
     - apocrypha.neon
@@ -9,6 +10,12 @@ includes:
     - vendor/phpstan/phpstan-strict-rules/rules.neon
 parameters:
     level: max
+    doctrineOfTheSecondSun:
+        enabled: true
+        filePatterns:
+            - '#/src/#'
+        excludeFilePatterns:
+            - '#/src/Parser/Parser\.php$#'
     paths:
         - benchmarks
         - src

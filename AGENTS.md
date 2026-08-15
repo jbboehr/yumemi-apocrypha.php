@@ -188,8 +188,8 @@ an entry.
 
 ## Doctrine of the Second Sun
 
-This repository adopts the literary, coding, generation, exemplar, image, technical-writing, and Ruinenwert guides from
-Doctrine of the Second Sun, pinned as a Composer development dependency beneath
+This repository adopts the literary, coding, generation, exemplar, image, technical-writing, Ruinenwert, and sovereignty
+documents from Doctrine of the Second Sun, pinned as a Composer development dependency beneath
 `vendor/jbboehr/doctrine-of-the-second-sun/`. Specifically, use:
 
 - `DOCTRINE-STYLE-GUIDE.md` for literary style and canonical meaning;
@@ -198,11 +198,12 @@ Doctrine of the Second Sun, pinned as a Composer development dependency beneath
 - `DOCTRINE-GOLD-EXEMPLARS.md` as a nonnormative quality ceiling;
 - `DOCTRINE-IMAGE-GUIDE.md` for visual interpretation;
 - `MEASURE-OF-WORDS.md` for concise, clear, and exact technical writing; and
-- `RUINENWERT.md` for durable contracts, reproducibility, testable behavior, and replaceable integration boundaries.
+- `RUINENWERT.md` for durable contracts, reproducibility, testable behavior, and replaceable integration boundaries; and
+- `CODE_OF_SOVEREIGNTY.md`, adopted locally as `CODE_OF_CONDUCT.md`, for repository authority and the sovereignty of
+  forks.
 
 This `AGENTS.md` remains authoritative for repository-specific scope, coverage, tag form, citation allocation, asset
-paths, and verification. When its local rules narrow a choice permitted by an installed guide, follow the local rule. Do
-not treat installation as adoption of the package's Code of Sovereignty.
+paths, and verification. When its local rules narrow a choice permitted by an installed guide, follow the local rule.
 
 Apply the Measure of Words to technical documentation, design notes, comments and docblocks, commit and review text, and
 other technical artifacts. It does not govern logia or other non-technical prose. Concision must not remove required
@@ -214,6 +215,11 @@ considerations, not standing requirements to add process or documentation to thi
 they solve a concrete project need or the user explicitly requests them.
 
 New in-scope named declarations must contain exactly one `@logion` PHPDoc tag.
+
+The Doctrine PHPStan adapter is enabled for authored source under `src/`, excluding generated code. It mechanically
+checks class-like declarations, functions, and methods for tag coverage, citation form, allowed books, and citation
+uniqueness. This is partial enforcement: properties, class constants, and enum cases remain subject to the manual review
+and verification rules below because the upstream adapter does not yet inspect them.
 
 Do not add, replace, or revise a logion on a preexisting declaration unless the user explicitly requests a doctrine
 pass. A doctrine pass may backfill preexisting declarations within the scope requested by the user.
