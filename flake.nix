@@ -504,6 +504,7 @@
         consumerComposerCache = pkgs.stdenvNoCC.mkDerivation {
           pname = "yumemi-apocrypha-consumer-composer-cache-${consumerCacheFingerprint}";
           version = "0.0.0";
+          __structuredAttrs = true;
           dontUnpack = true;
           nativeBuildInputs = [
             canonicalComposer

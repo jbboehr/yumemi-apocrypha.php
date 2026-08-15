@@ -869,6 +869,21 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
             '11.35.1',
             ['http.stub'],
         ];
+        yield 'Console 12 scheduling signature' => [
+            'illuminate/console',
+            '12.66.0',
+            ['console-11.stub'],
+        ];
+        yield 'Console 13 before termination-signal release' => [
+            'illuminate/console',
+            '13.1.1',
+            ['console-11.stub'],
+        ];
+        yield 'Console 13 with termination-signal release' => [
+            'illuminate/console',
+            '13.2.0',
+            ['console-13.stub'],
+        ];
         yield 'Queue 11 before stop-when-empty duration' => [
             'illuminate/queue',
             '11.52.0',

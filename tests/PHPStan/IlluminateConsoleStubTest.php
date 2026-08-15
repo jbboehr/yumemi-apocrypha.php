@@ -38,36 +38,60 @@ declare(strict_types=1);
 
 namespace jbboehr\Yumemi\Apocrypha\Tests\PHPStan;
 
-use jbboehr\Yumemi\Apocrypha\PHPStan\ConfiguredIntegrationStubFilesExtension;
+use PhpParser\Node\Stmt\ClassLike;
+use PhpParser\Node\Stmt\Namespace_;
+use PHPStan\Parser\Parser;
+use PHPStan\Testing\PHPStanTestCase;
 
-final class LarastanCompatibilityTestExtensionFactory
+final class IlluminateConsoleStubTest extends PHPStanTestCase
 {
-    public static function createSelection(): ConfiguredIntegrationStubFilesExtension
+    public static function getAdditionalConfigFiles(): array
     {
-        return new ConfiguredIntegrationStubFilesExtension(
-            [
-                'illuminate/auth',
-                'illuminate/cache',
-                'illuminate/console',
-                'illuminate/database',
-                'illuminate/filesystem',
-                'illuminate/queue',
-                'illuminate/redis',
-                'illuminate/routing',
-                'illuminate/session',
-                'illuminate/support',
-                'illuminate/validation',
-                'nesbot/carbon',
-            ],
-            false,
-            true,
-            packageInstalledResolver: static fn (): bool => true,
-            packageVersionResolver: static fn (string $package): string => match ($package) {
-                'larastan/larastan' => '3.10.0',
-                'illuminate/database' => '12.51.0',
-                'nesbot/carbon' => '3.2.0',
-                default => '12.0.0',
-            },
-        );
+        return [
+            __DIR__ . '/../../vendor/jbboehr/yumemi/extension.neon',
+            __DIR__ . '/../../vendor/jbboehr/yumemi/yumemi-tags.neon',
+            __DIR__ . '/illuminate-console-stub.neon',
+        ];
+    }
+
+    public function testSchedulingUnitTagsArePromotedByTheStubParser(): void
+    {
+        $parser = self::getContainer()->getService('stubParser');
+        self::assertInstanceOf(Parser::class, $parser);
+
+        foreach (['console-11.stub', 'console-13.stub'] as $file) {
+            $phpDocs = $this->memberPhpDocs($parser, $file);
+            self::assertStringContainsString("unit_int<'second'>|null", $phpDocs['Event::$repeatSeconds']);
+            self::assertStringContainsString("unit_int<'minute'>", $phpDocs['Event::$expiresAt']);
+            self::assertStringContainsString("unit_int<'minute'>", $phpDocs['Event::withoutOverlapping']);
+        }
+    }
+
+    /** @return array<string, string> */
+    private function memberPhpDocs(Parser $parser, string $file): array
+    {
+        $phpDocs = [];
+        foreach ($parser->parseFile(__DIR__ . '/../../stubs/illuminate/' . $file) as $node) {
+            if (!$node instanceof Namespace_) {
+                continue;
+            }
+
+            foreach ($node->stmts as $statement) {
+                if (!$statement instanceof ClassLike || $statement->name === null) {
+                    continue;
+                }
+
+                foreach ($statement->getMethods() as $method) {
+                    $phpDocs[$statement->name->toString() . '::' . $method->name->toString()]
+                        = $method->getDocComment()?->getText() ?? '';
+                }
+                foreach ($statement->getProperties() as $property) {
+                    $phpDocs[$statement->name->toString() . '::$' . $property->props[0]->name->toString()]
+                        = $property->getDocComment()?->getText() ?? '';
+                }
+            }
+        }
+
+        return $phpDocs;
     }
 }

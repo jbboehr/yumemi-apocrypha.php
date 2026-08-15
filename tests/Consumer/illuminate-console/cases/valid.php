@@ -36,58 +36,18 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Auth\SessionGuard;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
 use Illuminate\Console\Scheduling\Event;
-use Illuminate\Database\Connection;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
-use Illuminate\Routing\Route;
-use Illuminate\Session\ArraySessionHandler;
-use Illuminate\Support\Sleep;
-use Illuminate\Validation\Rules\Dimensions;
-use Illuminate\Validation\Rules\File;
 
 use function jbboehr\Yumemi\unit;
+use function PHPStan\Testing\assertType;
 
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
+function configureScheduledEvent(Event $event): void
 {
-}
+    assertType("unit_int<'second'>|null", $event->repeatSeconds);
+    assertType("unit_int<'minute'>", $event->expiresAt);
 
-function rejectInvalidLaravelFrameworkUnits(
-    SessionGuard $guard,
-    Store $cache,
-    Event $event,
-    Factory $cookies,
-    Connection $database,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
-): void {
-    $guard->setRememberDuration(unit(30, 'second'));
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $event->withoutOverlapping(unit(30, 'second'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    $database->whenQueryingForLongerThan(unit(1, 'second'), static function (): void {
-    });
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
-    (new Route(['GET'], '/report', static fn (): string => 'report'))->block(unit(1, 'minute'));
-    new ArraySessionHandler(unit(30, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
-
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+    $event->repeatSeconds = unit(5, 'second');
+    $event->expiresAt = unit(30, 'minute');
+    $event->withoutOverlapping();
+    $event->withoutOverlapping(unit(30, 'minute'));
 }

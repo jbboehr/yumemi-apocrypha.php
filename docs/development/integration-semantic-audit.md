@@ -27,7 +27,8 @@ entered an advisory range. Consumer fixtures now whitelist those known advisorie
 `v11.55.1`, and reject any non-tagged `laravel/framework` version in committed locks.
 
 The 2026-08-15 Auth audit added 16 committed profiles around the component's cache, timebox, prefix, and hash-key
-cutovers. The resulting 154-lock, 39-check Linux flake matrix passed after the new integration was added.
+cutovers. The Console audit then added eight profiles for the shared scheduler surface and its Laravel 13.2 signature
+cutover. The resulting 162-lock, 40-check Linux flake matrix covers both integrations.
 
 ## Verified Profiles
 
@@ -37,6 +38,7 @@ cutovers. The resulting 154-lock, 39-check Linux flake matrix passed after the n
 | Guzzle                        | 7 through 7.10 integer request delay; 7.11+ numeric request delay; 8   | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                                                                        |
 | getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                                                              |
 | Illuminate Auth               | 11–13, with cache, timebox, prefix, and hash-key cutovers              | `11.30.0`, `11.31.0`, `11.44.0`, `11.45.0`, `12.13.0`, `12.14.0`, `12.19.3`, `12.20.0`, `12.44.0`, `12.45.0`, and latest 11–13 |
+| Illuminate Console            | 11–13 shared scheduler units; Laravel 13.2 adds an unrelated flag      | `11.51.0`, `11.55.1`, `12.66.0`, `13.1.1`, `13.2.0`, `13.25.0`                                                                 |
 | Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.51.0`, `12.66.0`, `13.25.0`                                                                          |
 | Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                                                                  |
 | Illuminate Database           | 11–13 query timings; query timeout from 12.51.0                        | `11.0.0`, `11.51.0`, `12.0.0`, `12.50.0`, `12.51.0`, `12.66.0`, `13.0.0`, `13.25.0`                                            |
@@ -171,6 +173,26 @@ initial and current release of Laravel 11–13.
 | Cookie factory contract and `CookieJar::make($minutes)`                                                                              | integer minutes                                                                           | S/V/I        |
 
 Cookie expiration timestamps and the variadic queue API remain unbranded.
+
+## Illuminate Console
+
+Evidence: Laravel's scheduler
+[`ManagesAttributes`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Console/Scheduling/ManagesAttributes.php)
+and
+[`ManagesFrequencies`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Console/Scheduling/ManagesFrequencies.php)
+traits, checked at the current releases of Laravel 11–13.
+
+| Boundaries                                  | Promoted type            | Coverage |
+| ------------------------------------------- | ------------------------ | -------- |
+| `Event::$repeatSeconds`                     | nullable integer seconds | S/V/I    |
+| `Event::$expiresAt`, `withoutOverlapping()` | integer minutes          | S/V/I    |
+
+The named sub-minute frequency methods store their second interval in `$repeatSeconds`; the protected numeric helper is
+not a public input boundary. `withoutOverlapping()` stores its argument in `$expiresAt`, which Laravel documents and
+uses as the cache-lock lifetime in minutes. Laravel 13.2 adds an unrelated termination-signal flag to that method, so
+the standalone reference stubs preserve the signatures immediately before and after that cutover. Larastan profiles
+suppress those stubs and reproduce only the same unit boundaries through metadata. Cron segments, exit codes, and
+attempt counts remain unbranded.
 
 ## Illuminate Database
 

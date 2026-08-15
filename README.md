@@ -62,6 +62,7 @@ function cacheReportForOneMinute(Store $cache): void
 | `guzzlehttp/guzzle`                 | 7, 8                                |
 | `illuminate/auth`                   | 11, 12, 13                          |
 | `illuminate/cache`                  | 11, 12, 13                          |
+| `illuminate/console`                | 11, 12, 13                          |
 | `illuminate/cookie`                 | 11, 12, 13                          |
 | `illuminate/database`               | 11, 12, 13                          |
 | `illuminate/filesystem`             | 11, 12, 13                          |

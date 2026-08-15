@@ -62,6 +62,10 @@ in
   ];
 
   illuminate-cache = illuminateProfiles "illuminate-cache";
+  illuminate-console = (illuminateIntegrationProfiles "illuminate-console") ++ [
+    (plain "83" "source" "illuminate-console" "13.1.1")
+    (plain "83" "source" "illuminate-console" "13.2.0")
+  ];
 
   illuminate-auth = (illuminateIntegrationProfiles "illuminate-auth") ++ [
     (plain "82" "source" "illuminate-auth" "11.30.0")

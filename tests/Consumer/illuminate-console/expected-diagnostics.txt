@@ -1,0 +1,8 @@
+Event::withoutOverlapping() expects unit_int<'minute'>, 30&unit_int<'second'> given
+Event::withoutOverlapping() expects unit_int<'minute'>, int given
+Property Illuminate\Console\Scheduling\Event::$repeatSeconds (unit_int<'second'>|null) does not accept 1&unit_int<'minute'>
+Property Illuminate\Console\Scheduling\Event::$repeatSeconds (unit_int<'second'>|null) does not accept int
+Property Illuminate\Console\Scheduling\Event::$expiresAt (unit_int<'minute'>) does not accept 30&unit_int<'second'>
+Property Illuminate\Console\Scheduling\Event::$expiresAt (unit_int<'minute'>) does not accept int
+acceptScheduledMinutes expects unit_int<'minute'>|null, unit_int<'second'>|null given
+acceptScheduledSeconds expects unit_int<'second'>, unit_int<'minute'> given

@@ -132,7 +132,7 @@ if [[ $PACKAGE_MODE == archive && $CONSUMER_DEPENDENCIES_ONLY != 1 ]]; then
         php "$PACKAGE_CHECKER" "$git_archive"
     fi
 elif [[ $PACKAGE_MODE != source && $PACKAGE_MODE != archive ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-cache|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -798,10 +798,14 @@ run_simple_illuminate_integration() {
                 $FIXTURE_SUITE != illuminate-database
                 || ! $PACKAGE_MAJOR =~ ^12\.(50|51)\.0$
             )
+            && (
+                $FIXTURE_SUITE != illuminate-console
+                || ! $PACKAGE_MAJOR =~ ^13\.(1\.1|2\.0)$
+            )
             || $COMPATIBILITY_MODE != plain
         ]]; then
             printf '%s\n' \
-                'Exact Illuminate component profiles are limited to the documented Auth, Database, and Queue cutovers in plain mode.' >&2
+                'Exact Illuminate component profiles are limited to the documented Auth, Console, Database, and Queue cutovers in plain mode.' >&2
             exit 2
         fi
 
@@ -828,6 +832,10 @@ run_simple_illuminate_integration() {
     fi
 
     if [[ $FIXTURE_SUITE == illuminate-auth && $COMPATIBILITY_MODE == larastan ]]; then
+        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
+    fi
+
+    if [[ $FIXTURE_SUITE == illuminate-console && $COMPATIBILITY_MODE == larastan ]]; then
         mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
     fi
 
@@ -1024,6 +1032,10 @@ run_simple_illuminate_integration() {
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-auth "$project_dir" phpstan.neon "$documentation_case" illuminate-auth-invalid
     fi
+    if [[ $FIXTURE_SUITE == illuminate-console ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case illuminate-console "$project_dir" phpstan.neon "$documentation_case" illuminate-console-invalid
+    fi
 }
 
 run_laravel_framework() {
@@ -1031,6 +1043,7 @@ run_laravel_framework() {
     local expected_diagnostics=(
         "SessionGuard::setRememberDuration() expects unit_int<'minute'>, 30&unit_int<'second'> given"
         "Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given"
+        "Event::withoutOverlapping() expects unit_int<'minute'>, 30&unit_int<'second'> given"
         "Factory::make() expects unit_int<'minute'>, 30&unit_int<'second'> given"
         "Connection::whenQueryingForLongerThan() expects Carbon\\CarbonInterval|DateTimeInterface|unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
         "acceptFrameworkMeters expects unit_int<'meter'>, unit_int<'octet'> given"
@@ -1477,7 +1490,7 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-auth | illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
+    illuminate-auth | illuminate-console | illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
         run_simple_illuminate_integration
         ;;
     intervention-image)
@@ -1502,7 +1515,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-cache|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

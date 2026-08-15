@@ -1,0 +1,28 @@
+<?php
+
+namespace Illuminate\Console\Scheduling;
+
+class Event
+{
+    /**
+     * @var int|null
+     * @yumemi-var unit_int<'second'>|null
+     */
+    public $repeatSeconds;
+
+    /**
+     * @var int
+     * @yumemi-var unit_int<'minute'>
+     */
+    public $expiresAt;
+
+    /**
+     * @param int $expiresAt
+     * @return $this
+     *
+     * @yumemi-param unit_int<'minute'> $expiresAt
+     */
+    public function withoutOverlapping($expiresAt = 1440)
+    {
+    }
+}

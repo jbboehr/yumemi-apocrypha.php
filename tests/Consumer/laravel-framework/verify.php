@@ -56,6 +56,7 @@ if (
 $checks = [
     'illuminate/auth' => [Illuminate\Auth\SessionGuard::class, 'setRememberDuration', 'minutes'],
     'illuminate/cache' => [Illuminate\Contracts\Cache\Store::class, 'put', 'seconds'],
+    'illuminate/console' => [Illuminate\Console\Scheduling\Event::class, 'withoutOverlapping', 'expiresAt'],
     'illuminate/cookie' => [Illuminate\Contracts\Cookie\Factory::class, 'make', 'minutes'],
     'illuminate/database' => [Illuminate\Database\Connection::class, 'whenQueryingForLongerThan', 'threshold'],
     'illuminate/filesystem' => [Illuminate\Contracts\Filesystem\Filesystem::class, 'size', 'path'],

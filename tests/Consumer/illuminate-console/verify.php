@@ -36,58 +36,55 @@
 
 declare(strict_types=1);
 
-use Illuminate\Contracts\Cache\Store;
-use Illuminate\Auth\SessionGuard;
-use Illuminate\Contracts\Cookie\Factory;
-use Illuminate\Contracts\Filesystem\Filesystem;
-use Illuminate\Contracts\Queue\Queue;
-use Illuminate\Console\Scheduling\Event;
-use Illuminate\Database\Connection;
-use Illuminate\Http\Client\PendingRequest;
-use Illuminate\Process\PendingProcess;
-use Illuminate\Queue\WorkerOptions;
-use Illuminate\Redis\Limiters\DurationLimiterBuilder;
-use Illuminate\Routing\Route;
-use Illuminate\Session\ArraySessionHandler;
-use Illuminate\Support\Sleep;
-use Illuminate\Validation\Rules\Dimensions;
-use Illuminate\Validation\Rules\File;
+require __DIR__ . '/vendor/autoload.php';
 
-use function jbboehr\Yumemi\unit;
-
-/** @param unit_int<'meter'> $meters */
-function acceptFrameworkMeters(int $meters): void
-{
+$version = Composer\InstalledVersions::getVersion('illuminate/console')
+    ?? Composer\InstalledVersions::getVersion('laravel/framework');
+if ($version === null || preg_match('/^v?(11|12|13)\./', $version, $matches) !== 1) {
+    throw new RuntimeException(sprintf('Unable to determine a supported Illuminate Console version from %s.', $version ?? 'null'));
 }
 
-function rejectInvalidLaravelFrameworkUnits(
-    SessionGuard $guard,
-    Store $cache,
-    Event $event,
-    Factory $cookies,
-    Connection $database,
-    Filesystem $filesystem,
-    PendingRequest $request,
-    PendingProcess $process,
-    Queue $queue,
-    DurationLimiterBuilder $redisLimiter,
-): void {
-    $guard->setRememberDuration(unit(30, 'second'));
-    $cache->put('report', 'ready', unit(1, 'minute'));
-    $event->withoutOverlapping(unit(30, 'second'));
-    $cookies->make('session', 'token', unit(30, 'second'));
-    $database->whenQueryingForLongerThan(unit(1, 'second'), static function (): void {
-    });
-    acceptFrameworkMeters($filesystem->size('report.csv'));
-    $request->timeout(unit(500, 'millisecond'));
-    $process->timeout(unit(1, 'minute'));
-    $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
-    $redisLimiter->sleep(unit(1, 'second'));
-    (new Route(['GET'], '/report', static fn (): string => 'report'))->block(unit(1, 'minute'));
-    new ArraySessionHandler(unit(30, 'second'));
-    Sleep::sleep(unit(500, 'millisecond'));
-    (new Dimensions())->width(unit(1200, 'css_pixel'));
-    (new File())->max(unit(2, 'megabyte'));
+$major = (int) $matches[1];
+$method = new ReflectionMethod(Illuminate\Console\Scheduling\Event::class, 'withoutOverlapping');
+$actualParameters = array_map(
+    static fn (ReflectionParameter $parameter): string => $parameter->getName(),
+    $method->getParameters(),
+);
+$expectedParameters = $major === 13 && version_compare(ltrim($version, 'v'), '13.2.0', '>=')
+    ? ['expiresAt', 'releaseOnTerminationSignals']
+    : ['expiresAt'];
+if ($actualParameters !== $expectedParameters) {
+    throw new RuntimeException(sprintf(
+        'Illuminate Console %d has an unexpected Event::withoutOverlapping() signature.',
+        $major,
+    ));
+}
 
-    new WorkerOptions(memory: unit(128, '1000000 * byte'));
+$reflection = new ReflectionClass(Illuminate\Console\Scheduling\Event::class);
+foreach (['repeatSeconds', 'expiresAt'] as $property) {
+    if (!$reflection->hasProperty($property)) {
+        throw new RuntimeException(sprintf('Illuminate Console Event::$%s does not exist.', $property));
+    }
+}
+
+$mutex = new class () implements Illuminate\Console\Scheduling\EventMutex {
+    public function create(Illuminate\Console\Scheduling\Event $event): bool
+    {
+        return true;
+    }
+
+    public function exists(Illuminate\Console\Scheduling\Event $event): bool
+    {
+        return false;
+    }
+
+    public function forget(Illuminate\Console\Scheduling\Event $event): void
+    {
+    }
+};
+
+$event = new Illuminate\Console\Scheduling\Event($mutex, 'reports:refresh');
+$event->everyFiveSeconds()->withoutOverlapping(30);
+if ($event->repeatSeconds !== 5 || $event->expiresAt !== 30) {
+    throw new RuntimeException('Illuminate Console did not preserve the scheduler second and minute scales.');
 }

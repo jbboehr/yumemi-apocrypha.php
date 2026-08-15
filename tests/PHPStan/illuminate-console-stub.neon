@@ -1,0 +1,3 @@
+parameters:
+    stubFiles:
+        - ../../stubs/illuminate/console-13.stub

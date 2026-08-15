@@ -156,6 +156,15 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
         ],
+        'illuminate/console' => [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../stubs/illuminate/console-11.stub'],
+            'filesByMinimumVersion' => [
+                13 => [
+                    '13.2.0' => [__DIR__ . '/../../stubs/illuminate/console-13.stub'],
+                ],
+            ],
+        ],
         'illuminate/cookie' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/cookie.stub'],

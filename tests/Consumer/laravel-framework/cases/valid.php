@@ -41,6 +41,7 @@ use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Cookie\Factory;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Queue\Queue;
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Connection;
 use Illuminate\Http\Client\PendingRequest;
 use Illuminate\Process\PendingProcess;
@@ -58,6 +59,7 @@ use function PHPStan\Testing\assertType;
 function exerciseLaravelFrameworkIntegrations(
     SessionGuard $guard,
     Store $cache,
+    Event $event,
     Factory $cookies,
     Connection $database,
     Filesystem $filesystem,
@@ -70,6 +72,7 @@ function exerciseLaravelFrameworkIntegrations(
 
     $guard->setRememberDuration(unit(30, 'minute'));
     $cache->put('report', 'ready', $seconds);
+    $event->withoutOverlapping(unit(30, 'minute'));
     $cookies->make('session', 'token', unit(30, 'minute'));
     $database->whenQueryingForLongerThan(unit(500, 'millisecond'), static function (): void {
     });

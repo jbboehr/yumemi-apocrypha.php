@@ -23,6 +23,7 @@
             { id: "getid3", title: "getID3" },
             { id: "illuminate-auth", title: "Illuminate Auth" },
             { id: "illuminate-cache", title: "Illuminate Cache" },
+            { id: "illuminate-console", title: "Illuminate Console" },
             { id: "illuminate-cookie", title: "Illuminate Cookie" },
             { id: "illuminate-database", title: "Illuminate Database" },
             { id: "illuminate-filesystem", title: "Illuminate Filesystem" },

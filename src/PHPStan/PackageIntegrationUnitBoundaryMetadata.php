@@ -158,6 +158,16 @@ final class PackageIntegrationUnitBoundaryMetadata
                 ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'getDefaultCacheTime', 'type' => "unit_int<'second'>|null", 'adapterOnly' => true],
             ],
         ],
+        'illuminate/console' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Console\\Scheduling\\Event', 'kind' => 'method', 'method' => 'withoutOverlapping', 'position' => 0, 'name' => 'expiresAt', 'type' => "unit_int<'minute'>"],
+            ],
+            'properties' => [
+                ['class' => 'Illuminate\\Console\\Scheduling\\Event', 'property' => 'repeatSeconds', 'type' => "unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Console\\Scheduling\\Event', 'property' => 'expiresAt', 'type' => "unit_int<'minute'>"],
+            ],
+            'returns' => [],
+        ],
         'illuminate/cookie' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Contracts\\Cookie\\Factory', 'kind' => 'method', 'method' => 'make', 'position' => 2, 'name' => 'minutes', 'type' => "unit_int<'minute'>"],

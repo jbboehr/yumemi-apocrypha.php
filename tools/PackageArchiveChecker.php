@@ -82,6 +82,8 @@ final readonly class PackageArchiveChecker
         'stubs/illuminate/auth-session-guard.stub',
         'stubs/illuminate/auth.stub',
         'stubs/illuminate/cache.stub',
+        'stubs/illuminate/console-11.stub',
+        'stubs/illuminate/console-13.stub',
         'stubs/illuminate/cookie.stub',
         'stubs/illuminate/database.stub',
         'stubs/illuminate/database-timeout.stub',
