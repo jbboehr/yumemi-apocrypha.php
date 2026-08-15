@@ -6,11 +6,11 @@ collected below.
 
 ## Documentation browser assets
 
-The documentation includes Heliogenesis from Doctrine of the Second Sun and its pinned Three.js runtime. Their source,
-revision, and licenses are recorded in the colocated
-[Heliogenesis provenance notice](pages/assets/heliogenesis/NOTICE.txt),
-[Doctrine license](pages/assets/heliogenesis/DOCTRINE-LICENSE.txt), and
-[Three.js license](pages/assets/heliogenesis/vendor/THREE-LICENSE.txt).
+The documentation includes Heliogenesis and The Document Looks Back from Doctrine of the Second Sun. They share the
+identical pinned Three.js runtime distributed with both integrations. Their source, revision, and licenses are recorded
+in the colocated [browser-asset provenance notice](pages/assets/doctrine-web/NOTICE.txt),
+[Doctrine license](pages/assets/doctrine-web/DOCTRINE-LICENSE.txt), and
+[Three.js license](pages/assets/doctrine-web/vendor/THREE-LICENSE.txt).
 
 ## Carbon
 

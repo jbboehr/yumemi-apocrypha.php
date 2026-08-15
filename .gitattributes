@@ -1,9 +1,10 @@
 * text=auto
 
 composer.lock linguist-generated
-docs/pages/assets/heliogenesis/heliogenesis-* linguist-vendored
-docs/pages/assets/heliogenesis/heliogenesis.* linguist-vendored
-docs/pages/assets/heliogenesis/vendor/** linguist-vendored
+docs/pages/assets/doctrine-web/document-looks-back.* linguist-vendored
+docs/pages/assets/doctrine-web/heliogenesis-* linguist-vendored
+docs/pages/assets/doctrine-web/heliogenesis.* linguist-vendored
+docs/pages/assets/doctrine-web/vendor/** linguist-vendored
 .claude export-ignore
 .codex export-ignore
 .dvc export-ignore

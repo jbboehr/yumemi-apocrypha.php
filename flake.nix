@@ -168,7 +168,7 @@
         treefmt = treefmt-nix.lib.evalModule pkgs {
           projectRootFile = "flake.nix";
           settings.global.excludes = [
-            "docs/pages/assets/heliogenesis/**"
+            "docs/pages/assets/doctrine-web/**"
             "tmp*"
           ];
           programs.nixfmt = {

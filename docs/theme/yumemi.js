@@ -78,11 +78,15 @@
         return list;
     }
 
-    function addHeliogenesisStylesheet(assetRoot, filename) {
+    function addDoctrineStylesheet(assetRoot, filename) {
         const stylesheet = document.createElement("link");
         stylesheet.rel = "stylesheet";
         stylesheet.href = new URL(filename, assetRoot).href;
         document.head.append(stylesheet);
+    }
+
+    function doctrineWebAssetRoot() {
+        return new URL(path_to_root + "assets/doctrine-web/", document.location.href);
     }
 
     function markHeliogenesisShell() {
@@ -103,9 +107,9 @@
             return;
         }
 
-        const assetRoot = new URL(path_to_root + "assets/heliogenesis/", document.location.href);
-        addHeliogenesisStylesheet(assetRoot, "heliogenesis.css");
-        addHeliogenesisStylesheet(assetRoot, "heliogenesis-document.css");
+        const assetRoot = doctrineWebAssetRoot();
+        addDoctrineStylesheet(assetRoot, "heliogenesis.css");
+        addDoctrineStylesheet(assetRoot, "heliogenesis-document.css");
         markHeliogenesisShell();
 
         const trigger = document.createElement("button");
@@ -118,12 +122,135 @@
         try {
             const moduleUrl = new URL("heliogenesis.js", assetRoot);
             const { Heliogenesis } = await import(moduleUrl.href);
-            const heliogenesis = new Heliogenesis({ trigger });
+            const heliogenesis = new Heliogenesis({ trigger, sunStyle: "synthwave" });
             heliogenesis.mount();
         } catch (error) {
             trigger.remove();
             console.error("Unable to mount Heliogenesis.", error);
         }
+    }
+
+    function mountDocumentLooksBack() {
+        if (typeof window.Highlight !== "function" || !window.CSS?.highlights) {
+            return;
+        }
+
+        const root = document.querySelector("#mdbook-content > main");
+        if (!root) {
+            return;
+        }
+
+        const assetRoot = doctrineWebAssetRoot();
+        addDoctrineStylesheet(assetRoot, "document-looks-back.css");
+        const frequency = { min: 45000, max: 90000 };
+        let controllerPromise = null;
+        let documentLooksBack = null;
+        let timer = 0;
+        let printing = false;
+        let heliogenesisActive = Boolean(
+            document.documentElement.dataset.heliogenesisState &&
+            document.documentElement.dataset.heliogenesisState !== "idle",
+        );
+
+        function clearTimer() {
+            if (timer) {
+                window.clearTimeout(timer);
+                timer = 0;
+            }
+        }
+
+        function blocked() {
+            return document.hidden || printing || heliogenesisActive;
+        }
+
+        function reset() {
+            clearTimer();
+            documentLooksBack?.reset();
+        }
+
+        function loadController() {
+            if (!controllerPromise) {
+                const moduleUrl = new URL("document-looks-back.js", assetRoot);
+                controllerPromise = import(moduleUrl.href).then(({ DocumentLooksBack }) => {
+                    documentLooksBack = new DocumentLooksBack({
+                        frequency: 0,
+                        maxEyes: 1,
+                        root,
+                        selector: "p, li",
+                    });
+                    documentLooksBack.mount();
+                    return documentLooksBack;
+                });
+            }
+
+            return controllerPromise;
+        }
+
+        async function attempt() {
+            if (blocked()) {
+                return;
+            }
+
+            try {
+                const controller = await loadController();
+                if (blocked()) {
+                    controller.reset();
+                    return;
+                }
+                controller.summon();
+                schedule();
+            } catch (error) {
+                console.error("Unable to mount Document Looks Back.", error);
+            }
+        }
+
+        function schedule() {
+            if (timer || blocked()) {
+                return;
+            }
+
+            const delay = frequency.min + Math.random() * (frequency.max - frequency.min);
+            timer = window.setTimeout(() => {
+                timer = 0;
+                void attempt();
+            }, delay);
+        }
+
+        for (const eventName of ["dawning", "radiant", "receding"]) {
+            document.documentElement.addEventListener(`heliogenesis:${eventName}`, () => {
+                heliogenesisActive = true;
+                reset();
+            });
+        }
+
+        document.documentElement.addEventListener("heliogenesis:idle", () => {
+            heliogenesisActive = false;
+            schedule();
+        });
+        document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+                reset();
+            } else {
+                schedule();
+            }
+        });
+        window.addEventListener("beforeprint", () => {
+            printing = true;
+            reset();
+        });
+        window.addEventListener("afterprint", () => {
+            printing = false;
+            schedule();
+        });
+
+        window.documentLooksBack = Object.freeze({
+            summon() {
+                clearTimer();
+                return attempt();
+            },
+        });
+
+        schedule();
     }
 
     document.addEventListener("DOMContentLoaded", function () {
@@ -146,5 +273,6 @@
         }
 
         void mountHeliogenesis();
+        mountDocumentLooksBack();
     });
 })();

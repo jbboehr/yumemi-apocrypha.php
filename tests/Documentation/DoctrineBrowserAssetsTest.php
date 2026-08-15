@@ -41,31 +41,60 @@ namespace jbboehr\Yumemi\Apocrypha\Tests\Documentation;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
-final class HeliogenesisAssetsTest extends TestCase
+final class DoctrineBrowserAssetsTest extends TestCase
 {
-    private const COPIED_FILES = [
+    private const DOCUMENT_LOOKS_BACK_FILES = [
+        'document-looks-back.css',
+        'document-looks-back.js',
+    ];
+
+    private const HELIOGENESIS_FILES = [
         'heliogenesis.css',
         'heliogenesis-document.css',
+        'heliogenesis-options.js',
         'heliogenesis-scene.js',
         'heliogenesis.js',
+    ];
+
+    private const SHARED_VENDOR_FILES = [
         'vendor/THREE-LICENSE.txt',
         'vendor/three.core.min.js',
         'vendor/three.module.min.js',
     ];
 
     #[Group('locked-dependencies')]
-    public function testPublicRuntimeMatchesTheComposerInstalledIntegration(): void
+    public function testPublicRuntimesMatchTheComposerInstalledIntegrations(): void
     {
         $projectRoot = dirname(__DIR__, 2);
-        $upstreamRoot = $projectRoot
-            . '/vendor/jbboehr/doctrine-of-the-second-sun/integrations/web/heliogenesis';
-        $publicRoot = $projectRoot . '/docs/pages/assets/heliogenesis';
+        $upstreamRoot = $projectRoot . '/vendor/jbboehr/doctrine-of-the-second-sun/integrations/web';
+        $publicRoot = $projectRoot . '/docs/pages/assets/doctrine-web';
 
-        foreach (self::COPIED_FILES as $relativePath) {
+        foreach (self::HELIOGENESIS_FILES as $relativePath) {
             self::assertFileEquals(
-                $upstreamRoot . '/' . $relativePath,
+                $upstreamRoot . '/heliogenesis/' . $relativePath,
                 $publicRoot . '/' . $relativePath,
                 $relativePath . ' must remain an unmodified copy of the installed Heliogenesis runtime.',
+            );
+        }
+
+        foreach (self::DOCUMENT_LOOKS_BACK_FILES as $relativePath) {
+            self::assertFileEquals(
+                $upstreamRoot . '/document-looks-back/' . $relativePath,
+                $publicRoot . '/' . $relativePath,
+                $relativePath . ' must remain an unmodified copy of the installed Document Looks Back runtime.',
+            );
+        }
+
+        foreach (self::SHARED_VENDOR_FILES as $relativePath) {
+            self::assertFileEquals(
+                $upstreamRoot . '/heliogenesis/' . $relativePath,
+                $publicRoot . '/' . $relativePath,
+                $relativePath . ' must remain an unmodified copy of the installed Heliogenesis dependency.',
+            );
+            self::assertFileEquals(
+                $upstreamRoot . '/document-looks-back/' . $relativePath,
+                $publicRoot . '/' . $relativePath,
+                $relativePath . ' must remain an unmodified copy of the installed Document Looks Back dependency.',
             );
         }
 
@@ -111,23 +140,22 @@ final class HeliogenesisAssetsTest extends TestCase
         self::assertIsString($reference);
         self::assertMatchesRegularExpression('/^[a-f0-9]{40}$/', $reference);
 
-        $notice = file_get_contents($projectRoot . '/docs/pages/assets/heliogenesis/NOTICE.txt');
+        $notice = file_get_contents($projectRoot . '/docs/pages/assets/doctrine-web/NOTICE.txt');
         self::assertNotFalse($notice);
         self::assertStringContainsString('revision ' . $reference, $notice);
     }
 
-    public function testMdBookThemeMountsTheOptInRuntimeWithAccessibleControls(): void
+    public function testMdBookThemeMountsHeliogenesisWithAccessibleControls(): void
     {
         $theme = file_get_contents(dirname(__DIR__, 2) . '/docs/theme/yumemi.js');
         self::assertNotFalse($theme);
 
-        self::assertStringContainsString('assets/heliogenesis/', $theme);
-        self::assertStringContainsString('path_to_root + "assets/heliogenesis/"', $theme);
-        self::assertStringContainsString('addHeliogenesisStylesheet(assetRoot, "heliogenesis.css")', $theme);
-        self::assertStringContainsString('addHeliogenesisStylesheet(assetRoot, "heliogenesis-document.css")', $theme);
+        self::assertStringContainsString('path_to_root + "assets/doctrine-web/"', $theme);
+        self::assertStringContainsString('addDoctrineStylesheet(assetRoot, "heliogenesis.css")', $theme);
+        self::assertStringContainsString('addDoctrineStylesheet(assetRoot, "heliogenesis-document.css")', $theme);
         self::assertStringContainsString('trigger.id = "yumemi-second-sun"', $theme);
         self::assertStringContainsString('aria-label", "Dawn the Second Sun"', $theme);
-        self::assertStringContainsString('new Heliogenesis({ trigger })', $theme);
+        self::assertStringContainsString('new Heliogenesis({ trigger, sunStyle: "synthwave" })', $theme);
         self::assertStringContainsString('for (const selector of ["#mdbook-menu-bar", "#mdbook-sidebar"])', $theme);
         self::assertStringContainsString('trigger.remove();', $theme);
         self::assertStringContainsString('document.querySelector("#mdbook-page-wrapper") ?? document.body', $theme);
@@ -136,6 +164,40 @@ final class HeliogenesisAssetsTest extends TestCase
         self::assertStringNotContainsString('dataset.heliogenesisCallout', $theme);
         self::assertStringNotContainsString('dataset.heliogenesisCode', $theme);
         self::assertStringNotContainsString('dataset.heliogenesisRule', $theme);
+    }
+
+    public function testMdBookThemeMountsDocumentLooksBackOnlyForArticleProse(): void
+    {
+        $theme = file_get_contents(dirname(__DIR__, 2) . '/docs/theme/yumemi.js');
+        self::assertNotFalse($theme);
+
+        self::assertStringContainsString('typeof window.Highlight !== "function"', $theme);
+        self::assertStringContainsString('!window.CSS?.highlights', $theme);
+        self::assertStringContainsString('addDoctrineStylesheet(assetRoot, "document-looks-back.css")', $theme);
+        self::assertStringContainsString('new URL("document-looks-back.js", assetRoot)', $theme);
+        self::assertStringContainsString('document.querySelector("#mdbook-content > main")', $theme);
+        self::assertStringContainsString('const frequency = { min: 45000, max: 90000 }', $theme);
+        self::assertStringContainsString('frequency: 0', $theme);
+        self::assertStringContainsString('maxEyes: 1', $theme);
+        self::assertStringContainsString('selector: "p, li"', $theme);
+        self::assertStringContainsString('documentLooksBack.mount()', $theme);
+        self::assertStringContainsString('timer = window.setTimeout', $theme);
+        self::assertStringContainsString('controller.summon()', $theme);
+        self::assertStringContainsString('window.documentLooksBack = Object.freeze', $theme);
+        self::assertStringContainsString('return attempt()', $theme);
+    }
+
+    public function testMdBookThemeResetsDocumentLooksBackAcrossUnsafePresentationStates(): void
+    {
+        $theme = file_get_contents(dirname(__DIR__, 2) . '/docs/theme/yumemi.js');
+        self::assertNotFalse($theme);
+
+        self::assertStringContainsString('["dawning", "radiant", "receding"]', $theme);
+        self::assertStringContainsString('document.documentElement.addEventListener(`heliogenesis:${eventName}`', $theme);
+        self::assertStringContainsString('document.documentElement.addEventListener("heliogenesis:idle"', $theme);
+        self::assertStringContainsString('window.addEventListener("beforeprint"', $theme);
+        self::assertStringContainsString('window.addEventListener("afterprint"', $theme);
+        self::assertStringContainsString('documentLooksBack?.reset()', $theme);
     }
 
     public function testMdBookThemeKeepsIdleShellTransitionsImmediate(): void
