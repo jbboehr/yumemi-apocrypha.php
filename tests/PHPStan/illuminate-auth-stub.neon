@@ -1,0 +1,7 @@
+parameters:
+    stubFiles:
+        - ../../stubs/illuminate/auth.stub
+        - ../../stubs/illuminate/auth-session-guard-timebox-hash-key.stub
+        - ../../stubs/illuminate/auth-password-broker-timebox.stub
+        - ../../stubs/illuminate/auth-database-token-repository-12.stub
+        - ../../stubs/illuminate/auth-cache-token-repository.stub

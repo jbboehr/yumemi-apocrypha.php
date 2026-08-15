@@ -1,0 +1,40 @@
+<?php
+
+namespace Illuminate\Auth;
+
+class SessionGuard
+{
+    /**
+     * @param string $name
+     * @param \Illuminate\Contracts\Auth\UserProvider $provider
+     * @param \Illuminate\Contracts\Session\Session $session
+     * @param \Symfony\Component\HttpFoundation\Request|null $request
+     * @param \Illuminate\Support\Timebox|null $timebox
+     * @param bool $rehashOnLogin
+     * @param int $timeboxDuration
+     * @param string|null $hashKey
+     *
+     * @yumemi-param unit_int<'microsecond'> $timeboxDuration
+     */
+    public function __construct(
+        $name,
+        \Illuminate\Contracts\Auth\UserProvider $provider,
+        \Illuminate\Contracts\Session\Session $session,
+        ?\Symfony\Component\HttpFoundation\Request $request = null,
+        ?\Illuminate\Support\Timebox $timebox = null,
+        bool $rehashOnLogin = true,
+        int $timeboxDuration = 200000,
+        ?string $hashKey = null,
+    ) {
+    }
+
+    /**
+     * @param int $minutes
+     * @return $this
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function setRememberDuration($minutes)
+    {
+    }
+}

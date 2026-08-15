@@ -21,6 +21,7 @@
             { id: "carbon", title: "Carbon" },
             { id: "guzzle", title: "Guzzle" },
             { id: "getid3", title: "getID3" },
+            { id: "illuminate-auth", title: "Illuminate Auth" },
             { id: "illuminate-cache", title: "Illuminate Cache" },
             { id: "illuminate-cookie", title: "Illuminate Cookie" },
             { id: "illuminate-database", title: "Illuminate Database" },

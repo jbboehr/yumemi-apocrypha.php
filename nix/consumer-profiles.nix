@@ -63,6 +63,19 @@ in
 
   illuminate-cache = illuminateProfiles "illuminate-cache";
 
+  illuminate-auth = (illuminateIntegrationProfiles "illuminate-auth") ++ [
+    (plain "82" "source" "illuminate-auth" "11.30.0")
+    (plain "82" "source" "illuminate-auth" "11.31.0")
+    (plain "82" "source" "illuminate-auth" "11.44.0")
+    (plain "82" "source" "illuminate-auth" "11.45.0")
+    (plain "82" "source" "illuminate-auth" "12.13.0")
+    (plain "82" "source" "illuminate-auth" "12.14.0")
+    (plain "82" "source" "illuminate-auth" "12.19.3")
+    (plain "82" "source" "illuminate-auth" "12.20.0")
+    (plain "82" "source" "illuminate-auth" "12.44.0")
+    (plain "82" "source" "illuminate-auth" "12.45.0")
+  ];
+
   illuminate-http = (illuminateProfiles "illuminate-http") ++ [
     (plain "82" "source" "illuminate-http" "11.35.0")
     (plain "82" "source" "illuminate-http" "11.35.1")

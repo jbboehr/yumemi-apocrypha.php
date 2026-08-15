@@ -78,6 +78,18 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         yield 'illuminate/database 12.51.0' => ['illuminate/database', 12, '12.51.0'];
         yield 'illuminate/database v12.51.0' => ['illuminate/database', 12, 'v12.51.0'];
         yield 'illuminate/database 12.x-dev' => ['illuminate/database', 12, '12.x-dev'];
+        yield 'illuminate/auth 11.30.0' => ['illuminate/auth', 11, '11.30.0'];
+        yield 'illuminate/auth 11.31.0' => ['illuminate/auth', 11, '11.31.0'];
+        yield 'illuminate/auth 11.44.0' => ['illuminate/auth', 11, '11.44.0'];
+        yield 'illuminate/auth 11.45.0' => ['illuminate/auth', 11, '11.45.0'];
+        yield 'illuminate/auth 11.x-dev' => ['illuminate/auth', 11, '11.x-dev'];
+        yield 'illuminate/auth 12.13.0' => ['illuminate/auth', 12, '12.13.0'];
+        yield 'illuminate/auth 12.14.0' => ['illuminate/auth', 12, '12.14.0'];
+        yield 'illuminate/auth 12.19.3' => ['illuminate/auth', 12, '12.19.3'];
+        yield 'illuminate/auth 12.20.0' => ['illuminate/auth', 12, '12.20.0'];
+        yield 'illuminate/auth 12.44.0' => ['illuminate/auth', 12, '12.44.0'];
+        yield 'illuminate/auth 12.45.0' => ['illuminate/auth', 12, '12.45.0'];
+        yield 'illuminate/auth 12.x-dev' => ['illuminate/auth', 12, '12.x-dev'];
         yield 'Intervention Image 3' => ['intervention/image', 3, '3.0.0'];
         yield 'Intervention Image 4' => ['intervention/image', 4, '4.0.0'];
     }
@@ -292,6 +304,7 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         $base = __DIR__ . '/../../stubs/illuminate/';
 
         return match ($integration) {
+            'illuminate/auth' => $this->authStubFiles($base, $major, $version),
             'illuminate/cache' => [$base . 'cache.stub'],
             'illuminate/cookie' => [$base . 'cookie.stub'],
             'illuminate/database' => [
@@ -333,6 +346,43 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
             ],
             default => throw new \LogicException(sprintf('Unknown adapter integration %s.', $integration)),
         };
+    }
+
+    /** @return list<string> */
+    private function authStubFiles(string $base, int $major, string $version): array
+    {
+        $normalizedVersion = ltrim($version, 'v');
+        $developmentVersion = $normalizedVersion === $major . '.x-dev';
+        $database = $base . ($major === 11
+            ? 'auth-database-token-repository-11.stub'
+            : 'auth-database-token-repository-12.stub');
+        $cache = $major === 11
+            || ($major === 12 && !$developmentVersion && version_compare($normalizedVersion, '12.20.0', '<'))
+            ? 'auth-cache-token-repository-with-prefix.stub'
+            : 'auth-cache-token-repository.stub';
+        $files = [$base . 'auth.stub', $base . 'auth-session-guard.stub', $database];
+
+        if ($major !== 11 || $developmentVersion || version_compare($normalizedVersion, '11.31.0', '>=')) {
+            $files[] = $base . $cache;
+        }
+
+        $supportsTimebox = $major === 13
+            || $developmentVersion
+            || version_compare($normalizedVersion, $major === 11 ? '11.45.0' : '12.14.0', '>=');
+        if (!$supportsTimebox) {
+            return $files;
+        }
+
+        $hasHashKey = $major === 13
+            || ($major === 12 && (
+                $developmentVersion || version_compare($normalizedVersion, '12.45.0', '>=')
+            ));
+        $files[1] = $base . ($hasHashKey
+            ? 'auth-session-guard-timebox-hash-key.stub'
+            : 'auth-session-guard-timebox.stub');
+        array_splice($files, 2, 0, [$base . 'auth-password-broker-timebox.stub']);
+
+        return $files;
     }
 
     /** @return list<string> */

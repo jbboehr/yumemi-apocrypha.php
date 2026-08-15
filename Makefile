@@ -3,7 +3,7 @@
 	test-consumer-getid3 test-consumer-getid3-archive \
 	test-consumer-guzzle test-consumer-guzzle-archive \
 	test-consumer-intervention-image test-consumer-intervention-image-archive \
-	test-consumer-illuminate-cache \
+	test-consumer-illuminate-auth test-consumer-illuminate-auth-archive test-consumer-illuminate-cache \
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-http test-consumer-illuminate-http-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-database test-consumer-illuminate-filesystem test-consumer-illuminate-process \
 	test-consumer-illuminate-queue \
@@ -22,6 +22,7 @@ BRANCH_COVERAGE_SOURCE ?= src
 BRANCH_COVERAGE_TESTS ?=
 BRANCH_COVERAGE_XDEBUG_ERROR := Xdebug is not loaded; enter nix develop .\#xdebug.
 CARBON_VERSION ?= 3
+ILLUMINATE_AUTH_MAJOR ?= 12
 ILLUMINATE_CACHE_MAJOR ?= 12
 ILLUMINATE_COMPATIBILITY_MODE ?= plain
 GETID3_VERSION ?= 2
@@ -90,6 +91,12 @@ test-consumer-intervention-image:
 
 test-consumer-intervention-image-archive:
 	tests/Consumer/run archive intervention-image $(INTERVENTION_IMAGE_VERSION)
+
+test-consumer-illuminate-auth:
+	tests/Consumer/run source illuminate-auth $(ILLUMINATE_AUTH_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-auth-archive:
+	tests/Consumer/run archive illuminate-auth $(ILLUMINATE_AUTH_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-cache:
 	tests/Consumer/run source illuminate-cache $(ILLUMINATE_CACHE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)

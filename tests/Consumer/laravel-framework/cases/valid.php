@@ -37,6 +37,7 @@
 declare(strict_types=1);
 
 use Illuminate\Contracts\Cache\Store;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Cookie\Factory;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Queue\Queue;
@@ -55,6 +56,7 @@ use function jbboehr\Yumemi\unit;
 use function PHPStan\Testing\assertType;
 
 function exerciseLaravelFrameworkIntegrations(
+    SessionGuard $guard,
     Store $cache,
     Factory $cookies,
     Connection $database,
@@ -66,6 +68,7 @@ function exerciseLaravelFrameworkIntegrations(
 ): void {
     $seconds = unit(30, 'second');
 
+    $guard->setRememberDuration(unit(30, 'minute'));
     $cache->put('report', 'ready', $seconds);
     $cookies->make('session', 'token', unit(30, 'minute'));
     $database->whenQueryingForLongerThan(unit(500, 'millisecond'), static function (): void {

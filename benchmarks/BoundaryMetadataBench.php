@@ -54,6 +54,7 @@ final class BoundaryMetadataBench
      * @var array<non-empty-string, array{int, non-empty-string}>
      */
     private const PINNED_PROFILES = [
+        'illuminate/auth' => [13, '13.25.0'],
         'illuminate/cache' => [13, '13.10.0'],
         'illuminate/cookie' => [13, '13.10.0'],
         'illuminate/database' => [13, '13.25.0'],

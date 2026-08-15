@@ -89,6 +89,69 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 ],
             ],
         ],
+        'illuminate/auth' => [
+            'majors' => [11, 12, 13],
+            'files' => [
+                __DIR__ . '/../../stubs/illuminate/auth.stub',
+                __DIR__ . '/../../stubs/illuminate/auth-session-guard.stub',
+                __DIR__ . '/../../stubs/illuminate/auth-database-token-repository-11.stub',
+            ],
+            'filesByMajor' => [
+                12 => [
+                    __DIR__ . '/../../stubs/illuminate/auth.stub',
+                    __DIR__ . '/../../stubs/illuminate/auth-session-guard.stub',
+                    __DIR__ . '/../../stubs/illuminate/auth-database-token-repository-12.stub',
+                    __DIR__ . '/../../stubs/illuminate/auth-cache-token-repository-with-prefix.stub',
+                ],
+                13 => [
+                    __DIR__ . '/../../stubs/illuminate/auth.stub',
+                    __DIR__ . '/../../stubs/illuminate/auth-session-guard-timebox-hash-key.stub',
+                    __DIR__ . '/../../stubs/illuminate/auth-password-broker-timebox.stub',
+                    __DIR__ . '/../../stubs/illuminate/auth-database-token-repository-12.stub',
+                    __DIR__ . '/../../stubs/illuminate/auth-cache-token-repository.stub',
+                ],
+            ],
+            'filesByMinimumVersion' => [
+                11 => [
+                    '11.31.0' => [
+                        __DIR__ . '/../../stubs/illuminate/auth.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-session-guard.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-database-token-repository-11.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-cache-token-repository-with-prefix.stub',
+                    ],
+                    '11.45.0' => [
+                        __DIR__ . '/../../stubs/illuminate/auth.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-session-guard-timebox.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-password-broker-timebox.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-database-token-repository-11.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-cache-token-repository-with-prefix.stub',
+                    ],
+                ],
+                12 => [
+                    '12.14.0' => [
+                        __DIR__ . '/../../stubs/illuminate/auth.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-session-guard-timebox.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-password-broker-timebox.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-database-token-repository-12.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-cache-token-repository-with-prefix.stub',
+                    ],
+                    '12.20.0' => [
+                        __DIR__ . '/../../stubs/illuminate/auth.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-session-guard-timebox.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-password-broker-timebox.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-database-token-repository-12.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-cache-token-repository.stub',
+                    ],
+                    '12.45.0' => [
+                        __DIR__ . '/../../stubs/illuminate/auth.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-session-guard-timebox-hash-key.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-password-broker-timebox.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-database-token-repository-12.stub',
+                        __DIR__ . '/../../stubs/illuminate/auth-cache-token-repository.stub',
+                    ],
+                ],
+            ],
+        ],
         'illuminate/cache' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],

@@ -1,0 +1,19 @@
+<?php
+
+namespace Illuminate\Auth\Passwords;
+
+class CacheTokenRepository
+{
+    /**
+     * @yumemi-param unit_int<'second'> $expires
+     * @yumemi-param unit_int<'second'> $throttle
+     */
+    public function __construct(
+        \Illuminate\Cache\Repository $cache,
+        \Illuminate\Contracts\Hashing\Hasher $hasher,
+        string $hashKey,
+        int $expires = 3600,
+        int $throttle = 60,
+    ) {
+    }
+}

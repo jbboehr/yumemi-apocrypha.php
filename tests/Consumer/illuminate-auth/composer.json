@@ -1,0 +1,20 @@
+{
+    "name": "jbboehr/yumemi-apocrypha-consumer-illuminate-auth",
+    "description": "Isolated Illuminate Auth consumer fixture for Yumemi Apocrypha.",
+    "type": "project",
+    "license": "AGPL-3.0-only WITH romic-exception",
+    "require": {
+        "jbboehr/yumemi-apocrypha": "dev-consumer"
+    },
+    "require-dev": {
+        "phpstan/extension-installer": "^1.4"
+    },
+    "config": {
+        "allow-plugins": {
+            "phpstan/extension-installer": true
+        },
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

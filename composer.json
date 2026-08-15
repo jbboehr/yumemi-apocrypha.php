@@ -159,6 +159,8 @@
         "test:consumer:guzzle:archive": "make test-consumer-guzzle-archive",
         "test:consumer:intervention-image": "make test-consumer-intervention-image",
         "test:consumer:intervention-image:archive": "make test-consumer-intervention-image-archive",
+        "test:consumer:illuminate-auth": "make test-consumer-illuminate-auth",
+        "test:consumer:illuminate-auth:archive": "make test-consumer-illuminate-auth-archive",
         "test:consumer:illuminate-cache": "make test-consumer-illuminate-cache",
         "test:consumer:illuminate-cache:archive": "make test-consumer-illuminate-cache-archive",
         "test:consumer:illuminate-cookie": "make test-consumer-illuminate-cookie",

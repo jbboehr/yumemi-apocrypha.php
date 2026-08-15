@@ -1,0 +1,23 @@
+<?php
+
+namespace Illuminate\Auth\Passwords;
+
+class DatabaseTokenRepository
+{
+    /**
+     * @param int $expires The number of seconds a token should remain valid.
+     * @param int $throttle Minimum number of seconds before the user can generate new password reset tokens.
+     *
+     * @yumemi-param unit_int<'second'> $expires
+     * @yumemi-param unit_int<'second'> $throttle
+     */
+    public function __construct(
+        \Illuminate\Database\ConnectionInterface $connection,
+        \Illuminate\Contracts\Hashing\Hasher $hasher,
+        string $table,
+        string $hashKey,
+        int $expires = 3600,
+        int $throttle = 60,
+    ) {
+    }
+}

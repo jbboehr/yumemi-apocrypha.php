@@ -84,6 +84,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'getid3',
         ],
+        'illuminate-auth-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'illuminate-auth',
+        ],
         'illuminate-cache-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-cache',

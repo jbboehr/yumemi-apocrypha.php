@@ -5,6 +5,7 @@ parameters:
     tmpDir: tmp/phpstan
     yumemiApocrypha:
         integrations:
+            - illuminate/auth
             - illuminate/cache
             - illuminate/cookie
             - illuminate/database

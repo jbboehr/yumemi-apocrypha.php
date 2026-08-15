@@ -1,7 +1,7 @@
 # Integration Semantic Audit
 
 This ledger records the source evidence and consumer coverage behind every branded third-party boundary. It was last
-reviewed on 2026-08-14. The public supported-version matrix remains in
+reviewed on 2026-08-15. The public supported-version matrix remains in
 [`docs/pages/integrations.md`](../pages/integrations.md); this document is the maintainer-facing evidence behind it.
 
 ## Method
@@ -26,28 +26,32 @@ The audit did find that Composer's security policy selected `11.x-dev` after eve
 entered an advisory range. Consumer fixtures now whitelist those known advisories for static-analysis testing, pin
 `v11.55.1`, and reject any non-tagged `laravel/framework` version in committed locks.
 
+The 2026-08-15 Auth audit added 16 committed profiles around the component's cache, timebox, prefix, and hash-key
+cutovers. The resulting 154-lock, 39-check Linux flake matrix passed after the new integration was added.
+
 ## Verified Profiles
 
-| Package                       | Profiles and source snapshots                                          | Profile evidence                                                                    |
-| ----------------------------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
-| Carbon                        | 2.62.1–2.x; 3.0–3.1 `Real`; 3.2+ `UTC`                                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                             |
-| Guzzle                        | 7 through 7.10 integer request delay; 7.11+ numeric request delay; 8   | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                             |
-| getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                   |
-| Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.51.0`, `12.66.0`, `13.25.0`                               |
-| Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
-| Illuminate Database           | 11–13 query timings; query timeout from 12.51.0                        | `11.0.0`, `11.51.0`, `12.0.0`, `12.50.0`, `12.51.0`, `12.66.0`, `13.0.0`, `13.25.0` |
-| Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                           |
-| Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
-| Illuminate Routing            | 11–13 shared throttle, route-lock, and signed-URL profile              | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
-| Illuminate Session            | 11–13 shared handler and lock-lifetime profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
-| Illuminate Validation         | 11–13 shared fluent-rule profile                                       | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                       |
-| Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                                   |
-| Laravel framework replacement | 11–13                                                                  | `11.55.1`, `12.66.0`, `13.25.0`                                                     |
-| Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                                 |
-| Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                            |
-| phpgeo                        | 4–6                                                                    | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                         |
-| Symfony HttpFoundation        | 6.4+ base; 7.3+ SSE; 8+ IP byte counts                                 | `6.4.0`, `6.4.43`, `7.0.0`, `7.2.9`, `7.3.0`, `7.4.16`, `8.0.0`, `8.1.4`            |
-| Symfony Stopwatch             | 6–8                                                                    | `6.0.0`, `6.4.24`, `7.0.0`, `7.4.8`, `8.0.0`, `8.1.0`                               |
+| Package                       | Profiles and source snapshots                                          | Profile evidence                                                                                                               |
+| ----------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Carbon                        | 2.62.1–2.x; 3.0–3.1 `Real`; 3.2+ `UTC`                                 | `2.62.1`, `2.73.0`, `3.0.0`, `3.1.1`, `3.2.0`, `3.13.2`                                                                        |
+| Guzzle                        | 7 through 7.10 integer request delay; 7.11+ numeric request delay; 8   | `7.0.0`, `7.10.0`, `7.11.0`, `7.15.3`, `8.0.0`, `8.0.2`                                                                        |
+| getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                                                              |
+| Illuminate Auth               | 11–13, with cache, timebox, prefix, and hash-key cutovers              | `11.30.0`, `11.31.0`, `11.44.0`, `11.45.0`, `12.13.0`, `12.14.0`, `12.19.3`, `12.20.0`, `12.44.0`, `12.45.0`, and latest 11–13 |
+| Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.51.0`, `12.66.0`, `13.25.0`                                                                          |
+| Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                                                                  |
+| Illuminate Database           | 11–13 query timings; query timeout from 12.51.0                        | `11.0.0`, `11.51.0`, `12.0.0`, `12.50.0`, `12.51.0`, `12.66.0`, `13.0.0`, `13.25.0`                                            |
+| Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                                                                      |
+| Illuminate Redis              | 11–13 shared limiter and command-event profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                                                                  |
+| Illuminate Routing            | 11–13 shared throttle, route-lock, and signed-URL profile              | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                                                                  |
+| Illuminate Session            | 11–13 shared handler and lock-lifetime profile                         | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                                                                  |
+| Illuminate Validation         | 11–13 shared fluent-rule profile                                       | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                                                                  |
+| Other Illuminate integrations | 11–13                                                                  | initial and current tagged releases of each major                                                                              |
+| Laravel framework replacement | 11–13                                                                  | `11.55.1`, `12.66.0`, `13.25.0`                                                                                                |
+| Intervention Image            | 3–4                                                                    | `3.0.0`, `3.11.8`, `4.0.0`, `4.2.1`                                                                                            |
+| Measurements                  | 1.4+ `Length` and `Duration` magic factories                           | `v1.4.0`                                                                                                                       |
+| phpgeo                        | 4–6                                                                    | `4.0.0`, `4.2.1`, `5.0.0`, `6.0.0`, `6.0.4`                                                                                    |
+| Symfony HttpFoundation        | 6.4+ base; 7.3+ SSE; 8+ IP byte counts                                 | `6.4.0`, `6.4.43`, `7.0.0`, `7.2.9`, `7.3.0`, `7.4.16`, `8.0.0`, `8.1.4`                                                       |
+| Symfony Stopwatch             | 6–8                                                                    | `6.0.0`, `6.4.24`, `7.0.0`, `7.4.8`, `8.0.0`, `8.1.0`                                                                          |
 
 The source links below point to a representative current snapshot. The profile table names the additional tags checked
 for signature changes.
@@ -119,6 +123,33 @@ The top-level, audio, and video shapes remain open because format modules add ke
 optional. The upstream structure reference defines the standardized video dimensions as integers measured in pixels;
 Yumemi's `pixel` is the nominal raster-sample dimension rather than the physical-length `css_pixel` unit. Other
 format-specific image dimensions remain unbranded.
+
+## Illuminate Auth
+
+Evidence: Laravel's
+[`SessionGuard`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Auth/SessionGuard.php),
+[`PasswordBroker`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Auth/Passwords/PasswordBroker.php),
+[`RequirePassword`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Auth/Middleware/RequirePassword.php),
+and the
+[`database`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Auth/Passwords/DatabaseTokenRepository.php)
+and [`cache`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Auth/Passwords/CacheTokenRepository.php)
+token repositories. Adjacent tags were checked at CacheTokenRepository's Laravel 11.31.0 introduction, the timebox
+additions in 11.45.0 and 12.14.0, the cache-prefix removal in 12.20.0, and SessionGuard's 12.45.0 hash-key addition.
+
+| Boundaries                                                       | Promoted type                                               | Coverage |
+| ---------------------------------------------------------------- | ----------------------------------------------------------- | -------- |
+| `SessionGuard::setRememberDuration()`                            | integer minutes                                             | S/V/I    |
+| `SessionGuard` and `PasswordBroker` constructor timeboxes        | integer microseconds                                        | S/V/I    |
+| `RequirePassword` constructor, `using()`, and `handle()` timeout | integer seconds, preserving published string and null arms  | S/V/I    |
+| `DatabaseTokenRepository` expiry                                 | integer minutes in Laravel 11; integer seconds in 12 and 13 | S/V/I    |
+| Database and cache token-repository throttle                     | integer seconds                                             | S/V/I    |
+| `CacheTokenRepository` expiry                                    | integer seconds                                             | S/V/I    |
+
+Laravel 11 multiplies the database repository's expiry by 60 before storing it; Laravel 12 and 13 store the supplied
+seconds directly. Cache expiry and both throttle parameters are already second-valued. Apocrypha brands these native
+boundaries but performs no conversion. Profile reflection verifies the constructor changes and the Laravel 11 runtime
+multiplication. Plain consumers exercise the retained upstream signatures at each cutover; Larastan consumers for every
+supported major disable the complete Auth stub set and reproduce only these unit boundaries through metadata.
 
 ## Illuminate Cache and Cookie
 

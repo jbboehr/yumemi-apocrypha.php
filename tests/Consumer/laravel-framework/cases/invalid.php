@@ -37,6 +37,7 @@
 declare(strict_types=1);
 
 use Illuminate\Contracts\Cache\Store;
+use Illuminate\Auth\SessionGuard;
 use Illuminate\Contracts\Cookie\Factory;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Contracts\Queue\Queue;
@@ -59,6 +60,7 @@ function acceptFrameworkMeters(int $meters): void
 }
 
 function rejectInvalidLaravelFrameworkUnits(
+    SessionGuard $guard,
     Store $cache,
     Factory $cookies,
     Connection $database,
@@ -68,6 +70,7 @@ function rejectInvalidLaravelFrameworkUnits(
     Queue $queue,
     DurationLimiterBuilder $redisLimiter,
 ): void {
+    $guard->setRememberDuration(unit(30, 'second'));
     $cache->put('report', 'ready', unit(1, 'minute'));
     $cookies->make('session', 'token', unit(30, 'second'));
     $database->whenQueryingForLongerThan(unit(1, 'second'), static function (): void {

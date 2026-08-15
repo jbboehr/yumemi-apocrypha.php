@@ -132,7 +132,7 @@ if [[ $PACKAGE_MODE == archive && $CONSUMER_DEPENDENCIES_ONLY != 1 ]]; then
         php "$PACKAGE_CHECKER" "$git_archive"
     fi
 elif [[ $PACKAGE_MODE != source && $PACKAGE_MODE != archive ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -274,6 +274,13 @@ printf("Stable dependency resolution: Apocrypha %s, Yumemi %s.\n", $apocryphaVer
 
 configure_laravel_advisory_whitelist() {
     local project_dir=$1
+
+    if [[ $PACKAGE_MAJOR == *.* ]]; then
+        # Exact historical cutover profiles are deliberately pinned inside advisory ranges.
+        composer --working-dir="$project_dir" config policy.advisories.ignore laravel/framework
+
+        return
+    fi
 
     # Laravel 11 has no tagged release outside these advisory ranges. The fixtures exercise package metadata and static
     # analysis only, so whitelist the known advisories to keep Composer on the latest tagged framework release instead
@@ -784,13 +791,17 @@ run_simple_illuminate_integration() {
                 || ! $PACKAGE_MAJOR =~ ^(11\.(52|53)\.0|12\.(59|60)\.0|13\.(9|10)\.0)$
             )
             && (
+                $FIXTURE_SUITE != illuminate-auth
+                || ! $PACKAGE_MAJOR =~ ^(11\.(30|31|44|45)\.0|12\.(13|14|20|44|45)\.0|12\.19\.3)$
+            )
+            && (
                 $FIXTURE_SUITE != illuminate-database
                 || ! $PACKAGE_MAJOR =~ ^12\.(50|51)\.0$
             )
             || $COMPATIBILITY_MODE != plain
         ]]; then
             printf '%s\n' \
-                'Exact Illuminate component profiles are limited to the documented Queue cutovers and illuminate/database 12.50.0 or 12.51.0 in plain mode.' >&2
+                'Exact Illuminate component profiles are limited to the documented Auth, Database, and Queue cutovers in plain mode.' >&2
             exit 2
         fi
 
@@ -813,6 +824,10 @@ run_simple_illuminate_integration() {
     fi
 
     if [[ $FIXTURE_SUITE == illuminate-session && $COMPATIBILITY_MODE == larastan ]]; then
+        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
+    fi
+
+    if [[ $FIXTURE_SUITE == illuminate-auth && $COMPATIBILITY_MODE == larastan ]]; then
         mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
     fi
 
@@ -843,6 +858,13 @@ run_simple_illuminate_integration() {
     if [[ $FIXTURE_SUITE == illuminate-session ]]; then
         composer --working-dir="$project_dir" require --dev "illuminate/database:$package_constraint" --no-update --no-interaction
     fi
+    if [[ $FIXTURE_SUITE == illuminate-auth && $PACKAGE_MAJOR != *.* ]]; then
+        composer --working-dir="$project_dir" require --dev \
+            "illuminate/cache:$package_constraint" \
+            "illuminate/database:$package_constraint" \
+            "illuminate/hashing:$package_constraint" \
+            --no-update --no-interaction
+    fi
     if [[ $PACKAGE_MAJOR == *.* || $COMPATIBILITY_MODE != plain ]]; then
         configure_laravel_advisory_whitelist "$project_dir"
     fi
@@ -864,6 +886,9 @@ run_simple_illuminate_integration() {
             fi
         fi
     fi
+    if [[ $FIXTURE_SUITE == illuminate-auth ]]; then
+        profile_case=$([[ $package_major == 11 ]] && printf '11' || printf '12')
+    fi
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     if [[ $COMPATIBILITY_MODE == larastan && -f $project_dir/cases/valid-larastan.php ]]; then
@@ -877,6 +902,64 @@ run_simple_illuminate_integration() {
     if [[ -f $project_dir/cases/valid-$profile_case.php ]]; then
         run_phpstan_case "$project_dir" phpstan.neon "valid-$profile_case.php"
         run_phpstan_case "$project_dir" phpstan-autodetect.neon "valid-$profile_case.php"
+    fi
+    if [[ $FIXTURE_SUITE == illuminate-auth ]]; then
+        local database_expiry_type
+        local invalid_database_expiry
+        if [[ $package_major == 11 ]]; then
+            database_expiry_type="unit_int<'minute'>"
+            invalid_database_expiry="3600&unit_int<'second'>"
+        else
+            database_expiry_type="unit_int<'second'>"
+            invalid_database_expiry="60&unit_int<'minute'>"
+        fi
+        run_phpstan_case "$project_dir" phpstan.neon "invalid-$profile_case.php" \
+            "DatabaseTokenRepository constructor expects $database_expiry_type, $invalid_database_expiry given" \
+            "DatabaseTokenRepository constructor expects $database_expiry_type, int given"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon "invalid-$profile_case.php" \
+            "DatabaseTokenRepository constructor expects $database_expiry_type, $invalid_database_expiry given" \
+            "DatabaseTokenRepository constructor expects $database_expiry_type, int given"
+
+        # shellcheck disable=SC2016
+        if php -r 'require $argv[1]; exit(class_exists(Illuminate\Auth\Passwords\CacheTokenRepository::class) ? 0 : 1);' \
+            "$project_dir/vendor/autoload.php"; then
+            run_phpstan_case "$project_dir" phpstan.neon valid-cache.php
+            run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-cache.php
+            run_phpstan_case "$project_dir" phpstan.neon invalid-cache.php \
+                "CacheTokenRepository constructor expects unit_int<'second'>, 60&unit_int<'minute'> given" \
+                "CacheTokenRepository constructor expects unit_int<'second'>, 1&unit_int<'minute'> given" \
+                "CacheTokenRepository constructor expects unit_int<'second'>, int given" \
+                "CacheTokenRepository constructor expects unit_int<'second'>, int given"
+            run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-cache.php \
+                "CacheTokenRepository constructor expects unit_int<'second'>, 60&unit_int<'minute'> given" \
+                "CacheTokenRepository constructor expects unit_int<'second'>, 1&unit_int<'minute'> given" \
+                "CacheTokenRepository constructor expects unit_int<'second'>, int given" \
+                "CacheTokenRepository constructor expects unit_int<'second'>, int given"
+        fi
+
+        # shellcheck disable=SC2016
+        if php -r '
+            require $argv[1];
+            foreach ((new ReflectionMethod(Illuminate\Auth\SessionGuard::class, "__construct"))->getParameters() as $parameter) {
+                if ($parameter->getName() === "timeboxDuration") {
+                    exit(0);
+                }
+            }
+            exit(1);
+        ' "$project_dir/vendor/autoload.php"; then
+            run_phpstan_case "$project_dir" phpstan.neon valid-timebox.php
+            run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-timebox.php
+            run_phpstan_case "$project_dir" phpstan.neon invalid-timebox.php \
+                "SessionGuard constructor expects unit_int<'1/1000000 * second'>, 1&unit_int<'second'> given" \
+                "SessionGuard constructor expects unit_int<'1/1000000 * second'>, int given" \
+                "PasswordBroker constructor expects unit_int<'1/1000000 * second'>, 1&unit_int<'second'> given" \
+                "PasswordBroker constructor expects unit_int<'1/1000000 * second'>, int given"
+            run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-timebox.php \
+                "SessionGuard constructor expects unit_int<'1/1000000 * second'>, 1&unit_int<'second'> given" \
+                "SessionGuard constructor expects unit_int<'1/1000000 * second'>, int given" \
+                "PasswordBroker constructor expects unit_int<'1/1000000 * second'>, 1&unit_int<'second'> given" \
+                "PasswordBroker constructor expects unit_int<'1/1000000 * second'>, int given"
+        fi
     fi
     if [[ $FIXTURE_SUITE == illuminate-database ]] && php -r "
         require \$argv[1];
@@ -937,11 +1020,16 @@ run_simple_illuminate_integration() {
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-validation "$project_dir" phpstan.neon "$documentation_case" illuminate-validation-invalid
     fi
+    if [[ $FIXTURE_SUITE == illuminate-auth ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case illuminate-auth "$project_dir" phpstan.neon "$documentation_case" illuminate-auth-invalid
+    fi
 }
 
 run_laravel_framework() {
     local project_dir=$WORK_DIR/laravel-framework
     local expected_diagnostics=(
+        "SessionGuard::setRememberDuration() expects unit_int<'minute'>, 30&unit_int<'second'> given"
         "Store::put() expects unit_int<'second'>, 1&unit_int<'minute'> given"
         "Factory::make() expects unit_int<'minute'>, 30&unit_int<'second'> given"
         "Connection::whenQueryingForLongerThan() expects Carbon\\CarbonInterval|DateTimeInterface|unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
@@ -1389,7 +1477,7 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
+    illuminate-auth | illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
         run_simple_illuminate_integration
         ;;
     intervention-image)
@@ -1414,7 +1502,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-cache|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

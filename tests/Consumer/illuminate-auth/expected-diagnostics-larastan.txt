@@ -1,0 +1,10 @@
+Illuminate\Auth\SessionGuard::setRememberDuration() expects unit_int<'minute'>, 30&unit_int<'second'> given
+Illuminate\Auth\SessionGuard::setRememberDuration() expects unit_int<'minute'>, int given
+Parameter $passwordTimeout of class Illuminate\Auth\Middleware\RequirePassword constructor expects unit_int<'second'>|null, 180&unit_int<'minute'> given
+Parameter $passwordTimeout of class Illuminate\Auth\Middleware\RequirePassword constructor expects unit_int<'second'>|null, int given
+Illuminate\Auth\Middleware\RequirePassword::using() expects string|unit_int<'second'>|null, 180&unit_int<'minute'> given
+Illuminate\Auth\Middleware\RequirePassword::using() expects string|unit_int<'second'>|null, int given
+Illuminate\Auth\Middleware\RequirePassword::handle() expects string|unit_int<'second'>|null, 180&unit_int<'minute'> given
+Illuminate\Auth\Middleware\RequirePassword::handle() expects string|unit_int<'second'>|null, int given
+Parameter $throttle of class Illuminate\Auth\Passwords\DatabaseTokenRepository constructor expects unit_int<'second'>, 1&unit_int<'minute'> given
+Parameter $throttle of class Illuminate\Auth\Passwords\DatabaseTokenRepository constructor expects unit_int<'second'>, int given

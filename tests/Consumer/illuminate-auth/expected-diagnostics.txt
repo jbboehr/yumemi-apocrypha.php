@@ -1,0 +1,10 @@
+SessionGuard::setRememberDuration() expects unit_int<'minute'>, 30&unit_int<'second'> given
+SessionGuard::setRememberDuration() expects unit_int<'minute'>, int given
+RequirePassword constructor expects unit_int<'second'>|null, 180&unit_int<'minute'> given
+RequirePassword constructor expects unit_int<'second'>|null, int given
+RequirePassword::using() expects string|unit_int<'second'>|null, 180&unit_int<'minute'> given
+RequirePassword::using() expects string|unit_int<'second'>|null, int given
+RequirePassword::handle() expects string|unit_int<'second'>|null, 180&unit_int<'minute'> given
+RequirePassword::handle() expects string|unit_int<'second'>|null, int given
+DatabaseTokenRepository constructor expects unit_int<'second'>, 1&unit_int<'minute'> given
+DatabaseTokenRepository constructor expects unit_int<'second'>, int given

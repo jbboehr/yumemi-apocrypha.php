@@ -790,6 +790,75 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
     /** @return iterable<string, array{non-empty-string, non-empty-string, list<non-empty-string>}> */
     public static function illuminateVersionProfiles(): iterable
     {
+        yield 'Auth 11 before the cache token repository' => [
+            'illuminate/auth',
+            '11.30.0',
+            ['auth.stub', 'auth-session-guard.stub', 'auth-database-token-repository-11.stub'],
+        ];
+        yield 'Auth 11 with the cache token repository' => [
+            'illuminate/auth',
+            '11.31.0',
+            [
+                'auth.stub',
+                'auth-session-guard.stub',
+                'auth-database-token-repository-11.stub',
+                'auth-cache-token-repository-with-prefix.stub',
+            ],
+        ];
+        yield 'Auth 11 with authentication timeboxes' => [
+            'illuminate/auth',
+            '11.45.0',
+            [
+                'auth.stub',
+                'auth-session-guard-timebox.stub',
+                'auth-password-broker-timebox.stub',
+                'auth-database-token-repository-11.stub',
+                'auth-cache-token-repository-with-prefix.stub',
+            ],
+        ];
+        yield 'Auth 12 before authentication timeboxes' => [
+            'illuminate/auth',
+            '12.13.0',
+            [
+                'auth.stub',
+                'auth-session-guard.stub',
+                'auth-database-token-repository-12.stub',
+                'auth-cache-token-repository-with-prefix.stub',
+            ],
+        ];
+        yield 'Auth 12 with authentication timeboxes' => [
+            'illuminate/auth',
+            '12.14.0',
+            [
+                'auth.stub',
+                'auth-session-guard-timebox.stub',
+                'auth-password-broker-timebox.stub',
+                'auth-database-token-repository-12.stub',
+                'auth-cache-token-repository-with-prefix.stub',
+            ],
+        ];
+        yield 'Auth 12 without the cache-key prefix' => [
+            'illuminate/auth',
+            '12.20.0',
+            [
+                'auth.stub',
+                'auth-session-guard-timebox.stub',
+                'auth-password-broker-timebox.stub',
+                'auth-database-token-repository-12.stub',
+                'auth-cache-token-repository.stub',
+            ],
+        ];
+        yield 'Auth 12 with the remember-cookie hash key' => [
+            'illuminate/auth',
+            '12.45.0',
+            [
+                'auth.stub',
+                'auth-session-guard-timebox-hash-key.stub',
+                'auth-password-broker-timebox.stub',
+                'auth-database-token-repository-12.stub',
+                'auth-cache-token-repository.stub',
+            ],
+        ];
         yield 'HTTP before fractional timeouts' => [
             'illuminate/http',
             '11.35.0',

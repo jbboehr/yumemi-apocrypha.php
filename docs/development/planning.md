@@ -19,14 +19,15 @@ upstream versions it claims to support and semantically accurate about the repre
   releases.
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
-- `illuminate/cache`, `illuminate/cookie`, `illuminate/database`, `illuminate/filesystem`, `illuminate/http`,
-  `illuminate/support`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`, `illuminate/routing`,
-  `illuminate/session`, and `illuminate/validation` cover stable unit-bearing APIs across Laravel 11 through 13.
-  Database distinguishes millisecond query timings from second-valued query execution timeouts where that API exists.
-  Validation covers raster dimensions and integer file-rule sizes while preserving upstream string size expressions.
-  Routing distinguishes minute-valued throttle decay from second-valued route locks and signed-URL expirations. Session
-  distinguishes minute-valued handler retention from second-valued garbage collection, route locks, and decorator
-  lifetimes.
+- `illuminate/auth`, `illuminate/cache`, `illuminate/cookie`, `illuminate/database`, `illuminate/filesystem`,
+  `illuminate/http`, `illuminate/support`, `illuminate/process`, `illuminate/queue`, `illuminate/redis`,
+  `illuminate/routing`, `illuminate/session`, and `illuminate/validation` cover stable unit-bearing APIs across Laravel
+  11 through 13. Auth distinguishes remember-cookie minutes, authentication timebox microseconds, and version-specific
+  token expiry. Database distinguishes millisecond query timings from second-valued query execution timeouts where that
+  API exists. Validation covers raster dimensions and integer file-rule sizes while preserving upstream string size
+  expressions. Routing distinguishes minute-valued throttle decay from second-valued route locks and signed-URL
+  expirations. Session distinguishes minute-valued handler retention from second-valued garbage collection, route locks,
+  and decorator lifetimes.
 - `intervention/image` covers nominal raster-pixel dimensions and coordinates plus degree rotations across Intervention
   Image 3 and 4. A metadata adapter preserves the package's complete interfaces, while version 4 retains its `Fraction`
   dimension alternatives. Resolution, quality, opacity, transparency, and lower-level geometry objects remain outside
@@ -52,10 +53,11 @@ upstream versions it claims to support and semantically accurate about the repre
 - `symfony/stopwatch` covers event and period durations and memory results across Symfony Stopwatch 6 through 8.
 - The loader can enforce a minimum release within a major and select major- or minor-version-specific stub files when a
   supported upstream signature differs. Carbon uses three release profiles; Illuminate HTTP distinguishes Laravel 11
-  before and after 11.35.1; Illuminate Queue uses cutovers at Laravel 11.53.0, 12.60.0, and 13.10.0; Guzzle
-  distinguishes request delays before and after 7.11.0; Illuminate Database adds query execution timeouts at Laravel
-  12.51.0; getID3 uses minimum and major selection for its global 1.x and namespaced 2.x APIs; Illuminate Process and
-  Guzzle also use major-specific files.
+  before and after 11.35.1; Illuminate Auth selects its CacheTokenRepository, timebox, cache-prefix, and hash-key
+  constructor cutovers; Illuminate Queue uses cutovers at Laravel 11.53.0, 12.60.0, and 13.10.0; Guzzle distinguishes
+  request delays before and after 7.11.0; Illuminate Database adds query execution timeouts at Laravel 12.51.0; getID3
+  uses minimum and major selection for its global 1.x and namespaced 2.x APIs; Illuminate Process and Guzzle also use
+  major-specific files.
 - Isolated Composer consumers verify every supported major, automatic and manual PHPStan registration, source installs,
   default symlinked path installs, a representative Composer archive, and Laravel 11 through 13 replacement metadata for
   every Illuminate integration. Every Illuminate subpackage and the combined framework fixture run both with and without

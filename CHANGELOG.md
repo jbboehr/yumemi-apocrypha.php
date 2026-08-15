@@ -7,6 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Unit-aware integration for Laravel 11–13 authentication timeboxes, remember durations, password timeouts, and token
+  expiry and throttle boundaries.
+
 ## [0.1.0] - 2026-08-14
 
 ### Added

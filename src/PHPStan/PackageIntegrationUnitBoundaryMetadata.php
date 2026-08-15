@@ -95,6 +95,23 @@ final class PackageIntegrationUnitBoundaryMetadata
      *     all other gold sank through the cedar floors and hath not been counted since.
      */
     private const BOUNDARIES = [
+        'illuminate/auth' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Auth\\SessionGuard', 'kind' => 'method', 'method' => 'setRememberDuration', 'position' => 0, 'name' => 'minutes', 'type' => "unit_int<'minute'>"],
+                ['class' => 'Illuminate\\Auth\\SessionGuard', 'kind' => 'constructor', 'method' => '__construct', 'position' => 6, 'name' => 'timeboxDuration', 'type' => "unit_int<'microsecond'>", 'minimumVersions' => [11 => '11.45.0', 12 => '12.14.0'], 'majors' => [11, 12, 13]],
+                ['class' => 'Illuminate\\Auth\\Passwords\\PasswordBroker', 'kind' => 'constructor', 'method' => '__construct', 'position' => 4, 'name' => 'timeboxDuration', 'type' => "unit_int<'microsecond'>", 'minimumVersions' => [11 => '11.45.0', 12 => '12.14.0'], 'majors' => [11, 12, 13]],
+                ['class' => 'Illuminate\\Auth\\Passwords\\DatabaseTokenRepository', 'kind' => 'constructor', 'method' => '__construct', 'position' => 4, 'name' => 'expires', 'type' => "unit_int<'minute'>", 'majors' => [11]],
+                ['class' => 'Illuminate\\Auth\\Passwords\\DatabaseTokenRepository', 'kind' => 'constructor', 'method' => '__construct', 'position' => 4, 'name' => 'expires', 'type' => "unit_int<'second'>", 'majors' => [12, 13]],
+                ['class' => 'Illuminate\\Auth\\Passwords\\DatabaseTokenRepository', 'kind' => 'constructor', 'method' => '__construct', 'position' => 5, 'name' => 'throttle', 'type' => "unit_int<'second'>"],
+                ['class' => 'Illuminate\\Auth\\Passwords\\CacheTokenRepository', 'kind' => 'constructor', 'method' => '__construct', 'position' => 3, 'name' => 'expires', 'type' => "unit_int<'second'>", 'minimumVersions' => [11 => '11.31.0'], 'majors' => [11, 12, 13]],
+                ['class' => 'Illuminate\\Auth\\Passwords\\CacheTokenRepository', 'kind' => 'constructor', 'method' => '__construct', 'position' => 4, 'name' => 'throttle', 'type' => "unit_int<'second'>", 'minimumVersions' => [11 => '11.31.0'], 'majors' => [11, 12, 13]],
+                ['class' => 'Illuminate\\Auth\\Middleware\\RequirePassword', 'kind' => 'constructor', 'method' => '__construct', 'position' => 2, 'name' => 'passwordTimeout', 'type' => "unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Auth\\Middleware\\RequirePassword', 'kind' => 'static', 'method' => 'using', 'position' => 1, 'name' => 'passwordTimeoutSeconds', 'type' => "string|unit_int<'second'>|null"],
+                ['class' => 'Illuminate\\Auth\\Middleware\\RequirePassword', 'kind' => 'method', 'method' => 'handle', 'position' => 3, 'name' => 'passwordTimeoutSeconds', 'type' => "string|unit_int<'second'>|null"],
+            ],
+            'properties' => [],
+            'returns' => [],
+        ],
         'illuminate/cache' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Contracts\\Cache\\Repository', 'kind' => 'method', 'method' => 'put', 'position' => 2, 'name' => 'ttl', 'type' => "unit_int<'second'>|\\DateTimeInterface|\\DateInterval|null"],

@@ -1,0 +1,23 @@
+<?php
+
+namespace Illuminate\Auth\Passwords;
+
+class DatabaseTokenRepository
+{
+    /**
+     * @param int $expires
+     * @param int $throttle
+     *
+     * @yumemi-param unit_int<'minute'> $expires
+     * @yumemi-param unit_int<'second'> $throttle
+     */
+    public function __construct(
+        \Illuminate\Database\ConnectionInterface $connection,
+        \Illuminate\Contracts\Hashing\Hasher $hasher,
+        $table,
+        $hashKey,
+        $expires = 60,
+        $throttle = 60,
+    ) {
+    }
+}

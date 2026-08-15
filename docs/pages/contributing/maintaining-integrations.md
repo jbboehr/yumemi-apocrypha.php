@@ -31,8 +31,9 @@ upstream declaration must fail before semantic assertions run.
 
 Laravel 11 has no tagged framework release outside its known advisory ranges. Its temporary consumer projects whitelist
 those advisories because they install source only for reflection and static analysis; this is not a recommendation to
-run an affected release. The lock check rejects a development-branch `laravel/framework` resolution so Composer cannot
-silently substitute `11.x-dev` for the latest reviewed tag.
+run an affected release. Exact historical cutover profiles similarly whitelist `laravel/framework` while pinned to the
+reviewed tag. The lock check rejects a development-branch resolution so Composer cannot silently substitute a
+development branch for a reviewed release.
 
 Preserve the upstream type structure exactly and change only the unit-bearing scalar. In particular, retain integer
 ranges and literal types when upstream publishes them, but do not infer a narrower type merely because the
@@ -58,6 +59,7 @@ Every integration has a `test-consumer-*` Make target. Version variables are lis
 ```shell
 GETID3_VERSION=2 make test-consumer-getid3
 GUZZLE_MAJOR=8 make test-consumer-guzzle
+ILLUMINATE_AUTH_MAJOR=12 make test-consumer-illuminate-auth
 ILLUMINATE_CACHE_MAJOR=12 make test-consumer-illuminate-cache
 ILLUMINATE_QUEUE_MAJOR=12 make test-consumer-illuminate-queue
 ILLUMINATE_ROUTING_MAJOR=12 make test-consumer-illuminate-routing

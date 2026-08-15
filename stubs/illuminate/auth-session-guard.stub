@@ -1,0 +1,16 @@
+<?php
+
+namespace Illuminate\Auth;
+
+class SessionGuard
+{
+    /**
+     * @param int $minutes
+     * @return $this
+     *
+     * @yumemi-param unit_int<'minute'> $minutes
+     */
+    public function setRememberDuration($minutes)
+    {
+    }
+}
