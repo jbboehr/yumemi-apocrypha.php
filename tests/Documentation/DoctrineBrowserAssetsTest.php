@@ -171,8 +171,8 @@ final class DoctrineBrowserAssetsTest extends TestCase
         $theme = file_get_contents(dirname(__DIR__, 2) . '/docs/theme/yumemi.js');
         self::assertNotFalse($theme);
 
-        self::assertStringContainsString('typeof window.Highlight !== "function"', $theme);
-        self::assertStringContainsString('!window.CSS?.highlights', $theme);
+        self::assertStringNotContainsString('window.Highlight', $theme);
+        self::assertStringNotContainsString('window.CSS?.highlights', $theme);
         self::assertStringContainsString('addDoctrineStylesheet(assetRoot, "document-looks-back.css")', $theme);
         self::assertStringContainsString('new URL("document-looks-back.js", assetRoot)', $theme);
         self::assertStringContainsString('document.querySelector("#mdbook-content > main")', $theme);

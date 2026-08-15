@@ -131,10 +131,6 @@
     }
 
     function mountDocumentLooksBack() {
-        if (typeof window.Highlight !== "function" || !window.CSS?.highlights) {
-            return;
-        }
-
         const root = document.querySelector("#mdbook-content > main");
         if (!root) {
             return;

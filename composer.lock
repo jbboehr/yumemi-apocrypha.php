@@ -1626,12 +1626,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jbboehr/doctrine-of-the-second-sun.git",
-                "reference": "0304bd22a75fd2f35ef2587f2a312ae8173a3003"
+                "reference": "7d48c2bcaa7fdc00b5bf020670f2686962bf114f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jbboehr/doctrine-of-the-second-sun/zipball/0304bd22a75fd2f35ef2587f2a312ae8173a3003",
-                "reference": "0304bd22a75fd2f35ef2587f2a312ae8173a3003",
+                "url": "https://api.github.com/repos/jbboehr/doctrine-of-the-second-sun/zipball/7d48c2bcaa7fdc00b5bf020670f2686962bf114f",
+                "reference": "7d48c2bcaa7fdc00b5bf020670f2686962bf114f",
                 "shasum": ""
             },
             "require-dev": {
@@ -1667,7 +1667,7 @@
                 "issues": "https://github.com/jbboehr/doctrine-of-the-second-sun/issues",
                 "source": "https://github.com/jbboehr/doctrine-of-the-second-sun"
             },
-            "time": "2026-08-14T00:46:42+00:00"
+            "time": "2026-08-15T02:31:15+00:00"
         },
         {
             "name": "jbboehr/phpbench-perfidious",

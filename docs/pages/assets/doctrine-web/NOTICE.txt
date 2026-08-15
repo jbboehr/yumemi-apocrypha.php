@@ -9,7 +9,7 @@ Both integrations come from:
   Doctrine of the Second Sun
   John Boehr and contributors
   https://github.com/jbboehr/doctrine-of-the-second-sun
-  revision 0304bd22a75fd2f35ef2587f2a312ae8173a3003
+  revision 7d48c2bcaa7fdc00b5bf020670f2686962bf114f
 
 Those files are distributed under the Creative Commons Attribution-ShareAlike
 4.0 International License reproduced in DOCTRINE-LICENSE.txt.
