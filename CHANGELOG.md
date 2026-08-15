@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-08-14
+
 ### Added
 
 - Initial PHPStan extension for PHP `^8.2` and PHPStan `^2.2.5`, using Yumemi `^0.1` branded native types to describe
@@ -23,4 +25,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Automatic registration through `phpstan/extension-installer`, manual `extension.neon` registration, and public
   documentation examples verified against the real upstream packages.
 
-[Unreleased]: https://github.com/jbboehr/yumemi-apocrypha.php/commits/master
+[Unreleased]: https://github.com/jbboehr/yumemi-apocrypha.php/compare/0.1.0...HEAD
+[0.1.0]: https://github.com/jbboehr/yumemi-apocrypha.php/releases/tag/0.1.0

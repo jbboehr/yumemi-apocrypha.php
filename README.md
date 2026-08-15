@@ -12,10 +12,10 @@
 
 Curated PHPStan unit annotations for third-party PHP packages, built on [Yumemi](https://github.com/jbboehr/yumemi.php).
 
-No tagged release exists.
+The public API remains provisional throughout the `0.x` release series.
 
 ```shell
-composer require --dev jbboehr/yumemi-apocrypha:dev-master phpstan/extension-installer
+composer require --dev jbboehr/yumemi-apocrypha:^0.1 phpstan/extension-installer
 ```
 
 If Yumemi is used only during PHPStan analysis, the complete toolchain may remain in development dependencies. The

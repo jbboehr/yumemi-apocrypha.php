@@ -19,14 +19,13 @@ check, and confirm that an incorrectly scaled value is rejected.
 Apocrypha requires PHP `^8.2`, PHPStan `^2.2.5`, and Yumemi `^0.1`. It does not install an integration's third-party
 package; that package must already be installed in the project.
 
-Yumemi has a tagged `0.1` release, while Apocrypha has not yet published its first release. Install Apocrypha's
-development branch according to how the application uses Yumemi.
+Install Apocrypha according to how the application uses Yumemi.
 
 **Static analysis only.** If application code does not call Yumemi functions or classes at runtime, keep the complete
 toolchain in development dependencies. Composer installs the compatible Yumemi release transitively:
 
 ```shell
-composer require --dev jbboehr/yumemi-apocrypha:dev-master phpstan/extension-installer
+composer require --dev jbboehr/yumemi-apocrypha:^0.1 phpstan/extension-installer
 ```
 
 **Runtime branded values.** If application code calls Yumemi functions or classes, install Yumemi as a normal
@@ -34,7 +33,7 @@ dependency. Apocrypha and the extension installer remain development dependencie
 
 ```shell
 composer require jbboehr/yumemi:^0.1
-composer require --dev jbboehr/yumemi-apocrypha:dev-master phpstan/extension-installer
+composer require --dev jbboehr/yumemi-apocrypha:^0.1 phpstan/extension-installer
 ```
 
 ## Automatic Registration
