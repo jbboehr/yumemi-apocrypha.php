@@ -12,37 +12,18 @@
 
 Curated PHPStan unit annotations for third-party PHP packages, built on [Yumemi](https://github.com/jbboehr/yumemi.php).
 
-No tagged release exists. The current supported integration matrix is:
-
-| Composer package          | Supported versions                  |
-| ------------------------- | ----------------------------------- |
-| `nesbot/carbon`           | 2.62.1+ in 2.x; 3.x                 |
-| `james-heinrich/getid3`   | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x |
-| `guzzlehttp/guzzle`       | 7, 8                                |
-| `illuminate/cache`        | 11, 12, 13                          |
-| `illuminate/cookie`       | 11, 12, 13                          |
-| `illuminate/database`     | 11, 12, 13                          |
-| `illuminate/filesystem`   | 11, 12, 13                          |
-| `illuminate/http`         | 11, 12, 13                          |
-| `illuminate/process`      | 11, 12, 13                          |
-| `illuminate/queue`        | 11, 12, 13                          |
-| `illuminate/redis`        | 11, 12, 13                          |
-| `illuminate/routing`      | 11, 12, 13                          |
-| `illuminate/session`      | 11, 12, 13                          |
-| `illuminate/support`      | 11, 12, 13                          |
-| `illuminate/validation`   | 11, 12, 13                          |
-| `intervention/image`      | 3, 4                                |
-| `laravel/framework`       | 11, 12, 13                          |
-| `mjaschen/phpgeo`         | 4, 5, 6                             |
-| `nmarfurt/measurements`   | 1.4+ in 1.x                         |
-| `symfony/http-foundation` | 6.4+ in 6.x; 7.x; 8.x               |
-| `symfony/stopwatch`       | 6, 7, 8                             |
-
-`laravel/framework` supplies the listed Illuminate packages through Composer replacements. Select the precise
-`illuminate/*` integration name; no separate component installation is required.
+No tagged release exists.
 
 ```shell
 composer require --dev jbboehr/yumemi-apocrypha:dev-master phpstan/extension-installer
+```
+
+If Yumemi is used only during PHPStan analysis, the complete toolchain may remain in development dependencies. The
+example below calls Yumemi's runtime `unit()` function; applications that do the same must install Yumemi as a normal
+dependency:
+
+```shell
+composer require jbboehr/yumemi:^0.1
 ```
 
 Select an integration in `phpstan.neon`:
@@ -71,6 +52,35 @@ function cacheReportForOneMinute(Store $cache): void
 ```
 
 `//!` marks the expected PHPStan diagnostic used by documentation testing; it is not Yumemi syntax.
+
+## Verified package compatibility
+
+| Composer package                    | Supported versions                  |
+| ----------------------------------- | ----------------------------------- |
+| `nesbot/carbon`                     | 2.62.1+ in 2.x; 3.x                 |
+| `james-heinrich/getid3`             | 1.9.22+ in 1.x; 2.0.0-beta6+ in 2.x |
+| `guzzlehttp/guzzle`                 | 7, 8                                |
+| `illuminate/cache`                  | 11, 12, 13                          |
+| `illuminate/cookie`                 | 11, 12, 13                          |
+| `illuminate/database`               | 11, 12, 13                          |
+| `illuminate/filesystem`             | 11, 12, 13                          |
+| `illuminate/http`                   | 11, 12, 13                          |
+| `illuminate/process`                | 11, 12, 13                          |
+| `illuminate/queue`                  | 11, 12, 13                          |
+| `illuminate/redis`                  | 11, 12, 13                          |
+| `illuminate/routing`                | 11, 12, 13                          |
+| `illuminate/session`                | 11, 12, 13                          |
+| `illuminate/support`                | 11, 12, 13                          |
+| `illuminate/validation`             | 11, 12, 13                          |
+| `intervention/image`                | 3, 4                                |
+| `laravel/framework` (provider only) | 11, 12, 13                          |
+| `mjaschen/phpgeo`                   | 4, 5, 6                             |
+| `nmarfurt/measurements`             | 1.4+ in 1.x                         |
+| `symfony/http-foundation`           | 6.4+ in 6.x; 7.x; 8.x               |
+| `symfony/stopwatch`                 | 6, 7, 8                             |
+
+`laravel/framework` supplies the listed Illuminate packages through Composer replacements. Select the precise
+`illuminate/*` integration name; no separate component installation is required.
 
 ## Documentation
 
