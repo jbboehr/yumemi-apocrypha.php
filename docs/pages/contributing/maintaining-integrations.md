@@ -142,7 +142,7 @@ Before tagging a release, run `composer release:check`. The release gate assigns
 prospective stable version, installs it into clean stable-minimum projects, and confirms that Composer selects a tagged
 Yumemi `0.1` release. It exercises extension-installer with Symfony Stopwatch, manual PHPStan registration with
 Illuminate Cache, and Laravel with Larastan. Set `APOCRYPHA_PACKAGE_VERSION` when preparing a version other than the
-default prospective `0.1.0`.
+default prospective `0.2.0`.
 
 Source-mode consumers use Composer's default symlinked path-repository layout; archive-mode consumers use a mirrored
 path. Keep both modes because package-relative NEON includes and registered stub paths can behave differently after

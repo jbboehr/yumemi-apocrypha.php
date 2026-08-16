@@ -7,6 +7,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-08-16
+
 ### Added
 
 - Unit-aware integration for Laravel 11–13 authentication timeboxes, remember durations, password timeouts, and token
@@ -16,6 +18,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   releases.
 - Unit-aware integration for Laravel 11–13 scheduler repeat intervals in seconds and overlap-lock expiration in minutes.
 - Unit-aware integration for Laravel 11–13 delayed mail and queued-mailable timeout seconds.
+
+### Changed
+
+- Autodetection now selects the Auth, Bus, Console, Mail, and Concurrency integrations when those Illuminate packages or
+  their `laravel/framework` replacements are installed. Explicit `yumemiApocrypha.integrations` lists are unchanged;
+  adding those keys or enabling autodetection can report new unit errors in previously clean analysis.
 
 ## [0.1.0] - 2026-08-14
 
@@ -35,5 +43,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Automatic registration through `phpstan/extension-installer`, manual `extension.neon` registration, and public
   documentation examples verified against the real upstream packages.
 
-[Unreleased]: https://github.com/jbboehr/yumemi-apocrypha.php/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jbboehr/yumemi-apocrypha.php/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/jbboehr/yumemi-apocrypha.php/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jbboehr/yumemi-apocrypha.php/releases/tag/v0.1.0

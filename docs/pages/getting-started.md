@@ -25,7 +25,7 @@ Install Apocrypha according to how the application uses Yumemi.
 toolchain in development dependencies. Composer installs the compatible Yumemi release transitively:
 
 ```shell
-composer require --dev jbboehr/yumemi-apocrypha:^0.1 phpstan/extension-installer
+composer require --dev jbboehr/yumemi-apocrypha:^0.2 phpstan/extension-installer
 ```
 
 **Runtime branded values.** If application code calls Yumemi functions or classes, install Yumemi as a normal
@@ -33,7 +33,7 @@ dependency. Apocrypha and the extension installer remain development dependencie
 
 ```shell
 composer require jbboehr/yumemi:^0.1
-composer require --dev jbboehr/yumemi-apocrypha:^0.1 phpstan/extension-installer
+composer require --dev jbboehr/yumemi-apocrypha:^0.2 phpstan/extension-installer
 ```
 
 ## Automatic Registration

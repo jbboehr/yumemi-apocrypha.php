@@ -222,11 +222,11 @@
     "yumemi-development-head": {
       "flake": false,
       "locked": {
-        "lastModified": 1786582870,
-        "narHash": "sha256-QwKPLj6FmhGxU4M3RFxYUcqTbclm8GKUWx0LFb3/He8=",
+        "lastModified": 1786848826,
+        "narHash": "sha256-sitKZfQqyYmjeTVyb8xv0wS4m0yAKj/23LOt50J/Lm0=",
         "owner": "jbboehr",
         "repo": "yumemi.php",
-        "rev": "80d022de4ee0b5d5f7a9656ad307c09602d85452",
+        "rev": "8b122dbf2df0ebf5c75b22f19f0df1fd492872a0",
         "type": "github"
       },
       "original": {

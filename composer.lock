@@ -89,12 +89,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jbboehr/yumemi.php.git",
-                "reference": "80d022de4ee0b5d5f7a9656ad307c09602d85452"
+                "reference": "8b122dbf2df0ebf5c75b22f19f0df1fd492872a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/80d022de4ee0b5d5f7a9656ad307c09602d85452",
-                "reference": "80d022de4ee0b5d5f7a9656ad307c09602d85452",
+                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/8b122dbf2df0ebf5c75b22f19f0df1fd492872a0",
+                "reference": "8b122dbf2df0ebf5c75b22f19f0df1fd492872a0",
                 "shasum": ""
             },
             "require": {
@@ -165,7 +165,7 @@
                 "issues": "https://github.com/jbboehr/yumemi.php/issues",
                 "source": "https://github.com/jbboehr/yumemi.php"
             },
-            "time": "2026-08-13T01:01:10+00:00"
+            "time": "2026-08-16T02:53:46+00:00"
         },
         {
             "name": "phpstan/phpstan",
@@ -7357,7 +7357,8 @@
     "stability-flags": {
         "jbboehr/akashi": 20,
         "jbboehr/doctrine-of-the-second-sun": 20,
-        "jbboehr/phpbench-perfidious": 20
+        "jbboehr/phpbench-perfidious": 20,
+        "jbboehr/yumemi": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
