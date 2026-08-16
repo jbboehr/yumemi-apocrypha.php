@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9a3b152ee8d917ee60b89818d10604cf",
+    "content-hash": "54dc13639563c630ee6f318e52f598b6",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -168,7 +168,7 @@
         },
         {
             "name": "jbboehr/yumemi-apocrypha",
-            "version": "0.1.0",
+            "version": "0.2.0",
             "dist": {
                 "type": "path",
                 "url": ".apocrypha-package"
