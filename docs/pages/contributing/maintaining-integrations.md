@@ -150,8 +150,8 @@ symlink resolution. A source-mode consumer must confirm that returned stub paths
 resolving them to the external checkout can make PHPStan validate a different package boundary or fail during stub
 validation.
 
-Every fenced PHP example in `README.md` and `docs/pages/**` must have a `yumemi-example` marker and an entry in the
-public-documentation verification manifest. Examples that use third-party APIs belong to the corresponding isolated
+Every fenced PHP example in `README.md` and `docs/pages/**` must have an `akashi: example=...` identity and an entry in
+the public-documentation verification manifest. Examples that use third-party APIs belong to the corresponding isolated
 consumer; the harness resolves their source document through that manifest before Akashi extracts the authored fence. Do
 not copy an example into a fixture or declare a consumer route without wiring that marker into the consumer harness.
 Route a future dependency-free example through a root runtime or PHPStan test instead of assigning it to an unrelated

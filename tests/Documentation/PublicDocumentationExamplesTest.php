@@ -54,16 +54,17 @@ final class PublicDocumentationExamplesTest extends TestCase
         $covered = [];
 
         foreach (PublicDocumentationExamples::corpus() as $example) {
+            $origin = $example->codeOrigin();
             $location = sprintf(
                 '%s:%d',
-                $example->document->path->value,
-                $example->location->openingFenceLine,
+                $origin->document->path->value,
+                $origin->firstCodeLine,
             );
             $marker = $example->explicitMarkerId?->value;
 
             self::assertNotNull(
                 $marker,
-                sprintf('Public PHP example at %s has no yumemi-example verification marker.', $location),
+                sprintf('Public PHP example at %s has no Akashi example identity.', $location),
             );
             self::assertArrayHasKey(
                 $marker,
@@ -73,7 +74,7 @@ final class PublicDocumentationExamplesTest extends TestCase
 
             $verification = $manifest[$marker];
             self::assertSame(
-                $example->document->path->value,
+                $origin->document->path->value,
                 $verification['document'],
                 sprintf('Public PHP example %s is assigned to the wrong document.', $marker),
             );

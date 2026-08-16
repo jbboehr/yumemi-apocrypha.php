@@ -78,7 +78,7 @@ Enable `nesbot/carbon` to brand fixed-duration calculations and waits.
 | `secondsSinceMidnight()` and `secondsUntilEndOfDay()` | `second`                      |
 | Carbon 3 `sleep()` methods                            | `second`                      |
 
-<!-- yumemi-example: carbon-invalid -->
+<!-- akashi: example=carbon-invalid -->
 
 ```php
 <?php
@@ -127,7 +127,7 @@ through Guzzle 7.10 and accept branded integers or floats from Guzzle 7.11 onwar
 | Expect/Continue threshold and progress byte counts | `byte`        |
 | `TransferStats` transfer time                      | `second`      |
 
-<!-- yumemi-example: guzzle-invalid -->
+<!-- akashi: example=guzzle-invalid -->
 
 ```php
 <?php
@@ -167,7 +167,7 @@ the optional file-size override accepted by `analyze()` and `openfile()`.
 | Audio sample and video frame rates | `hertz`        |
 | Video width and height             | `pixel`        |
 
-<!-- yumemi-example: getid3-invalid -->
+<!-- akashi: example=getid3-invalid -->
 
 ```php
 <?php
@@ -217,7 +217,7 @@ timeout and throttle seconds.
 | Database token expiry on Laravel 12 and 13         | `second`      |
 | Cache token expiry                                 | `second`      |
 
-<!-- yumemi-example: illuminate-auth-invalid -->
+<!-- akashi: example=illuminate-auth-invalid -->
 
 ```php
 <?php
@@ -253,7 +253,7 @@ Enable `illuminate/bus` to distinguish scalar job-delay seconds from batch progr
 | `Queueable::$delay`, `delay()` | `second`  |
 | `Batch::progress()`            | `percent` |
 
-<!-- yumemi-example: illuminate-bus-invalid -->
+<!-- akashi: example=illuminate-bus-invalid -->
 
 ```php
 <?php
@@ -297,7 +297,7 @@ Enable `illuminate/cache` to brand duration boundaries in cache contracts and re
 | `Limit::perDay()`                       | `day`                          |
 | Available/default cache time            | returned or stored as `second` |
 
-<!-- yumemi-example: illuminate-cache-invalid -->
+<!-- akashi: example=illuminate-cache-invalid -->
 
 ```php
 <?php
@@ -329,7 +329,7 @@ Enable `illuminate/concurrency` to require seconds for the optional task timeout
 | `Driver::run()` and concrete driver timeout    | `second` |
 | `ConcurrencyManager::run()` and facade timeout | `second` |
 
-<!-- yumemi-example: illuminate-concurrency-invalid -->
+<!-- akashi: example=illuminate-concurrency-invalid -->
 
 ```php
 <?php
@@ -364,7 +364,7 @@ Enable `illuminate/console` to distinguish the scheduler's sub-minute repeat int
 | `Event::$repeatSeconds`                        | `second` |
 | `Event::$expiresAt` and `withoutOverlapping()` | `minute` |
 
-<!-- yumemi-example: illuminate-console-invalid -->
+<!-- akashi: example=illuminate-console-invalid -->
 
 ```php
 <?php
@@ -406,7 +406,7 @@ Enable `illuminate/database` to distinguish millisecond query measurements from 
 | Long-query threshold and total query duration | `millisecond` |
 | Query Builder timeout, where available        | `second`      |
 
-<!-- yumemi-example: illuminate-database-invalid -->
+<!-- akashi: example=illuminate-database-invalid -->
 
 ```php
 <?php
@@ -458,7 +458,7 @@ Apocrypha therefore uses the exact unit `1024 * byte`; the decimal UDUNITS `kilo
 Laravel 11.35.1 widened `PendingRequest::timeout()` and `connectTimeout()` from `int` to `int|float`. Apocrypha selects
 an integer-only profile through 11.35.0 and the integer-or-float profile for 11.35.1 and later.
 
-<!-- yumemi-example: illuminate-http-invalid -->
+<!-- akashi: example=illuminate-http-invalid -->
 
 ```php
 <?php
@@ -489,7 +489,7 @@ Laravel's mail contracts, `Mailable`, `Mailer`, and `PendingMail` all publish th
 delay. Apocrypha brands only the integer alternative. With Larastan, the Mail facade receives the same boundary without
 replacing Larastan's partial `Mailable` stub. Standalone analysis keeps the upstream facade's magic dispatch unmodified.
 
-<!-- yumemi-example: illuminate-mail-invalid -->
+<!-- akashi: example=illuminate-mail-invalid -->
 
 ```php
 <?php
@@ -562,7 +562,7 @@ reported command latency in milliseconds.
 | Limiter polling sleep                            | `millisecond` |
 | `CommandExecuted::$time` and constructor latency | `millisecond` |
 
-<!-- yumemi-example: illuminate-redis-invalid -->
+<!-- akashi: example=illuminate-redis-invalid -->
 
 ```php
 <?php
@@ -596,7 +596,7 @@ signed-URL expirations.
 | `Route::block()`, `locksFor()`, and `waitsFor()`                             | `second` |
 | Integer signed-route expiration on generators, redirects, and the URL facade | `second` |
 
-<!-- yumemi-example: illuminate-routing-invalid -->
+<!-- akashi: example=illuminate-routing-invalid -->
 
 ```php
 <?php
@@ -630,7 +630,7 @@ route-lock lifetimes expressed in seconds.
 | `SessionManager` route-block lock and wait defaults                   | `second` |
 | `SymfonySessionDecorator::invalidate()` and `migrate()` lifetime      | `second` |
 
-<!-- yumemi-example: illuminate-session-invalid -->
+<!-- akashi: example=illuminate-session-invalid -->
 
 ```php
 <?php
@@ -661,7 +661,7 @@ chunks from decimal storage units.
 | `Dimensions` width, height, and minimum/maximum dimensions                         | `pixel`       |
 | Integer alternatives accepted by `File::size()`, `between()`, `min()`, and `max()` | `1024 * byte` |
 
-<!-- yumemi-example: illuminate-validation-invalid -->
+<!-- akashi: example=illuminate-validation-invalid -->
 
 ```php
 <?php
@@ -707,7 +707,7 @@ and image APIs.
 | `width()` and `height()` results                             | `pixel`  |
 | `rotate()` angle                                             | `degree` |
 
-<!-- yumemi-example: intervention-image-invalid -->
+<!-- akashi: example=intervention-image-invalid -->
 
 ```php
 <?php
@@ -744,7 +744,7 @@ Enable `nmarfurt/measurements` to require the unit named by each `Length` and `D
 | Other length   | Inch, foot, yard, mile, light-year, nautical mile, fathom, furlong, astronomical unit, parsec |
 | Duration       | Second, minute, hour                                                                          |
 
-<!-- yumemi-example: measurements-invalid -->
+<!-- akashi: example=measurements-invalid -->
 
 ```php
 <?php
@@ -782,7 +782,7 @@ This covers distance calculators and `Coordinate::getDistance()`; line, polyline
 cardinal-direction components; destination calculations; bounds expansion; perpendicular-distance utilities; and
 polyline simplification tolerances.
 
-<!-- yumemi-example: phpgeo-invalid -->
+<!-- akashi: example=phpgeo-invalid -->
 
 ```php
 <?php
@@ -825,7 +825,7 @@ time units.
 | Server-sent event reconnect retry           | `millisecond` | 7.3+         |
 | IPv4 and IPv6 anonymization suffix lengths  | `byte`        | 8.x          |
 
-<!-- yumemi-example: symfony-http-foundation-invalid -->
+<!-- akashi: example=symfony-http-foundation-invalid -->
 
 ```php
 <?php
@@ -864,7 +864,7 @@ Enable `symfony/stopwatch` to brand elapsed durations and memory results from `S
 Duration results retain Symfony's `int|float` alternative: ordinary precision returns integers, while the
 `morePrecision` mode may return floats. Both alternatives carry the same millisecond unit.
 
-<!-- yumemi-example: symfony-stopwatch-invalid -->
+<!-- akashi: example=symfony-stopwatch-invalid -->
 
 ```php
 <?php

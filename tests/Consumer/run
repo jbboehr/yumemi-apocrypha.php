@@ -376,8 +376,7 @@ extract_documentation_case() {
     if ! document=$(php "$DOCUMENTATION_EXAMPLE_RESOLVER" document "$consumer" "$marker"); then
         exit 1
     fi
-    php "$AKASHI" extract --marker-name=yumemi-example \
-        "$PROJECT_ROOT/$document" "$marker" > "$output_file"
+    php "$AKASHI" extract "$PROJECT_ROOT/$document" "$marker" > "$output_file"
 }
 
 run_documentation_phpstan_case() {

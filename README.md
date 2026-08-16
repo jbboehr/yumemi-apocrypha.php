@@ -35,7 +35,7 @@ parameters:
             - illuminate/cache
 ```
 
-<!-- yumemi-example: readme-cache-invalid -->
+<!-- akashi: example=readme-cache-invalid -->
 
 ```php
 <?php

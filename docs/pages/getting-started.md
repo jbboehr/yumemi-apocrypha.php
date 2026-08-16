@@ -117,7 +117,7 @@ parser services and may conflict with another extension replacing the same servi
 
 Add a deliberate mismatch to code using an annotated upstream API:
 
-<!-- yumemi-example: getting-started-invalid -->
+<!-- akashi: example=getting-started-invalid -->
 
 ```php
 <?php

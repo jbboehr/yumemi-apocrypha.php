@@ -173,11 +173,7 @@ final class PublicDocumentationExamples
     public static function corpus(): ExampleCorpus
     {
         $source = MarkdownSource::forProject(dirname(__DIR__, 2))
-            ->withMarkerName('yumemi-example');
-
-        foreach (self::DOCUMENTS as $document) {
-            $source = $source->includeFile($document);
-        }
+            ->includeFiles(self::DOCUMENTS);
 
         return $source->load();
     }
@@ -211,11 +207,12 @@ final class PublicDocumentationExamples
     {
         $document = self::documentForConsumer($consumer, $marker);
         $example = (new MarkedExampleSelector())->select(self::corpus(), $marker);
-        if ($example->document->path->value !== $document) {
+        $actualDocument = $example->codeOrigin()->document->path->value;
+        if ($actualDocument !== $document) {
             throw new \LogicException(sprintf(
                 'Public documentation example marker %s resolved to %s instead of %s.',
                 $marker,
-                $example->document->path->value,
+                $actualDocument,
                 $document,
             ));
         }
