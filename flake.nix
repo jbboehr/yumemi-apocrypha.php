@@ -274,9 +274,13 @@
             ) indexedDependencyConsumerProfiles
           )
         ) consumerCacheShardCount;
+        # Dependency preparation needs only the runner, fixture manifests, and committed locks. Excluding analysis
+        # cases and expectations keeps ordinary consumer-test edits from invalidating the shared Composer cache.
         consumerDependencyFiles = lib.fileset.unions [
           ./composer.json
-          ./tests/Consumer
+          (lib.fileset.fileFilter (
+            file: file.name == "composer.json" || file.name == "run" || file.hasExt "lock"
+          ) ./tests/Consumer)
         ];
         consumerDependencySource = lib.fileset.toSource {
           root = ./.;

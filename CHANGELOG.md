@@ -12,6 +12,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Unit-aware integration for Laravel 11–13 authentication timeboxes, remember durations, password timeouts, and token
   expiry and throttle boundaries.
 - Unit-aware integration for Laravel 11–13 job delay seconds and batch progress percentages.
+- Unit-aware integration for Laravel 13.9+ concurrency timeout seconds, with inert profiles for earlier Laravel 11–13
+  releases.
 - Unit-aware integration for Laravel 11–13 scheduler repeat intervals in seconds and overlap-lock expiration in minutes.
 - Unit-aware integration for Laravel 11–13 delayed mail and queued-mailable timeout seconds.
 

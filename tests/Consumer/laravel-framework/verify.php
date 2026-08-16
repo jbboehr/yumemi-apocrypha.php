@@ -57,6 +57,7 @@ $checks = [
     'illuminate/auth' => [Illuminate\Auth\SessionGuard::class, 'setRememberDuration', 'minutes'],
     'illuminate/bus' => [Illuminate\Bus\Queueable::class, 'delay', 'delay'],
     'illuminate/cache' => [Illuminate\Contracts\Cache\Store::class, 'put', 'seconds'],
+    'illuminate/concurrency' => [Illuminate\Contracts\Concurrency\Driver::class, 'run', 'tasks'],
     'illuminate/console' => [Illuminate\Console\Scheduling\Event::class, 'withoutOverlapping', 'expiresAt'],
     'illuminate/cookie' => [Illuminate\Contracts\Cookie\Factory::class, 'make', 'minutes'],
     'illuminate/database' => [Illuminate\Database\Connection::class, 'whenQueryingForLongerThan', 'threshold'],
@@ -97,6 +98,19 @@ foreach ($checks as $package => [$class, $method, $parameter]) {
     );
     if (!in_array($parameter, $parameterNames, true)) {
         throw new RuntimeException(sprintf('%s::%s() does not have parameter $%s.', $class, $method, $parameter));
+    }
+}
+
+if ($expectedMajor === 13) {
+    $timeout = (new ReflectionMethod(Illuminate\Contracts\Concurrency\Driver::class, 'run'))->getParameters()[1] ?? null;
+    if (
+        !$timeout instanceof ReflectionParameter
+        || $timeout->getName() !== 'timeout'
+        || (string) $timeout->getType() !== 'Carbon\\CarbonInterval|int|null'
+        || !$timeout->isDefaultValueAvailable()
+        || $timeout->getDefaultValue() !== null
+    ) {
+        throw new RuntimeException('Laravel 13 does not expose the expected Concurrency Driver timeout.');
     }
 }
 

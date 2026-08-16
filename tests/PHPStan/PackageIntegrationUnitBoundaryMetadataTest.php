@@ -96,6 +96,9 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
         yield 'illuminate/bus 12.51.0' => ['illuminate/bus', 12, '12.51.0'];
         yield 'illuminate/bus 12.52.0' => ['illuminate/bus', 12, '12.52.0'];
         yield 'illuminate/bus 12.x-dev' => ['illuminate/bus', 12, '12.x-dev'];
+        yield 'illuminate/concurrency 13.8.0' => ['illuminate/concurrency', 13, '13.8.0'];
+        yield 'illuminate/concurrency 13.9.0' => ['illuminate/concurrency', 13, '13.9.0'];
+        yield 'illuminate/concurrency 13.x-dev' => ['illuminate/concurrency', 13, '13.x-dev'];
         yield 'Intervention Image 3' => ['intervention/image', 3, '3.0.0'];
         yield 'Intervention Image 4' => ['intervention/image', 4, '4.0.0'];
     }
@@ -321,6 +324,12 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
                     : 'bus.stub'
             )],
             'illuminate/cache' => [$base . 'cache.stub'],
+            'illuminate/concurrency' => [
+                ...($major === 13 && (
+                    $version === '13.x-dev'
+                    || version_compare(ltrim($version, 'v'), '13.9.0', '>=')
+                ) ? [$base . 'concurrency.stub'] : []),
+            ],
             'illuminate/console' => [$base . (
                 $major === 13
                 && ($version === '13.x-dev' || version_compare(ltrim($version, 'v'), '13.2.0', '>='))

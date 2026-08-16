@@ -1,0 +1,7 @@
+Illuminate\Contracts\Concurrency\Driver::run() expects Carbon\CarbonInterval|unit_int<'second'>|null, int given
+Illuminate\Contracts\Concurrency\Driver::run() expects Carbon\CarbonInterval|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Concurrency\ForkDriver::run() expects Carbon\CarbonInterval|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Concurrency\ProcessDriver::run() expects Carbon\CarbonInterval|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Concurrency\SyncDriver::run() expects Carbon\CarbonInterval|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Concurrency\ConcurrencyManager::run() expects Carbon\CarbonInterval|unit_int<'second'>|null, 1&unit_int<'minute'> given
+Illuminate\Support\Facades\Concurrency::run() expects Carbon\CarbonInterval|unit_int<'second'>|null, 1&unit_int<'minute'> given

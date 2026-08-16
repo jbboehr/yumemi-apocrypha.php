@@ -8,6 +8,7 @@ parameters:
             - illuminate/auth
             - illuminate/bus
             - illuminate/cache
+            - illuminate/concurrency
             - illuminate/console
             - illuminate/cookie
             - illuminate/database

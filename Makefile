@@ -5,7 +5,8 @@
 	test-consumer-intervention-image test-consumer-intervention-image-archive \
 	test-consumer-illuminate-auth test-consumer-illuminate-auth-archive test-consumer-illuminate-bus \
 	test-consumer-illuminate-bus-archive test-consumer-illuminate-cache \
-	test-consumer-illuminate-cache-archive test-consumer-illuminate-console test-consumer-illuminate-console-archive \
+	test-consumer-illuminate-cache-archive test-consumer-illuminate-concurrency \
+	test-consumer-illuminate-concurrency-archive test-consumer-illuminate-console test-consumer-illuminate-console-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-database test-consumer-illuminate-filesystem \
 	test-consumer-illuminate-http test-consumer-illuminate-http-archive \
 	test-consumer-illuminate-mail test-consumer-illuminate-mail-archive \
@@ -29,6 +30,7 @@ CARBON_VERSION ?= 3
 ILLUMINATE_AUTH_MAJOR ?= 12
 ILLUMINATE_BUS_MAJOR ?= 12
 ILLUMINATE_CACHE_MAJOR ?= 12
+ILLUMINATE_CONCURRENCY_MAJOR ?= 13
 ILLUMINATE_CONSOLE_MAJOR ?= 12
 ILLUMINATE_COMPATIBILITY_MODE ?= plain
 GETID3_VERSION ?= 2
@@ -116,6 +118,12 @@ test-consumer-illuminate-cache:
 
 test-consumer-illuminate-cache-archive:
 	tests/Consumer/run archive illuminate-cache $(ILLUMINATE_CACHE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-concurrency:
+	tests/Consumer/run source illuminate-concurrency $(ILLUMINATE_CONCURRENCY_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-concurrency-archive:
+	tests/Consumer/run archive illuminate-concurrency $(ILLUMINATE_CONCURRENCY_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-console:
 	tests/Consumer/run source illuminate-console $(ILLUMINATE_CONSOLE_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)

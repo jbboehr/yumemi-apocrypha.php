@@ -537,6 +537,12 @@
                 "test:consumer:illuminate-cache:archive": [
                     "make test-consumer-illuminate-cache-archive"
                 ],
+                "test:consumer:illuminate-concurrency": [
+                    "make test-consumer-illuminate-concurrency"
+                ],
+                "test:consumer:illuminate-concurrency:archive": [
+                    "make test-consumer-illuminate-concurrency-archive"
+                ],
                 "test:consumer:illuminate-console": [
                     "make test-consumer-illuminate-console"
                 ],

@@ -132,7 +132,7 @@ if [[ $PACKAGE_MODE == archive && $CONSUMER_DEPENDENCIES_ONLY != 1 ]]; then
         php "$PACKAGE_CHECKER" "$git_archive"
     fi
 elif [[ $PACKAGE_MODE != source && $PACKAGE_MODE != archive ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-bus|illuminate-cache|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-mail|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-bus|illuminate-cache|illuminate-concurrency|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-mail|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -802,10 +802,14 @@ run_simple_illuminate_integration() {
                 $FIXTURE_SUITE != illuminate-bus
                 || ! $PACKAGE_MAJOR =~ ^12\.(51|52)\.0$
             )
+            && (
+                $FIXTURE_SUITE != illuminate-concurrency
+                || ! $PACKAGE_MAJOR =~ ^13\.(8|9)\.0$
+            )
             || $COMPATIBILITY_MODE != plain
         ]]; then
             printf '%s\n' \
-                'Exact Illuminate component profiles are limited to the documented Auth, Bus, Console, Database, and Queue cutovers in plain mode.' >&2
+                'Exact Illuminate component profiles are limited to the documented Auth, Bus, Concurrency, Console, Database, and Queue cutovers in plain mode.' >&2
             exit 2
         fi
 
@@ -815,58 +819,12 @@ run_simple_illuminate_integration() {
         package_constraint="^$package_major.0"
     fi
 
+    if [[ $FIXTURE_SUITE == illuminate-concurrency ]]; then
+        package=laravel/framework
+    fi
+
     mkdir -p -- "$project_dir"
     cp -R -- "$FIXTURES_DIR/$FIXTURE_SUITE/." "$project_dir/"
-    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
-
-    if [[ $FIXTURE_SUITE == illuminate-support && $COMPATIBILITY_MODE == larastan ]]; then
-        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
-    fi
-
-    if [[ $FIXTURE_SUITE == illuminate-redis && $COMPATIBILITY_MODE == larastan ]]; then
-        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
-    fi
-
-    if [[ $FIXTURE_SUITE == illuminate-session && $COMPATIBILITY_MODE == larastan ]]; then
-        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
-    fi
-
-    if [[ $FIXTURE_SUITE == illuminate-auth && $COMPATIBILITY_MODE == larastan ]]; then
-        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
-    fi
-
-    if [[ $FIXTURE_SUITE == illuminate-console && $COMPATIBILITY_MODE == larastan ]]; then
-        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
-    fi
-
-    if [[ $FIXTURE_SUITE == illuminate-bus && $COMPATIBILITY_MODE == larastan ]]; then
-        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
-    fi
-
-    if [[ $FIXTURE_SUITE == illuminate-mail && $COMPATIBILITY_MODE == larastan ]]; then
-        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
-    fi
-
-    if [[ $FIXTURE_SUITE == illuminate-validation && $COMPATIBILITY_MODE != plain ]]; then
-        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
-    fi
-
-    if [[ $FIXTURE_SUITE == illuminate-queue ]]; then
-        if [[ $COMPATIBILITY_MODE == larastan ]]; then
-            expected_diagnostics+=(
-                "Illuminate\\Queue\\InteractsWithQueue::release() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
-                "Illuminate\\Queue\\WorkerOptions::\$timeout expects unit_int<'second'>, 1&unit_int<'minute'> given"
-                "Illuminate\\Queue\\WorkerOptions::\$timeout expects unit_int<'second'>, int given"
-                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (int) does not accept mixed"
-            )
-        else
-            expected_diagnostics+=(
-                "DelayedReportJob::release() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
-                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (unit_int<'second'>) does not accept 1&unit_int<'minute'>"
-                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (unit_int<'second'>) does not accept int"
-            )
-        fi
-    fi
 
     configure_apocrypha_repository "$project_dir"
     configure_yumemi_repository "$project_dir"
@@ -887,12 +845,42 @@ run_simple_illuminate_integration() {
             "illuminate/hashing:$package_constraint" \
             --no-update --no-interaction
     fi
-    if [[ $PACKAGE_MAJOR == *.* || $PACKAGE_MAJOR == 11 || $COMPATIBILITY_MODE != plain ]]; then
+    if [[
+        $PACKAGE_MAJOR == *.*
+        || $PACKAGE_MAJOR == 11
+        || $FIXTURE_SUITE == illuminate-concurrency
+        || $COMPATIBILITY_MODE != plain
+    ]]; then
         configure_laravel_advisory_whitelist "$project_dir"
     fi
     enable_larastan "$project_dir"
     enable_phpstan_laravel_validation "$project_dir"
     install_consumer_dependencies "$project_dir"
+
+    local expected_diagnostics_file=expected-diagnostics.txt
+    case "$FIXTURE_SUITE:$COMPATIBILITY_MODE" in
+        illuminate-auth:larastan | illuminate-bus:larastan | illuminate-console:larastan | illuminate-mail:larastan | illuminate-redis:larastan | illuminate-session:larastan | illuminate-support:larastan | illuminate-validation:larastan | illuminate-validation:phpstan-laravel-validation)
+            expected_diagnostics_file=expected-diagnostics-larastan.txt
+            ;;
+    esac
+    mapfile -t expected_diagnostics < "$project_dir/$expected_diagnostics_file"
+
+    if [[ $FIXTURE_SUITE == illuminate-queue ]]; then
+        if [[ $COMPATIBILITY_MODE == larastan ]]; then
+            expected_diagnostics+=(
+                "Illuminate\\Queue\\InteractsWithQueue::release() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
+                "Illuminate\\Queue\\WorkerOptions::\$timeout expects unit_int<'second'>, 1&unit_int<'minute'> given"
+                "Illuminate\\Queue\\WorkerOptions::\$timeout expects unit_int<'second'>, int given"
+                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (int) does not accept mixed"
+            )
+        else
+            expected_diagnostics+=(
+                "DelayedReportJob::release() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
+                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (unit_int<'second'>) does not accept 1&unit_int<'minute'>"
+                "Property Illuminate\\Queue\\WorkerOptions::\$timeout (unit_int<'second'>) does not accept int"
+            )
+        fi
+    fi
 
     php "$project_dir/verify.php"
     if [[ $FIXTURE_SUITE == illuminate-queue ]]; then
@@ -924,6 +912,21 @@ run_simple_illuminate_integration() {
         expected_diagnostics+=(
             "Illuminate\\Bus\\Queueable::delay() expects array|DateInterval|DateTimeInterface|unit_int<'second'>|null, $bus_progress_type given"
         )
+    fi
+    if [[ $FIXTURE_SUITE == illuminate-concurrency ]]; then
+        profile_case=pre-timeout
+        # shellcheck disable=SC2016
+        if php -r '
+            require $argv[1];
+            foreach ((new ReflectionMethod(Illuminate\Contracts\Concurrency\Driver::class, "run"))->getParameters() as $parameter) {
+                if ($parameter->getName() === "timeout") {
+                    exit(0);
+                }
+            }
+            exit(1);
+        ' "$project_dir/vendor/autoload.php"; then
+            profile_case=timeout
+        fi
     fi
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
@@ -1028,6 +1031,12 @@ run_simple_illuminate_integration() {
         run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-callback.php \
             'whenQueryingForLongerThan() expects callable(Illuminate\Database\Connection, Illuminate\Database\Events\QueryExecuted): mixed, Closure(string): void given'
     fi
+    if [[ $FIXTURE_SUITE == illuminate-concurrency && $profile_case == timeout ]]; then
+        local timeout_diagnostics=()
+        mapfile -t timeout_diagnostics < "$project_dir/expected-diagnostics-timeout.txt"
+        run_phpstan_case "$project_dir" phpstan.neon invalid-timeout.php "${timeout_diagnostics[@]}"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-timeout.php "${timeout_diagnostics[@]}"
+    fi
     if [[ $FIXTURE_SUITE == illuminate-queue && $COMPATIBILITY_MODE == larastan ]]; then
         run_phpstan_without_apocrypha_diagnostic "$project_dir" phpstan.neon unknown-unpack.php
         run_phpstan_without_apocrypha_diagnostic "$project_dir" phpstan-autodetect.neon unknown-unpack.php
@@ -1067,6 +1076,10 @@ run_simple_illuminate_integration() {
     if [[ $FIXTURE_SUITE == illuminate-bus ]]; then
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-bus "$project_dir" phpstan.neon "$documentation_case" illuminate-bus-invalid
+    fi
+    if [[ $FIXTURE_SUITE == illuminate-concurrency && $profile_case == timeout ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case illuminate-concurrency "$project_dir" phpstan.neon "$documentation_case" illuminate-concurrency-invalid
     fi
     if [[ $FIXTURE_SUITE == illuminate-mail ]]; then
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
@@ -1137,6 +1150,14 @@ run_laravel_framework() {
     php "$project_dir/verify.php" "$PACKAGE_MAJOR"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
+    if [[ $PACKAGE_MAJOR == 13 ]]; then
+        run_phpstan_case "$project_dir" phpstan.neon valid-concurrency.php
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon valid-concurrency.php
+        run_phpstan_case "$project_dir" phpstan.neon invalid-concurrency.php \
+            "Illuminate\\Contracts\\Concurrency\\Driver::run() expects Carbon\\CarbonInterval|unit_int<'second'>|null, 1&unit_int<'minute'> given"
+        run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid-concurrency.php \
+            "Illuminate\\Contracts\\Concurrency\\Driver::run() expects Carbon\\CarbonInterval|unit_int<'second'>|null, 1&unit_int<'minute'> given"
+    fi
     run_phpstan_case "$project_dir" phpstan.neon invalid.php "${expected_diagnostics[@]}"
     run_phpstan_case "$project_dir" phpstan-autodetect.neon invalid.php "${expected_diagnostics[@]}"
 }
@@ -1153,13 +1174,14 @@ run_symfony_stopwatch() {
 
     mkdir -p -- "$project_dir"
     cp -R -- "$FIXTURES_DIR/symfony-stopwatch/." "$project_dir/"
-    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
     configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev "symfony/stopwatch:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     enable_phpstan_symfony "$project_dir"
     install_consumer_dependencies "$project_dir"
+
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
@@ -1215,7 +1237,6 @@ run_symfony_http_foundation() {
 
     mkdir -p -- "$project_dir"
     cp -R -- "$FIXTURES_DIR/symfony-http-foundation/." "$project_dir/"
-    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
     configure_yumemi_repository "$project_dir"
@@ -1223,6 +1244,8 @@ run_symfony_http_foundation() {
         "symfony/http-foundation:$package_constraint" --no-update --no-interaction
     enable_phpstan_symfony "$project_dir"
     install_consumer_dependencies "$project_dir"
+
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
@@ -1275,7 +1298,6 @@ run_guzzle() {
 
     mkdir -p -- "$project_dir"
     cp -R -- "$FIXTURES_DIR/guzzle/." "$project_dir/"
-    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
     configure_yumemi_repository "$project_dir"
@@ -1285,6 +1307,8 @@ run_guzzle() {
         composer --working-dir="$project_dir" config policy.advisories.ignore guzzlehttp/guzzle
     fi
     install_consumer_dependencies "$project_dir"
+
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     assert_stub_paths_use_consumer_install "$project_dir" guzzlehttp/guzzle
     php "$project_dir/verify.php" "$project_dir/$CONSUMER_VENDOR_DIR/autoload.php"
@@ -1321,12 +1345,13 @@ run_phpgeo() {
 
     mkdir -p -- "$project_dir"
     cp -R -- "$FIXTURES_DIR/phpgeo/." "$project_dir/"
-    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
     configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev "mjaschen/phpgeo:^$PACKAGE_MAJOR.0" --no-update --no-interaction
     install_consumer_dependencies "$project_dir"
+
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
@@ -1357,13 +1382,14 @@ run_measurements() {
 
     mkdir -p -- "$project_dir"
     cp -R -- "$FIXTURES_DIR/measurements/." "$project_dir/"
-    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     configure_apocrypha_repository "$project_dir"
     configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "nmarfurt/measurements:$package_constraint" --no-update --no-interaction
     install_consumer_dependencies "$project_dir"
+
+    mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics.txt"
 
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon valid.php
@@ -1484,13 +1510,14 @@ run_getid3() {
 
     mkdir -p -- "$project_dir"
     cp -R -- "$FIXTURES_DIR/getid3/." "$project_dir/"
-    mapfile -t expected_diagnostics < "$project_dir/$expected_diagnostics_file"
 
     configure_apocrypha_repository "$project_dir"
     configure_yumemi_repository "$project_dir"
     composer --working-dir="$project_dir" require --dev \
         "james-heinrich/getid3:$package_constraint" --no-update --no-interaction
     install_consumer_dependencies "$project_dir"
+
+    mapfile -t expected_diagnostics < "$project_dir/$expected_diagnostics_file"
 
     php "$project_dir/verify.php"
     run_phpstan_case "$project_dir" phpstan.neon "$valid_case"
@@ -1540,7 +1567,7 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-auth | illuminate-bus | illuminate-console | illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-mail | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
+    illuminate-auth | illuminate-bus | illuminate-concurrency | illuminate-console | illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-mail | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
         run_simple_illuminate_integration
         ;;
     intervention-image)
@@ -1565,7 +1592,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-bus|illuminate-cache|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-mail|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-bus|illuminate-cache|illuminate-concurrency|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-mail|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

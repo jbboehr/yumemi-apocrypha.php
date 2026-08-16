@@ -170,6 +170,18 @@ final class PackageIntegrationUnitBoundaryMetadata
                 ['class' => 'Illuminate\\Support\\Facades\\Cache', 'kind' => 'static', 'method' => 'getDefaultCacheTime', 'type' => "unit_int<'second'>|null", 'adapterOnly' => true],
             ],
         ],
+        'illuminate/concurrency' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Contracts\\Concurrency\\Driver', 'kind' => 'method', 'method' => 'run', 'position' => 1, 'name' => 'timeout', 'type' => "\\Carbon\\CarbonInterval|unit_int<'second'>|null", 'majors' => [13], 'minimumVersions' => [13 => '13.9.0']],
+                ['class' => 'Illuminate\\Concurrency\\ForkDriver', 'kind' => 'method', 'method' => 'run', 'position' => 1, 'name' => 'timeout', 'type' => "\\Carbon\\CarbonInterval|unit_int<'second'>|null", 'majors' => [13], 'minimumVersions' => [13 => '13.9.0']],
+                ['class' => 'Illuminate\\Concurrency\\ProcessDriver', 'kind' => 'method', 'method' => 'run', 'position' => 1, 'name' => 'timeout', 'type' => "\\Carbon\\CarbonInterval|unit_int<'second'>|null", 'majors' => [13], 'minimumVersions' => [13 => '13.9.0']],
+                ['class' => 'Illuminate\\Concurrency\\SyncDriver', 'kind' => 'method', 'method' => 'run', 'position' => 1, 'name' => 'timeout', 'type' => "\\Carbon\\CarbonInterval|unit_int<'second'>|null", 'majors' => [13], 'minimumVersions' => [13 => '13.9.0']],
+                ['class' => 'Illuminate\\Concurrency\\ConcurrencyManager', 'kind' => 'method', 'method' => 'run', 'position' => 1, 'name' => 'timeout', 'type' => "\\Carbon\\CarbonInterval|unit_int<'second'>|null", 'majors' => [13], 'minimumVersions' => [13 => '13.9.0'], 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\Concurrency', 'kind' => 'static', 'method' => 'run', 'position' => 1, 'name' => 'timeout', 'type' => "\\Carbon\\CarbonInterval|unit_int<'second'>|null", 'majors' => [13], 'minimumVersions' => [13 => '13.9.0'], 'adapterOnly' => true],
+            ],
+            'properties' => [],
+            'returns' => [],
+        ],
         'illuminate/console' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Console\\Scheduling\\Event', 'kind' => 'method', 'method' => 'withoutOverlapping', 'position' => 0, 'name' => 'expiresAt', 'type' => "unit_int<'minute'>"],

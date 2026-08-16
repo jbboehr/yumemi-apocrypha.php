@@ -24,6 +24,7 @@
             { id: "illuminate-auth", title: "Illuminate Auth" },
             { id: "illuminate-bus", title: "Illuminate Bus" },
             { id: "illuminate-cache", title: "Illuminate Cache" },
+            { id: "illuminate-concurrency", title: "Illuminate Concurrency" },
             { id: "illuminate-console", title: "Illuminate Console" },
             { id: "illuminate-cookie", title: "Illuminate Cookie" },
             { id: "illuminate-database", title: "Illuminate Database" },

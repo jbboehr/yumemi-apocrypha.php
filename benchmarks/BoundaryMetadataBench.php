@@ -57,6 +57,7 @@ final class BoundaryMetadataBench
         'illuminate/auth' => [13, '13.25.0'],
         'illuminate/bus' => [13, '13.25.0'],
         'illuminate/cache' => [13, '13.10.0'],
+        'illuminate/concurrency' => [13, '13.9.0'],
         'illuminate/console' => [13, '13.25.0'],
         'illuminate/cookie' => [13, '13.10.0'],
         'illuminate/database' => [13, '13.25.0'],

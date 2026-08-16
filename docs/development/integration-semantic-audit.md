@@ -13,9 +13,9 @@ package. `V` means a branded value is accepted or an inferred return is asserted
 means the boundary is exercised directly by `V`, while rejection is tested on another boundary with the identical
 promoted type. Every integration runs explicit and autodetected registration; every Illuminate integration also runs
 through the package-boundary adapter, whose core catalog is mechanically compared with its retained or selected
-reference stub. Carbon, Illuminate Bus, Illuminate Database, Illuminate Routing, Measurements, and Intervention Image
-always use the same adapter so their partial verification stubs cannot replace complete or more precise upstream
-declarations.
+reference stub. Carbon, Illuminate Bus, Illuminate Concurrency, Illuminate Database, Illuminate Routing, Measurements,
+and Intervention Image always use the same adapter so their partial verification stubs cannot replace complete or more
+precise upstream declarations.
 
 The audit preserves upstream scalar alternatives and nullability, keeps dynamic result and option arrays open, and does
 not narrow plain upstream integers from implementation behavior alone. It distinguishes relative durations from Unix
@@ -32,8 +32,9 @@ Apocrypha's local package under test and the two packages used by explicit devel
 The 2026-08-15 Auth audit added 16 committed profiles around the component's cache, timebox, prefix, and hash-key
 cutovers. The Console audit then added eight profiles for the shared scheduler surface and its Laravel 13.2 signature
 cutover. The Bus audit added eight profiles across Laravel 11–13 and both sides of its Laravel 12.52 progress-range
-cutover. The Mail audit added six profiles across Laravel 11–13 and Larastan coexistence. The resulting 176-lock,
-42-check Linux flake matrix covers all four integrations.
+cutover. The Mail audit added six profiles across Laravel 11–13 and Larastan coexistence. The Concurrency audit added
+eight profiles across Laravel 11–13, Larastan coexistence, and both sides of Laravel 13.9's timeout cutover. The
+resulting 184-lock, 43-check Linux flake matrix covers all five integrations.
 
 ## Verified Profiles
 
@@ -44,6 +45,7 @@ cutover. The Mail audit added six profiles across Laravel 11–13 and Larastan c
 | getID3                        | 1.9.22+ global class; 2.0.0-beta6+ namespaced class                    | `1.9.22`, `1.9.25`, `2.0.0-beta6`                                                                                              |
 | Illuminate Auth               | 11–13, with cache, timebox, prefix, and hash-key cutovers              | `11.30.0`, `11.31.0`, `11.44.0`, `11.45.0`, `12.13.0`, `12.14.0`, `12.19.3`, `12.20.0`, `12.44.0`, `12.45.0`, and latest 11–13 |
 | Illuminate Bus                | 11–13 delays and progress; ranged progress from Laravel 12.52          | `11.51.0`, `11.55.1`, `12.51.0`, `12.52.0`, `12.66.0`, `13.25.0`                                                               |
+| Illuminate Concurrency        | 11–13; task timeout seconds from Laravel 13.9                          | `11.55.1`, `12.66.0`, `13.8.0`, `13.9.0`, `13.25.0`; Larastan `3.10.0`                                                         |
 | Illuminate Console            | 11–13 shared scheduler units; Laravel 13.2 adds an unrelated flag      | `11.51.0`, `11.55.1`, `12.66.0`, `13.1.1`, `13.2.0`, `13.25.0`                                                                 |
 | Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.51.0`, `12.66.0`, `13.25.0`                                                                          |
 | Illuminate Mail               | 11–13 delayed sends and queued-mailable timeout seconds                | `11.55.1`, `12.66.0`, `13.25.0`; Larastan `3.10.0`                                                                             |
@@ -203,6 +205,33 @@ initial and current release of Laravel 11–13.
 | Cookie factory contract and `CookieJar::make($minutes)`                                                                              | integer minutes                                                                           | S/V/I        |
 
 Cookie expiration timestamps and the variadic queue API remain unbranded.
+
+## Illuminate Concurrency
+
+Evidence: Laravel's concurrency
+[`Driver`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Contracts/Concurrency/Driver.php),
+[`ForkDriver`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Concurrency/ForkDriver.php),
+[`ProcessDriver`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Concurrency/ProcessDriver.php),
+[`SyncDriver`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Concurrency/SyncDriver.php),
+[`ConcurrencyManager`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Concurrency/ConcurrencyManager.php),
+and
+[`Concurrency` facade](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Support/Facades/Concurrency.php).
+The shared timeout was checked immediately before and after its Laravel 13.9 introduction and at the current releases of
+Laravel 11–13.
+
+| Boundaries                                                                       | Promoted type                                | Coverage |
+| -------------------------------------------------------------------------------- | -------------------------------------------- | -------- |
+| Driver contract plus `ForkDriver`, `ProcessDriver`, `SyncDriver` `run()` timeout | nullable integer seconds or `CarbonInterval` | S/V/I    |
+| `ConcurrencyManager::run()` and facade `run()` timeout                           | nullable integer seconds or `CarbonInterval` | S/V/I    |
+
+The integer timeout is forwarded to Laravel's process timeout as seconds. The shared driver contract also exposes the
+parameter on the fork and synchronous drivers, even though those implementations do not start a timed process. Laravel
+11, 12, and 13.0 through 13.8 have no timeout parameter, so their selected integration contributes no unit boundary.
+Reflection verifies both signatures around the cutover.
+
+The integration always uses the metadata adapter. It preserves the complete upstream declarations and Larastan's
+framework model while covering the manager mixin and facade declaration without a partial overlay. The retained 13.9+
+stub exists only for metadata parity.
 
 ## Illuminate Console
 

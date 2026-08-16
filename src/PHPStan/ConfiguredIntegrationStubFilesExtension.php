@@ -58,7 +58,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      * @var array<string, array{
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
-     *     files: non-empty-list<string>,
+     *     files: list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>,
      *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>
@@ -167,6 +167,15 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
         'illuminate/cache' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/cache.stub'],
+        ],
+        'illuminate/concurrency' => [
+            'majors' => [11, 12, 13],
+            'files' => [],
+            'filesByMinimumVersion' => [
+                13 => [
+                    '13.9.0' => [__DIR__ . '/../../stubs/illuminate/concurrency.stub'],
+                ],
+            ],
         ],
         'illuminate/console' => [
             'majors' => [11, 12, 13],
@@ -375,7 +384,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      * @var array<string, array{
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
-     *     files: non-empty-list<string>,
+     *     files: list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>,
      *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>
@@ -435,7 +444,7 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
      * @param array<string, array{
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
-     *     files: non-empty-list<string>,
+     *     files: list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>,
      *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>|null $supportedIntegrations
@@ -669,7 +678,13 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
             return false;
         }
 
-        if (in_array($integration, ['illuminate/bus', 'illuminate/database', 'illuminate/routing'], true)) {
+        if (
+            in_array(
+                $integration,
+                ['illuminate/bus', 'illuminate/concurrency', 'illuminate/database', 'illuminate/routing'],
+                true,
+            )
+        ) {
             $this->resolveLarastanMajor();
 
             return true;

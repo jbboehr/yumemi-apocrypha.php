@@ -66,6 +66,16 @@ in
     (plain "82" "source" "illuminate-bus" "12.52.0")
   ];
   illuminate-cache = illuminateProfiles "illuminate-cache";
+  illuminate-concurrency = [
+    (profile "82" "source" "illuminate-concurrency" "11" "plain")
+    (profile "82" "source" "illuminate-concurrency" "11" "larastan")
+    (profile "82" "source" "illuminate-concurrency" "12" "plain")
+    (profile "82" "source" "illuminate-concurrency" "12" "larastan")
+    (profile "83" "archive" "illuminate-concurrency" "13" "plain")
+    (profile "83" "source" "illuminate-concurrency" "13" "larastan")
+    (plain "83" "source" "illuminate-concurrency" "13.8.0")
+    (plain "83" "source" "illuminate-concurrency" "13.9.0")
+  ];
   illuminate-console = (illuminateIntegrationProfiles "illuminate-console") ++ [
     (plain "83" "source" "illuminate-console" "13.1.1")
     (plain "83" "source" "illuminate-console" "13.2.0")

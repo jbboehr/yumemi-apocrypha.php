@@ -84,6 +84,7 @@ final readonly class PackageArchiveChecker
         'stubs/illuminate/bus-12.52.stub',
         'stubs/illuminate/bus.stub',
         'stubs/illuminate/cache.stub',
+        'stubs/illuminate/concurrency.stub',
         'stubs/illuminate/console-11.stub',
         'stubs/illuminate/console-13.stub',
         'stubs/illuminate/cookie.stub',

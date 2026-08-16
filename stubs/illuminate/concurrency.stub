@@ -1,0 +1,59 @@
+<?php
+
+namespace Illuminate\Contracts\Concurrency;
+
+interface Driver
+{
+    /**
+     * @param \Closure|array $tasks
+     * @param \Carbon\CarbonInterval|int|null $timeout
+     *
+     * @phpstan-param \Carbon\CarbonInterval|unit_int<'second'>|null $timeout
+     * @yumemi-param \Carbon\CarbonInterval|unit_int<'second'>|null $timeout
+     */
+    public function run(\Closure|array $tasks, \Carbon\CarbonInterval|int|null $timeout = null): array;
+}
+
+namespace Illuminate\Concurrency;
+
+class ForkDriver
+{
+    /**
+     * @param \Closure|array $tasks
+     * @param \Carbon\CarbonInterval|int|null $timeout
+     *
+     * @phpstan-param \Carbon\CarbonInterval|unit_int<'second'>|null $timeout
+     * @yumemi-param \Carbon\CarbonInterval|unit_int<'second'>|null $timeout
+     */
+    public function run(\Closure|array $tasks, \Carbon\CarbonInterval|int|null $timeout = null): array
+    {
+    }
+}
+
+class ProcessDriver
+{
+    /**
+     * @param \Closure|array $tasks
+     * @param \Carbon\CarbonInterval|int|null $timeout
+     *
+     * @phpstan-param \Carbon\CarbonInterval|unit_int<'second'>|null $timeout
+     * @yumemi-param \Carbon\CarbonInterval|unit_int<'second'>|null $timeout
+     */
+    public function run(\Closure|array $tasks, \Carbon\CarbonInterval|int|null $timeout = null): array
+    {
+    }
+}
+
+class SyncDriver
+{
+    /**
+     * @param \Closure|array $tasks
+     * @param \Carbon\CarbonInterval|int|null $timeout
+     *
+     * @phpstan-param \Carbon\CarbonInterval|unit_int<'second'>|null $timeout
+     * @yumemi-param \Carbon\CarbonInterval|unit_int<'second'>|null $timeout
+     */
+    public function run(\Closure|array $tasks, \Carbon\CarbonInterval|int|null $timeout = null): array
+    {
+    }
+}

@@ -986,6 +986,34 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
         self::assertSame([], $extension->getFiles());
     }
 
+    /** @return iterable<string, array{non-empty-string, int}> */
+    public static function concurrencyVersions(): iterable
+    {
+        yield 'before run timeouts' => ['13.8.0', 13];
+        yield 'with run timeouts' => ['13.9.0', 13];
+        yield 'development branch' => ['13.x-dev', 13];
+    }
+
+    #[DataProvider('concurrencyVersions')]
+    public function testConcurrencyAlwaysUsesTheAdapterInsteadOfItsReferenceStub(
+        string $version,
+        int $major,
+    ): void {
+        $extension = new ConfiguredIntegrationStubFilesExtension(
+            ['illuminate/concurrency'],
+            false,
+            true,
+            null,
+            static fn (string $package): bool => $package === 'illuminate/concurrency',
+            static fn (): string => $version,
+        );
+
+        self::assertSame([], $extension->getFiles());
+        self::assertSame($major, $extension->getSelectedMajor('illuminate/concurrency'));
+        self::assertSame($version, $extension->getSelectedVersion('illuminate/concurrency'));
+        self::assertTrue($extension->usesUnitBoundaryAdapter('illuminate/concurrency'));
+    }
+
     public function testUnselectedAlwaysAdapterIntegrationDoesNotUseTheAdapter(): void
     {
         $extension = new ConfiguredIntegrationStubFilesExtension(
@@ -1335,7 +1363,7 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
      * @param array<string, array{
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
-     *     files: non-empty-list<string>,
+     *     files: list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>,
      *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>|null $supported
@@ -1364,7 +1392,7 @@ final class ConfiguredIntegrationStubFilesExtensionTest extends TestCase
      * @return array<string, array{
      *     majors: non-empty-list<int>,
      *     minimumVersions?: array<int, non-empty-string>,
-     *     files: non-empty-list<string>,
+     *     files: list<string>,
      *     filesByMajor?: array<int, non-empty-list<string>>,
      *     filesByMinimumVersion?: array<int, non-empty-array<non-empty-string, non-empty-list<string>>>
      * }>

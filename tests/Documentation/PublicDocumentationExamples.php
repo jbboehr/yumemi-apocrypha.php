@@ -96,6 +96,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-cache',
         ],
+        'illuminate-concurrency-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'illuminate-concurrency',
+        ],
         'illuminate-console-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-console',

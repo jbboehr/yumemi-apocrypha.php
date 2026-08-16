@@ -49,6 +49,7 @@ final class LarastanCompatibilityTestExtensionFactory
                 'illuminate/auth',
                 'illuminate/bus',
                 'illuminate/cache',
+                'illuminate/concurrency',
                 'illuminate/console',
                 'illuminate/database',
                 'illuminate/filesystem',
@@ -67,6 +68,7 @@ final class LarastanCompatibilityTestExtensionFactory
             packageVersionResolver: static fn (string $package): string => match ($package) {
                 'larastan/larastan' => '3.10.0',
                 'illuminate/database' => '12.51.0',
+                'illuminate/concurrency' => '13.9.0',
                 'nesbot/carbon' => '3.2.0',
                 default => '12.0.0',
             },
