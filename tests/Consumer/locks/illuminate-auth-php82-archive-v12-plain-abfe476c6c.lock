@@ -402,6 +402,12 @@
                 "test:consumer:illuminate-http:archive": [
                     "make test-consumer-illuminate-http-archive"
                 ],
+                "test:consumer:illuminate-mail": [
+                    "make test-consumer-illuminate-mail"
+                ],
+                "test:consumer:illuminate-mail:archive": [
+                    "make test-consumer-illuminate-mail-archive"
+                ],
                 "test:consumer:illuminate-process": [
                     "make test-consumer-illuminate-process"
                 ],

@@ -1,0 +1,85 @@
+<?php
+
+namespace Illuminate\Contracts\Mail;
+
+interface MailQueue
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     * @param \Illuminate\Contracts\Mail\Mailable|string|array $view
+     * @param string|null $queue
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function later($delay, $view, $queue = null);
+}
+
+interface Mailable
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function later($delay, \Illuminate\Contracts\Queue\Factory $queue);
+}
+
+namespace Illuminate\Mail;
+
+abstract class Mailable
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function later($delay, \Illuminate\Contracts\Queue\Factory $queue)
+    {
+    }
+}
+
+class Mailer
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     * @param \Illuminate\Contracts\Mail\Mailable $view
+     * @param string|null $queue
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function later($delay, $view, $queue = null)
+    {
+    }
+
+    /**
+     * @param string $queue
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     * @param \Illuminate\Contracts\Mail\Mailable $view
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function laterOn($queue, $delay, $view)
+    {
+    }
+}
+
+class PendingMail
+{
+    /**
+     * @param \DateTimeInterface|\DateInterval|int $delay
+     * @phpstan-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     * @yumemi-param \DateTimeInterface|\DateInterval|unit_int<'second'> $delay
+     */
+    public function later($delay, \Illuminate\Contracts\Mail\Mailable $mailable)
+    {
+    }
+}
+
+class SendQueuedMailable
+{
+    /**
+     * @var int|null
+     * @yumemi-var unit_int<'second'>|null
+     */
+    public $timeout;
+}

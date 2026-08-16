@@ -216,6 +216,10 @@ final class ConfiguredIntegrationStubFilesExtension implements StubFilesExtensio
                 ],
             ],
         ],
+        'illuminate/mail' => [
+            'majors' => [11, 12, 13],
+            'files' => [__DIR__ . '/../../stubs/illuminate/mail.stub'],
+        ],
         'illuminate/process' => [
             'majors' => [11, 12, 13],
             'files' => [__DIR__ . '/../../stubs/illuminate/process.stub'],

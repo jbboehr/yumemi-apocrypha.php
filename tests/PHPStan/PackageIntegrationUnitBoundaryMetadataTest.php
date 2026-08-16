@@ -343,6 +343,7 @@ final class PackageIntegrationUnitBoundaryMetadataTest extends TestCase
                     ? 'http-11.stub'
                     : 'http.stub'
             )],
+            'illuminate/mail' => [$base . 'mail.stub'],
             'illuminate/process' => [$base . ($major === 13 ? 'process-13.stub' : 'process.stub')],
             'illuminate/queue' => [
                 $base . 'queue.stub',

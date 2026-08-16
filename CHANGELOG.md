@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
   expiry and throttle boundaries.
 - Unit-aware integration for Laravel 11–13 job delay seconds and batch progress percentages.
 - Unit-aware integration for Laravel 11–13 scheduler repeat intervals in seconds and overlap-lock expiration in minutes.
+- Unit-aware integration for Laravel 11–13 delayed mail and queued-mailable timeout seconds.
 
 ## [0.1.0] - 2026-08-14
 

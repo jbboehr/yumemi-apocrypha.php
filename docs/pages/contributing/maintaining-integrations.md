@@ -29,11 +29,12 @@ Validation's development head. The fixture's `verify.php` script then reflects e
 and property before PHPStan runs. Add reflection assertions whenever a stub gains coverage; a missing or renamed
 upstream declaration must fail before semantic assertions run.
 
-Laravel 11 has no tagged framework release outside its known advisory ranges. Its temporary consumer projects whitelist
-those advisories because they install source only for reflection and static analysis; this is not a recommendation to
-run an affected release. Exact historical cutover profiles similarly whitelist `laravel/framework` while pinned to the
-reviewed tag. The lock check rejects a development-branch resolution so Composer cannot silently substitute a
-development branch for a reviewed release.
+Laravel 11 has no tagged framework release outside its known advisory ranges. Its temporary consumer projects disable
+Composer's security blocking because they install source only for reflection and static analysis; Composer still reports
+the advisories, and this is not a recommendation to run an affected release. Exact historical cutover profiles use the
+same policy while pinned to the reviewed tag. The lock check rejects a development-branch resolution so Composer cannot
+silently substitute a development branch for a reviewed release; only Apocrypha's local package under test and packages
+used by explicit development-head profiles are whitelisted.
 
 Preserve the upstream type structure exactly and change only the unit-bearing scalar. In particular, retain integer
 ranges and literal types when upstream publishes them, but do not infer a narrower type merely because the

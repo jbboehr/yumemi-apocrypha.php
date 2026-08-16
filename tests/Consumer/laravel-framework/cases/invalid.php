@@ -47,6 +47,8 @@ use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Connection;
 use Illuminate\Foundation\Queue\Queueable as FoundationQueueable;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailer;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Redis\Limiters\DurationLimiterBuilder;
@@ -91,6 +93,8 @@ function rejectInvalidLaravelFrameworkUnits(
     Connection $database,
     Filesystem $filesystem,
     PendingRequest $request,
+    Mailer $mailer,
+    Mailable $mailable,
     PendingProcess $process,
     Queue $queue,
     DurationLimiterBuilder $redisLimiter,
@@ -108,6 +112,7 @@ function rejectInvalidLaravelFrameworkUnits(
     });
     acceptFrameworkMeters($filesystem->size('report.csv'));
     $request->timeout(unit(500, 'millisecond'));
+    $mailer->later(unit(1, 'minute'), $mailable);
     $process->timeout(unit(1, 'minute'));
     $queue->later(unit(1, 'minute'), 'App\\Jobs\\RefreshReport');
     $redisLimiter->sleep(unit(1, 'second'));

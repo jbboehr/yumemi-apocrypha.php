@@ -8,6 +8,7 @@
 	test-consumer-illuminate-cache-archive test-consumer-illuminate-console test-consumer-illuminate-console-archive \
 	test-consumer-illuminate-cookie test-consumer-illuminate-database test-consumer-illuminate-filesystem \
 	test-consumer-illuminate-http test-consumer-illuminate-http-archive \
+	test-consumer-illuminate-mail test-consumer-illuminate-mail-archive \
 	test-consumer-illuminate-process \
 	test-consumer-illuminate-queue \
 	test-consumer-illuminate-redis \
@@ -37,6 +38,7 @@ ILLUMINATE_COOKIE_MAJOR ?= 12
 ILLUMINATE_DATABASE_MAJOR ?= 12
 ILLUMINATE_FILESYSTEM_MAJOR ?= 12
 ILLUMINATE_HTTP_MAJOR ?= 12
+ILLUMINATE_MAIL_MAJOR ?= 12
 ILLUMINATE_PROCESS_MAJOR ?= 12
 ILLUMINATE_QUEUE_MAJOR ?= 12
 ILLUMINATE_REDIS_MAJOR ?= 12
@@ -135,6 +137,12 @@ test-consumer-illuminate-http:
 
 test-consumer-illuminate-http-archive:
 	tests/Consumer/run archive illuminate-http $(ILLUMINATE_HTTP_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-mail:
+	tests/Consumer/run source illuminate-mail $(ILLUMINATE_MAIL_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
+
+test-consumer-illuminate-mail-archive:
+	tests/Consumer/run archive illuminate-mail $(ILLUMINATE_MAIL_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)
 
 test-consumer-illuminate-process:
 	tests/Consumer/run source illuminate-process $(ILLUMINATE_PROCESS_MAJOR) $(ILLUMINATE_COMPATIBILITY_MODE)

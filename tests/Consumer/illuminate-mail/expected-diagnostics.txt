@@ -1,0 +1,14 @@
+Parameter #1 $delay of method Illuminate\Contracts\Mail\MailQueue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Parameter #1 $delay of method Illuminate\Contracts\Mail\Mailable::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Parameter #1 $delay of method Illuminate\Mail\Mailable::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Parameter #1 $delay of method Illuminate\Mail\Mailer::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Parameter #2 $delay of method Illuminate\Mail\Mailer::laterOn() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Parameter #1 $delay of method Illuminate\Mail\PendingMail::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given
+Property Illuminate\Mail\SendQueuedMailable::$timeout (unit_int<'second'>|null) does not accept 1&unit_int<'minute'>
+Property Illuminate\Mail\SendQueuedMailable::$timeout (unit_int<'second'>|null) does not accept int
+Parameter #2 $view of method Illuminate\Contracts\Mail\MailQueue::later() expects array|Illuminate\Contracts\Mail\Mailable|string, int given
+Parameter #3 $queue of method Illuminate\Contracts\Mail\MailQueue::later() expects string|null, stdClass given
+Parameter #2 $view of method Illuminate\Mail\Mailer::later() expects Illuminate\Contracts\Mail\Mailable, int given
+Parameter #3 $queue of method Illuminate\Mail\Mailer::later() expects string|null, stdClass given
+Parameter #1 $queue of method Illuminate\Mail\Mailer::laterOn() expects string, stdClass given
+Parameter #3 $view of method Illuminate\Mail\Mailer::laterOn() expects Illuminate\Contracts\Mail\Mailable, int given

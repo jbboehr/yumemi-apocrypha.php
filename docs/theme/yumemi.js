@@ -29,6 +29,7 @@
             { id: "illuminate-database", title: "Illuminate Database" },
             { id: "illuminate-filesystem", title: "Illuminate Filesystem" },
             { id: "illuminate-http", title: "Illuminate HTTP" },
+            { id: "illuminate-mail", title: "Illuminate Mail" },
             { id: "illuminate-support", title: "Illuminate Support" },
             { id: "illuminate-process", title: "Illuminate Process" },
             { id: "illuminate-queue", title: "Illuminate Queue" },

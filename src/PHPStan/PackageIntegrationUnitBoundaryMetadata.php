@@ -233,6 +233,22 @@ final class PackageIntegrationUnitBoundaryMetadata
                 ['class' => 'Illuminate\\Http\\Testing\\File', 'kind' => 'method', 'method' => 'getSize', 'type' => "unit_int<'byte'>"],
             ],
         ],
+        'illuminate/mail' => [
+            'arguments' => [
+                ['class' => 'Illuminate\\Contracts\\Mail\\MailQueue', 'kind' => 'method', 'method' => 'later', 'position' => 0, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Contracts\\Mail\\Mailable', 'kind' => 'method', 'method' => 'later', 'position' => 0, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Mail\\Mailable', 'kind' => 'method', 'method' => 'later', 'position' => 0, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Mail\\Mailer', 'kind' => 'method', 'method' => 'later', 'position' => 0, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Mail\\Mailer', 'kind' => 'method', 'method' => 'laterOn', 'position' => 1, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Mail\\PendingMail', 'kind' => 'method', 'method' => 'later', 'position' => 0, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>"],
+                ['class' => 'Illuminate\\Support\\Facades\\Mail', 'kind' => 'static', 'method' => 'later', 'position' => 0, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>", 'adapterOnly' => true],
+                ['class' => 'Illuminate\\Support\\Facades\\Mail', 'kind' => 'static', 'method' => 'laterOn', 'position' => 1, 'name' => 'delay', 'type' => "\\DateTimeInterface|\\DateInterval|unit_int<'second'>", 'adapterOnly' => true],
+            ],
+            'properties' => [
+                ['class' => 'Illuminate\\Mail\\SendQueuedMailable', 'property' => 'timeout', 'type' => "unit_int<'second'>|null"],
+            ],
+            'returns' => [],
+        ],
         'illuminate/process' => [
             'arguments' => [
                 ['class' => 'Illuminate\\Process\\PendingProcess', 'kind' => 'method', 'method' => 'timeout', 'position' => 0, 'name' => 'timeout', 'type' => "unit_int<'second'>", 'majors' => [11, 12]],

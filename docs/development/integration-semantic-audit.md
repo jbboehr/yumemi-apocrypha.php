@@ -24,13 +24,16 @@ timestamps and records byte scales from the actual arithmetic rather than from f
 The 2026-08-14 re-audit reproduced all 138 committed consumer locks, ran the complete 38-check Linux flake matrix, and
 compared the Laravel releases added since the previous source review. Those upstream diffs changed no branded boundary.
 The audit did find that Composer's security policy selected `11.x-dev` after every tagged Laravel 11 framework release
-entered an advisory range. Consumer fixtures now whitelist those known advisories for static-analysis testing, pin
-`v11.55.1`, and reject any non-tagged `laravel/framework` version in committed locks.
+entered an advisory range. Consumer fixtures now disable security blocking only for intentional Laravel 11 and exact
+historical profiles, still report the advisories, pin framework `v11.55.1`, and reject any non-tagged
+`laravel/framework` version in committed locks. The lock guard also rejects other development-branch dependencies except
+Apocrypha's local package under test and the two packages used by explicit development-head profiles.
 
 The 2026-08-15 Auth audit added 16 committed profiles around the component's cache, timebox, prefix, and hash-key
 cutovers. The Console audit then added eight profiles for the shared scheduler surface and its Laravel 13.2 signature
 cutover. The Bus audit added eight profiles across Laravel 11–13 and both sides of its Laravel 12.52 progress-range
-cutover. The resulting 170-lock, 41-check Linux flake matrix covers all three integrations.
+cutover. The Mail audit added six profiles across Laravel 11–13 and Larastan coexistence. The resulting 176-lock,
+42-check Linux flake matrix covers all four integrations.
 
 ## Verified Profiles
 
@@ -43,6 +46,7 @@ cutover. The resulting 170-lock, 41-check Linux flake matrix covers all three in
 | Illuminate Bus                | 11–13 delays and progress; ranged progress from Laravel 12.52          | `11.51.0`, `11.55.1`, `12.51.0`, `12.52.0`, `12.66.0`, `13.25.0`                                                               |
 | Illuminate Console            | 11–13 shared scheduler units; Laravel 13.2 adds an unrelated flag      | `11.51.0`, `11.55.1`, `12.66.0`, `13.1.1`, `13.2.0`, `13.25.0`                                                                 |
 | Illuminate HTTP               | 11 through 11.35.0 integer timeout; 11.35.1+ and 12–13 numeric timeout | `11.35.0`, `11.35.1`, `11.51.0`, `12.66.0`, `13.25.0`                                                                          |
+| Illuminate Mail               | 11–13 delayed sends and queued-mailable timeout seconds                | `11.55.1`, `12.66.0`, `13.25.0`; Larastan `3.10.0`                                                                             |
 | Illuminate Process            | 11–12 integer timeout; 13 accepts `CarbonInterval` or integer          | `11.0.0`, `11.51.0`, `12.0.0`, `12.66.0`, `13.0.0`, `13.25.0`                                                                  |
 | Illuminate Database           | 11–13 query timings; query timeout from 12.51.0                        | `11.0.0`, `11.51.0`, `12.0.0`, `12.50.0`, `12.51.0`, `12.66.0`, `13.0.0`, `13.25.0`                                            |
 | Illuminate Queue              | original worker; `stopWhenEmptyFor` from 11.53.0, 12.60.0, and 13.10.0 | adjacent releases at all three cutovers plus latest 11–13                                                                      |
@@ -264,6 +268,29 @@ and fake-upload [`File`](https://github.com/laravel/framework/blob/v13.25.0/src/
 
 The fake-upload input scale follows Laravel's multiplication by 1024, not decimal `kilobyte`. Filesystem modification
 times remain unbranded timestamps.
+
+## Illuminate Mail
+
+Evidence: Laravel's
+[`MailQueue`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Contracts/Mail/MailQueue.php) and
+[`Mailable`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Contracts/Mail/Mailable.php) contracts,
+concrete [`Mailable`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Mail/Mailable.php),
+[`Mailer`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Mail/Mailer.php),
+[`PendingMail`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Mail/PendingMail.php), and
+[`SendQueuedMailable`](https://github.com/laravel/framework/blob/v13.25.0/src/Illuminate/Mail/SendQueuedMailable.php),
+checked at current Laravel 11–13 releases and against Larastan 3.10.0's partial `Mailable` stub.
+
+| Boundaries                                                     | Promoted type                                           | Coverage     |
+| -------------------------------------------------------------- | ------------------------------------------------------- | ------------ |
+| Contract and concrete `later()` plus `Mailer::laterOn()` delay | integer seconds, preserving date-time and interval arms | S/V/I-family |
+| Mail facade `later()` and `laterOn()` with Larastan            | integer seconds, preserving date-time and interval arms | V/I          |
+| `SendQueuedMailable::$timeout`                                 | nullable integer seconds                                | S/V/I        |
+
+Every delayed-send implementation publishes the integer alternative as seconds. The queued wrapper copies a mailable's
+timeout when present and otherwise stores `null`, so the branded property preserves that runtime state even though
+Laravel documents it as an integer. The Larastan adapter retains Larastan's unrelated `Mailable::markdown()` and
+`view()` declarations. Dynamic transport configuration, arbitrary backoff values, and Queue-owned Laravel 13 attributes
+remain outside this integration.
 
 ## Intervention Image
 

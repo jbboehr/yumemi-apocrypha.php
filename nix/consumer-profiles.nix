@@ -97,6 +97,7 @@ in
   ];
 
   illuminate-filesystem = illuminateIntegrationProfiles "illuminate-filesystem";
+  illuminate-mail = illuminateIntegrationProfiles "illuminate-mail";
   illuminate-process = illuminateIntegrationProfiles "illuminate-process";
 
   illuminate-queue = (illuminateIntegrationProfiles "illuminate-queue") ++ [

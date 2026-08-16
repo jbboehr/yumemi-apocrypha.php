@@ -585,19 +585,41 @@
                 validationDevelopmentHeadConsumerProfiles
               }
               php -r '
+              $developmentPackageWhitelist = [
+                  "jbboehr/phpstan-laravel-validation",
+                  "jbboehr/yumemi",
+                  "jbboehr/yumemi-apocrypha",
+              ];
               foreach (array_slice($argv, 1) as $lockFile) {
                   $lock = json_decode(file_get_contents($lockFile), true, flags: JSON_THROW_ON_ERROR);
                   $packages = array_merge($lock["packages"] ?? [], $lock["packages-dev"] ?? []);
                   foreach ($packages as $package) {
-                      if (($package["name"] ?? null) !== "laravel/framework") {
-                          continue;
-                      }
+                      $name = $package["name"] ?? null;
                       $version = $package["version"] ?? null;
-                      if (!is_string($version) || preg_match("/^v?[0-9]+\\.[0-9]+\\.[0-9]+$/D", $version) !== 1) {
+                      if (!is_string($name) || !is_string($version)) {
+                          fwrite(STDERR, sprintf("Consumer lock %s contains invalid package metadata.\n", $lockFile));
+                          exit(1);
+                      }
+                      if (
+                          preg_match("/(?:^dev-|\\.x-dev$)/D", $version) === 1
+                          && !in_array($name, $developmentPackageWhitelist, true)
+                      ) {
+                          fwrite(STDERR, sprintf(
+                              "Consumer lock %s resolved %s to development version %s.\n",
+                              $lockFile,
+                              $name,
+                              $version,
+                          ));
+                          exit(1);
+                      }
+                      if (
+                          $name === "laravel/framework"
+                          && preg_match("/^v?[0-9]+\\.[0-9]+\\.[0-9]+$/D", $version) !== 1
+                      ) {
                           fwrite(STDERR, sprintf(
                               "Consumer lock %s resolved laravel/framework to non-tagged version %s.\n",
                               $lockFile,
-                              var_export($version, true),
+                              $version,
                           ));
                           exit(1);
                       }

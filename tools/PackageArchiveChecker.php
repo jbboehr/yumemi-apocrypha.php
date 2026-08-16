@@ -92,6 +92,7 @@ final readonly class PackageArchiveChecker
         'stubs/illuminate/filesystem.stub',
         'stubs/illuminate/http-11.stub',
         'stubs/illuminate/http.stub',
+        'stubs/illuminate/mail.stub',
         'stubs/illuminate/process-13.stub',
         'stubs/illuminate/process.stub',
         'stubs/illuminate/queue-worker-11.stub',

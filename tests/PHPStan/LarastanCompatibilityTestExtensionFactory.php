@@ -52,6 +52,7 @@ final class LarastanCompatibilityTestExtensionFactory
                 'illuminate/console',
                 'illuminate/database',
                 'illuminate/filesystem',
+                'illuminate/mail',
                 'illuminate/queue',
                 'illuminate/redis',
                 'illuminate/routing',

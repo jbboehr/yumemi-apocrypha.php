@@ -108,6 +108,10 @@ final class PublicDocumentationExamples
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-http',
         ],
+        'illuminate-mail-invalid' => [
+            'document' => 'docs/pages/integrations.md',
+            'consumer' => 'illuminate-mail',
+        ],
         'illuminate-redis-invalid' => [
             'document' => 'docs/pages/integrations.md',
             'consumer' => 'illuminate-redis',

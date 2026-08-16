@@ -47,6 +47,8 @@ use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Connection;
 use Illuminate\Foundation\Queue\Queueable as FoundationQueueable;
 use Illuminate\Http\Client\PendingRequest;
+use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailer;
 use Illuminate\Process\PendingProcess;
 use Illuminate\Queue\WorkerOptions;
 use Illuminate\Redis\Limiters\DurationLimiterBuilder;
@@ -87,6 +89,8 @@ function exerciseLaravelFrameworkIntegrations(
     Connection $database,
     Filesystem $filesystem,
     PendingRequest $request,
+    Mailer $mailer,
+    Mailable $mailable,
     PendingProcess $process,
     Queue $queue,
     DurationLimiterBuilder $redisLimiter,
@@ -107,6 +111,7 @@ function exerciseLaravelFrameworkIntegrations(
     assertType("unit_float<'1/1000 * second'>", $database->totalQueryDuration());
     assertType("unit_int<'octet'>", $filesystem->size('report.csv'));
     $request->timeout($seconds);
+    $mailer->later($seconds, $mailable);
     $process->timeout($seconds);
     $queue->later($seconds, 'App\\Jobs\\RefreshReport');
     $redisLimiter->every($seconds)->block($seconds)->sleep(unit(250, 'millisecond'));

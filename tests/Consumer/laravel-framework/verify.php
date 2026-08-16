@@ -62,6 +62,7 @@ $checks = [
     'illuminate/database' => [Illuminate\Database\Connection::class, 'whenQueryingForLongerThan', 'threshold'],
     'illuminate/filesystem' => [Illuminate\Contracts\Filesystem\Filesystem::class, 'size', 'path'],
     'illuminate/http' => [Illuminate\Http\Client\PendingRequest::class, 'timeout', 'seconds'],
+    'illuminate/mail' => [Illuminate\Mail\Mailer::class, 'later', 'delay'],
     'illuminate/process' => [Illuminate\Process\PendingProcess::class, 'timeout', 'timeout'],
     'illuminate/queue' => [Illuminate\Contracts\Queue\Queue::class, 'later', 'delay'],
     'illuminate/redis' => [Illuminate\Redis\Limiters\DurationLimiterBuilder::class, 'every', 'decay'],

@@ -132,7 +132,7 @@ if [[ $PACKAGE_MODE == archive && $CONSUMER_DEPENDENCIES_ONLY != 1 ]]; then
         php "$PACKAGE_CHECKER" "$git_archive"
     fi
 elif [[ $PACKAGE_MODE != source && $PACKAGE_MODE != archive ]]; then
-    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-bus|illuminate-cache|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+    printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-bus|illuminate-cache|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-mail|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
     exit 2
 fi
 
@@ -275,18 +275,14 @@ printf("Stable dependency resolution: Apocrypha %s, Yumemi %s.\n", $apocryphaVer
 configure_laravel_advisory_whitelist() {
     local project_dir=$1
 
-    if [[ $PACKAGE_MAJOR == *.* ]]; then
-        # Exact historical cutover profiles are deliberately pinned inside advisory ranges.
-        composer --working-dir="$project_dir" config policy.advisories.ignore laravel/framework
-
+    if [[ $PACKAGE_MAJOR != *.* && $PACKAGE_MAJOR != 11 ]]; then
         return
     fi
 
-    # Laravel 11 has no tagged release outside these advisory ranges. The fixtures exercise package metadata and static
-    # analysis only, so whitelist the known advisories to keep Composer on the latest tagged framework release instead
-    # of silently preferring the 11.x development branch.
-    composer --working-dir="$project_dir" config policy.advisories.ignore-id \
-        PKSA-m5cs-t1y6-qpcs PKSA-3r5d-mb8f-1qw9 PKSA-mdq4-51ck-6kdq
+    # Exact historical cutovers and every Laravel 11 tag are inside advisory ranges. These fixtures exercise package
+    # metadata and static analysis only. Let Composer resolve those intentional profiles instead of silently preferring
+    # an untagged development branch.
+    composer --working-dir="$project_dir" config policy.advisories.block false
 }
 
 enable_larastan() {
@@ -847,6 +843,10 @@ run_simple_illuminate_integration() {
         mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
     fi
 
+    if [[ $FIXTURE_SUITE == illuminate-mail && $COMPATIBILITY_MODE == larastan ]]; then
+        mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
+    fi
+
     if [[ $FIXTURE_SUITE == illuminate-validation && $COMPATIBILITY_MODE != plain ]]; then
         mapfile -t expected_diagnostics < "$project_dir/expected-diagnostics-larastan.txt"
     fi
@@ -874,6 +874,12 @@ run_simple_illuminate_integration() {
     if [[ $FIXTURE_SUITE == illuminate-session ]]; then
         composer --working-dir="$project_dir" require --dev "illuminate/database:$package_constraint" --no-update --no-interaction
     fi
+    if [[ $FIXTURE_SUITE == illuminate-mail ]]; then
+        composer --working-dir="$project_dir" require --dev \
+            "illuminate/bus:$package_constraint" \
+            "illuminate/queue:$package_constraint" \
+            --no-update --no-interaction
+    fi
     if [[ $FIXTURE_SUITE == illuminate-auth && $PACKAGE_MAJOR != *.* ]]; then
         composer --working-dir="$project_dir" require --dev \
             "illuminate/cache:$package_constraint" \
@@ -881,7 +887,7 @@ run_simple_illuminate_integration() {
             "illuminate/hashing:$package_constraint" \
             --no-update --no-interaction
     fi
-    if [[ $PACKAGE_MAJOR == *.* || $COMPATIBILITY_MODE != plain ]]; then
+    if [[ $PACKAGE_MAJOR == *.* || $PACKAGE_MAJOR == 11 || $COMPATIBILITY_MODE != plain ]]; then
         configure_laravel_advisory_whitelist "$project_dir"
     fi
     enable_larastan "$project_dir"
@@ -1062,6 +1068,10 @@ run_simple_illuminate_integration() {
         # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
         run_documentation_phpstan_case illuminate-bus "$project_dir" phpstan.neon "$documentation_case" illuminate-bus-invalid
     fi
+    if [[ $FIXTURE_SUITE == illuminate-mail ]]; then
+        # Keep registration calls on one line; PublicDocumentationExamplesTest inventories this form.
+        run_documentation_phpstan_case illuminate-mail "$project_dir" phpstan.neon "$documentation_case" illuminate-mail-invalid
+    fi
 }
 
 run_laravel_framework() {
@@ -1077,6 +1087,7 @@ run_laravel_framework() {
         "Connection::whenQueryingForLongerThan() expects Carbon\\CarbonInterval|DateTimeInterface|unit_float<'1/1000 * second'>|unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
         "acceptFrameworkMeters expects unit_int<'meter'>, unit_int<'octet'> given"
         "timeout() expects unit_float<'second'>|unit_int<'second'>, 500&unit_int<'1/1000 * second'> given"
+        "Mailer::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
         "Queue::later() expects DateInterval|DateTimeInterface|unit_int<'second'>, 1&unit_int<'minute'> given"
         "DurationLimiterBuilder::sleep() expects unit_int<'1/1000 * second'>, 1&unit_int<'second'> given"
         "Route::block() expects unit_int<'second'>|null, 1&unit_int<'minute'> given"
@@ -1529,7 +1540,7 @@ case $FIXTURE_SUITE in
     illuminate-http)
         run_illuminate_http
         ;;
-    illuminate-auth | illuminate-bus | illuminate-console | illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
+    illuminate-auth | illuminate-bus | illuminate-console | illuminate-cookie | illuminate-database | illuminate-filesystem | illuminate-mail | illuminate-process | illuminate-queue | illuminate-redis | illuminate-routing | illuminate-session | illuminate-support | illuminate-validation)
         run_simple_illuminate_integration
         ;;
     intervention-image)
@@ -1554,7 +1565,7 @@ case $FIXTURE_SUITE in
         run_manual
         ;;
     *)
-        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-bus|illuminate-cache|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
+        printf 'Usage: %s [source|archive] [carbon|getid3|guzzle|illuminate-auth|illuminate-bus|illuminate-cache|illuminate-console|illuminate-cookie|illuminate-database|illuminate-filesystem|illuminate-http|illuminate-mail|illuminate-process|illuminate-queue|illuminate-redis|illuminate-routing|illuminate-session|illuminate-support|illuminate-validation|intervention-image|laravel-framework|measurements|phpgeo|symfony-http-foundation|symfony-stopwatch|manual] [package-version] [plain|larastan|phpstan-laravel-validation|phpstan-symfony]\n' "$0" >&2
         exit 2
         ;;
 esac

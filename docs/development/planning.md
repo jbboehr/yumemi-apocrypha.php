@@ -20,17 +20,18 @@ upstream versions it claims to support and semantically accurate about the repre
 - `guzzlehttp/guzzle` covers selected request timeouts, delays, byte thresholds and callbacks, retry delays, and
   transfer times across Guzzle 7 and 8, including the request-delay native-type change at Guzzle 7.11.
 - `illuminate/auth`, `illuminate/bus`, `illuminate/cache`, `illuminate/console`, `illuminate/cookie`,
-  `illuminate/database`, `illuminate/filesystem`, `illuminate/http`, `illuminate/support`, `illuminate/process`,
-  `illuminate/queue`, `illuminate/redis`, `illuminate/routing`, `illuminate/session`, and `illuminate/validation` cover
-  stable unit-bearing APIs across Laravel 11 through 13. Auth distinguishes remember-cookie minutes, authentication
-  timebox microseconds, and version-specific token expiry. Database distinguishes millisecond query timings from
-  second-valued query execution timeouts where that API exists. Bus distinguishes scalar job-delay seconds from batch
-  progress percentages and preserves the progress range added in Laravel 12.52. Console distinguishes sub-minute repeat
-  seconds from overlap-lock expiration minutes and preserves the Laravel 13.2 overlap signature cutover. Validation
-  covers raster dimensions and integer file-rule sizes while preserving upstream string size expressions. Routing
-  distinguishes minute-valued throttle decay from second-valued route locks and signed-URL expirations. Session
-  distinguishes minute-valued handler retention from second-valued garbage collection, route locks, and decorator
-  lifetimes.
+  `illuminate/database`, `illuminate/filesystem`, `illuminate/http`, `illuminate/mail`, `illuminate/support`,
+  `illuminate/process`, `illuminate/queue`, `illuminate/redis`, `illuminate/routing`, `illuminate/session`, and
+  `illuminate/validation` cover stable unit-bearing APIs across Laravel 11 through 13. Auth distinguishes
+  remember-cookie minutes, authentication timebox microseconds, and version-specific token expiry. Database
+  distinguishes millisecond query timings from second-valued query execution timeouts where that API exists. Bus
+  distinguishes scalar job-delay seconds from batch progress percentages and preserves the progress range added in
+  Laravel 12.52. Console distinguishes sub-minute repeat seconds from overlap-lock expiration minutes and preserves the
+  Laravel 13.2 overlap signature cutover. Validation covers raster dimensions and integer file-rule sizes while
+  preserving upstream string size expressions. Routing distinguishes minute-valued throttle decay from second-valued
+  route locks and signed-URL expirations. Session distinguishes minute-valued handler retention from second-valued
+  garbage collection, route locks, and decorator lifetimes. Mail covers delayed-send and queued-mailable timeout seconds
+  while excluding dynamic transport and backoff values.
 - `intervention/image` covers nominal raster-pixel dimensions and coordinates plus degree rotations across Intervention
   Image 3 and 4. A metadata adapter preserves the package's complete interfaces, while version 4 retains its `Fraction`
   dimension alternatives. Resolution, quality, opacity, transparency, and lower-level geometry objects remain outside

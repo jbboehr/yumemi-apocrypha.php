@@ -13,6 +13,7 @@ parameters:
             - illuminate/database
             - illuminate/filesystem
             - illuminate/http
+            - illuminate/mail
             - illuminate/process
             - illuminate/queue
             - illuminate/redis

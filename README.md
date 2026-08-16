@@ -68,6 +68,7 @@ function cacheReportForOneMinute(Store $cache): void
 | `illuminate/database`               | 11, 12, 13                          |
 | `illuminate/filesystem`             | 11, 12, 13                          |
 | `illuminate/http`                   | 11, 12, 13                          |
+| `illuminate/mail`                   | 11, 12, 13                          |
 | `illuminate/process`                | 11, 12, 13                          |
 | `illuminate/queue`                  | 11, 12, 13                          |
 | `illuminate/redis`                  | 11, 12, 13                          |
