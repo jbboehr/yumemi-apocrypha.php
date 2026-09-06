@@ -23,7 +23,7 @@ example below calls Yumemi's runtime `unit()` function; applications that do the
 dependency:
 
 ```shell
-composer require jbboehr/yumemi:^0.1
+composer require jbboehr/yumemi:^0.2
 ```
 
 Select an integration in `phpstan.neon`:

@@ -111,18 +111,21 @@
                 "phpbench/phpbench": "^1.7",
                 "phpstan/phpstan": "^2.2.5",
                 "phpstan/phpstan-deprecation-rules": "^2.0",
-                "phpstan/phpstan-phpunit": "^2.0.13",
+                "phpstan/phpstan-phpunit": "^2.0.18",
                 "phpstan/phpstan-strict-rules": "^2.0",
-                "phpunit/phpunit": "^11.5"
+                "phpunit/phpunit": "^11.5",
+                "symfony/filesystem": "^7.4",
+                "symfony/process": "^7.4"
             },
             "suggest": {
+                "ext-yumemi": "Enables optional Quantity operator syntax and compatible native unit-expression parsing; method APIs and the PHP parser remain available without it.",
                 "jbboehr/yumemi-apocrypha": "Provides curated unit-aware PHPStan integrations for supported third-party packages.",
                 "phpstan/phpstan": "Enables the bundled Yumemi unit types extension (extension.neon; requires PHPStan 2.2.5 or later)."
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "0.1.x-dev"
+                    "dev-master": "0.2.x-dev"
                 },
                 "phpstan": {
                     "includes": [
@@ -189,6 +192,7 @@
                     "/phpunit.branch.xml.dist",
                     "/phpunit.xml.dist",
                     "/result*",
+                    "/scripts",
                     "/secrets",
                     "/src/Catalog/PhpCatalogExporter.php",
                     "/src/Catalog/Udunits2CatalogImporter.php",
@@ -217,10 +221,16 @@
                 ],
                 "check": [
                     "@composer validate --strict",
+                    "@test:consumer:locks",
                     "@check:whitespace",
                     "@cs",
                     "@analyse",
                     "@test"
+                ],
+                "check:bc": [
+                    "Composer\\Config::disableProcessTimeout",
+                    "composer --working-dir=tools/api-compatibility install --no-interaction --no-progress",
+                    "tools/api-compatibility/vendor/bin/roave-backward-compatibility-check"
                 ],
                 "check:full": [
                     "@check",
@@ -259,8 +269,7 @@
                     "make generate-catalog"
                 ],
                 "generate-parser": [
-                    "bison -S vendor/mrsuh/php-bison-skeleton/src/php-skel.m4 -o src/Parser/Parser.php src/Parser/grammar.y",
-                    "sed -i \"s/__DOLLAR__/$/g\" src/Parser/Parser.php"
+                    "scripts/generate-parser.sh"
                 ],
                 "infection": [
                     "infection --no-progress"
@@ -278,7 +287,7 @@
                     "infection --configuration=infection.phpstan.json5.dist --no-progress --min-msi=85 --min-covered-msi=85"
                 ],
                 "infection:phpstan:core": [
-                    "infection --configuration=infection.phpstan.json5.dist --no-progress --filter=src/PHPStan/InvalidUnitCallRule.php,src/PHPStan/InvalidUnitMinMaxFunctionRule.php,src/PHPStan/InvalidUnitRootFunctionRule.php,src/PHPStan/NativeUnitArgumentResolver.php,src/PHPStan/UnitExpression.php,src/PHPStan/UnitExpressionAlgebra.php,src/PHPStan/UnitExpressionParseResult.php,src/PHPStan/UnitExpressionParser.php,src/PHPStan/UnitConstantFloatType.php,src/PHPStan/UnitConstantIntegerType.php,src/PHPStan/UnitFactorFunctionDynamicReturnTypeExtension.php,src/PHPStan/UnitFloatType.php,src/PHPStan/UnitFunctionDynamicReturnTypeExtension.php,src/PHPStan/UnitIntegerRangeMath.php,src/PHPStan/UnitIntegerType.php,src/PHPStan/UnitIntegerTypeHelper.php,src/PHPStan/UnitNumericStringType.php,src/PHPStan/UnitMinMaxFunctionTypeResolverExtension.php,src/PHPStan/UnitOperatorTypeSpecifyingExtension.php,src/PHPStan/UnitPreservingFunctionTypeResolverExtension.php,src/PHPStan/UnitRootFunctionTypeResolverExtension.php,src/PHPStan/UnitToFunctionDynamicReturnTypeExtension.php,src/PHPStan/UnitUnaryOperatorTypeSpecifyingExtension.php,src/PHPStan/QuantityType.php,src/PHPStan/PointQuantityType.php,src/PHPStan/PointUnitExpression.php,src/PHPStan/PointUnitExpressionParseResult.php"
+                    "infection --configuration=infection.phpstan.json5.dist --no-progress --filter=src/PHPStan/InvalidUnitAngleFunctionRule.php,src/PHPStan/InvalidUnitArrayAggregationFunctionRule.php,src/PHPStan/InvalidUnitBinaryMathFunctionRule.php,src/PHPStan/InvalidUnitCallRule.php,src/PHPStan/InvalidUnitMinMaxFunctionRule.php,src/PHPStan/InvalidUnitRangeFunctionRule.php,src/PHPStan/InvalidUnitRootFunctionRule.php,src/PHPStan/NativeUnitArgumentResolver.php,src/PHPStan/UnitAngleFunctionTypeResolverExtension.php,src/PHPStan/UnitArrayAggregationFunctionTypeResolverExtension.php,src/PHPStan/UnitBinaryMathFunctionTypeResolverExtension.php,src/PHPStan/UnitExpression.php,src/PHPStan/UnitExpressionAlgebra.php,src/PHPStan/UnitExpressionParseResult.php,src/PHPStan/UnitExpressionParser.php,src/PHPStan/UnitConstantFloatType.php,src/PHPStan/UnitConstantIntegerType.php,src/PHPStan/UnitFactorFunctionDynamicReturnTypeExtension.php,src/PHPStan/UnitFloatType.php,src/PHPStan/UnitFunctionDynamicReturnTypeExtension.php,src/PHPStan/UnitIntegerRangeMath.php,src/PHPStan/UnitIntegerType.php,src/PHPStan/UnitIntegerTypeHelper.php,src/PHPStan/UnitNumericStringType.php,src/PHPStan/UnitMinMaxFunctionTypeResolverExtension.php,src/PHPStan/UnitOperatorTypeSpecifyingExtension.php,src/PHPStan/UnitPreservingFunctionTypeResolverExtension.php,src/PHPStan/UnitRangeFunctionTypeResolverExtension.php,src/PHPStan/UnitRootFunctionTypeResolverExtension.php,src/PHPStan/UnitToFunctionDynamicReturnTypeExtension.php,src/PHPStan/UnitUnaryOperatorTypeSpecifyingExtension.php,src/PHPStan/UnitUnionTypeHelper.php,src/PHPStan/QuantityType.php,src/PHPStan/PointQuantityType.php,src/PHPStan/PointUnitExpression.php,src/PHPStan/PointUnitExpressionParseResult.php"
                 ],
                 "test": [
                     "phpunit --no-coverage"
@@ -295,11 +304,17 @@
                 "test:consumer:archive": [
                     "make test-consumer-archive"
                 ],
+                "test:consumer:locks": [
+                    "make test-consumer-locks"
+                ],
                 "test:property": [
                     "phpunit --group property --no-coverage"
                 ],
                 "test:udunits2": [
                     "make test-udunits2"
+                ],
+                "update:consumer:locks": [
+                    "make update-consumer-locks"
                 ]
             },
             "license": [
@@ -331,7 +346,7 @@
             },
             "require": {
                 "composer-runtime-api": "^2.0",
-                "jbboehr/yumemi": "^0.1",
+                "jbboehr/yumemi": "^0.2",
                 "php": "^8.2",
                 "phpstan/phpstan": "^2.2.5"
             },
@@ -647,11 +662,11 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "2.2.8",
+            "version": "2.2.13",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e285254e60f33c21902efef4a926ca0987c06804",
-                "reference": "e285254e60f33c21902efef4a926ca0987c06804",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/9ba9ac76ee9c5cf5b56d58eb5deec6315b7a0260",
+                "reference": "9ba9ac76ee9c5cf5b56d58eb5deec6315b7a0260",
                 "shasum": ""
             },
             "require": {
@@ -707,7 +722,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-08-04T22:21:45+00:00"
+            "time": "2026-09-03T20:38:19+00:00"
         },
         {
             "name": "symfony/polyfill-php84",
@@ -793,16 +808,16 @@
     "packages-dev": [
         {
             "name": "carbonphp/carbon-doctrine-types",
-            "version": "3.2.0",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon-doctrine-types.git",
-                "reference": "18ba5ddfec8976260ead6e866180bd5d2f71aa1d"
+                "reference": "5fa5eacafd9ef47c8c6ab9143fc901ba0194d3dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon-doctrine-types/zipball/18ba5ddfec8976260ead6e866180bd5d2f71aa1d",
-                "reference": "18ba5ddfec8976260ead6e866180bd5d2f71aa1d",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon-doctrine-types/zipball/5fa5eacafd9ef47c8c6ab9143fc901ba0194d3dc",
+                "reference": "5fa5eacafd9ef47c8c6ab9143fc901ba0194d3dc",
                 "shasum": ""
             },
             "require": {
@@ -817,6 +832,11 @@
                 "phpunit/phpunit": "^10.3"
             },
             "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "3.x-dev"
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Carbon\\Doctrine\\": "src/Carbon/Doctrine/"
@@ -842,7 +862,7 @@
             ],
             "support": {
                 "issues": "https://github.com/CarbonPHP/carbon-doctrine-types/issues",
-                "source": "https://github.com/CarbonPHP/carbon-doctrine-types/tree/3.2.0"
+                "source": "https://github.com/CarbonPHP/carbon-doctrine-types/tree/3.2.1"
             },
             "funding": [
                 {
@@ -858,7 +878,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-02-09T16:56:22+00:00"
+            "time": "2026-09-06T14:11:38+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -952,7 +972,7 @@
         },
         {
             "name": "illuminate/cache",
-            "version": "v12.66.0",
+            "version": "v12.69.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/cache.git",
@@ -1014,7 +1034,7 @@
         },
         {
             "name": "illuminate/collections",
-            "version": "v12.66.0",
+            "version": "v12.69.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/collections.git",
@@ -1074,7 +1094,7 @@
         },
         {
             "name": "illuminate/conditionable",
-            "version": "v12.66.0",
+            "version": "v12.69.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/conditionable.git",
@@ -1120,7 +1140,7 @@
         },
         {
             "name": "illuminate/contracts",
-            "version": "v12.66.0",
+            "version": "v12.69.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -1168,7 +1188,7 @@
         },
         {
             "name": "illuminate/macroable",
-            "version": "v12.66.0",
+            "version": "v12.69.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/macroable.git",
@@ -1214,7 +1234,7 @@
         },
         {
             "name": "illuminate/reflection",
-            "version": "v12.66.0",
+            "version": "v12.69.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/reflection.git",
@@ -1265,7 +1285,7 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v12.66.0",
+            "version": "v12.69.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
@@ -1996,16 +2016,16 @@
         },
         {
             "name": "symfony/translation",
-            "version": "v7.4.16",
+            "version": "v7.4.17",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/translation.git",
-                "reference": "501e0ff4553c744209ca1a68790d8a4541563710"
+                "reference": "2ee1e4a3b32a528a642babe041ff7c440b213b4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/translation/zipball/501e0ff4553c744209ca1a68790d8a4541563710",
-                "reference": "501e0ff4553c744209ca1a68790d8a4541563710",
+                "url": "https://api.github.com/repos/symfony/translation/zipball/2ee1e4a3b32a528a642babe041ff7c440b213b4b",
+                "reference": "2ee1e4a3b32a528a642babe041ff7c440b213b4b",
                 "shasum": ""
             },
             "require": {
@@ -2072,7 +2092,7 @@
             "description": "Provides tools to internationalize your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/translation/tree/v7.4.16"
+                "source": "https://github.com/symfony/translation/tree/v7.4.17"
             },
             "funding": [
                 {
@@ -2092,7 +2112,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-07-30T12:37:26+00:00"
+            "time": "2026-08-21T17:40:08+00:00"
         },
         {
             "name": "symfony/translation-contracts",

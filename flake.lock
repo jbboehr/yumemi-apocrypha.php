@@ -13,11 +13,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1786503253,
-        "narHash": "sha256-z2RfLBtLSNw5VzV+cA+/YXtgg2Hoxvd+P89aAO5Ts+c=",
+        "lastModified": 1788683347,
+        "narHash": "sha256-fcFq4zYo8VKZHoYVc53s85vWyZpZGMgQUmqlbtPcV4w=",
         "ref": "master",
-        "rev": "4e8f892f443245cf9a32583034d3a155e9fdcb48",
-        "revCount": 463,
+        "rev": "c00276270b0546a9c3c22ac54d7e258ae2dbf4e6",
+        "revCount": 465,
         "type": "git",
         "url": "https://github.com/jbboehr/agent-badge.ts"
       },
@@ -222,17 +222,18 @@
     "yumemi-development-head": {
       "flake": false,
       "locked": {
-        "lastModified": 1786848826,
-        "narHash": "sha256-sitKZfQqyYmjeTVyb8xv0wS4m0yAKj/23LOt50J/Lm0=",
-        "owner": "jbboehr",
-        "repo": "yumemi.php",
-        "rev": "8b122dbf2df0ebf5c75b22f19f0df1fd492872a0",
-        "type": "github"
+        "lastModified": 1788725733,
+        "narHash": "sha256-NgIHm4G96YhIqdSTKgV9t+htIj2IOzZ2bmokepoIbec=",
+        "ref": "master",
+        "rev": "c897566426bea2c3253e4f37f41005697b45eb3d",
+        "revCount": 377,
+        "type": "git",
+        "url": "https://github.com/jbboehr/yumemi.php"
       },
       "original": {
-        "owner": "jbboehr",
-        "repo": "yumemi.php",
-        "type": "github"
+        "ref": "master",
+        "type": "git",
+        "url": "https://github.com/jbboehr/yumemi.php"
       }
     }
   },

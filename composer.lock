@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68fddc8caa7929eea6ad1920786d8e1f",
+    "content-hash": "3233b3908f5e5270be925424cee436e1",
     "packages": [
         {
             "name": "doctrine/lexer",
@@ -85,16 +85,16 @@
         },
         {
             "name": "jbboehr/yumemi",
-            "version": "dev-master",
+            "version": "v0.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/jbboehr/yumemi.php.git",
-                "reference": "8b122dbf2df0ebf5c75b22f19f0df1fd492872a0"
+                "reference": "c897566426bea2c3253e4f37f41005697b45eb3d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/8b122dbf2df0ebf5c75b22f19f0df1fd492872a0",
-                "reference": "8b122dbf2df0ebf5c75b22f19f0df1fd492872a0",
+                "url": "https://api.github.com/repos/jbboehr/yumemi.php/zipball/c897566426bea2c3253e4f37f41005697b45eb3d",
+                "reference": "c897566426bea2c3253e4f37f41005697b45eb3d",
                 "shasum": ""
             },
             "require": {
@@ -118,15 +118,17 @@
                 "phpbench/phpbench": "^1.7",
                 "phpstan/phpstan": "^2.2.5",
                 "phpstan/phpstan-deprecation-rules": "^2.0",
-                "phpstan/phpstan-phpunit": "^2.0.13",
+                "phpstan/phpstan-phpunit": "^2.0.18",
                 "phpstan/phpstan-strict-rules": "^2.0",
-                "phpunit/phpunit": "^11.5"
+                "phpunit/phpunit": "^11.5",
+                "symfony/filesystem": "^7.4",
+                "symfony/process": "^7.4"
             },
             "suggest": {
+                "ext-yumemi": "Enables optional Quantity operator syntax and compatible native unit-expression parsing; method APIs and the PHP parser remain available without it.",
                 "jbboehr/yumemi-apocrypha": "Provides curated unit-aware PHPStan integrations for supported third-party packages.",
                 "phpstan/phpstan": "Enables the bundled Yumemi unit types extension (extension.neon; requires PHPStan 2.2.5 or later)."
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "phpstan": {
@@ -135,7 +137,7 @@
                     ]
                 },
                 "branch-alias": {
-                    "dev-master": "0.1.x-dev"
+                    "dev-master": "0.2.x-dev"
                 }
             },
             "autoload": {
@@ -165,7 +167,7 @@
                 "issues": "https://github.com/jbboehr/yumemi.php/issues",
                 "source": "https://github.com/jbboehr/yumemi.php"
             },
-            "time": "2026-08-16T02:53:46+00:00"
+            "time": "2026-09-06T20:15:33+00:00"
         },
         {
             "name": "phpstan/phpstan",
@@ -1620,12 +1622,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/jbboehr/akashi.php.git",
-                "reference": "96ea8ebcccf5a8ba7f7f64c12fc6049b1d581f18"
+                "reference": "2a1d33eb7905384f501d174a73a6b085d1df31df"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/jbboehr/akashi.php/zipball/96ea8ebcccf5a8ba7f7f64c12fc6049b1d581f18",
-                "reference": "96ea8ebcccf5a8ba7f7f64c12fc6049b1d581f18",
+                "url": "https://api.github.com/repos/jbboehr/akashi.php/zipball/2a1d33eb7905384f501d174a73a6b085d1df31df",
+                "reference": "2a1d33eb7905384f501d174a73a6b085d1df31df",
                 "shasum": ""
             },
             "require": {
@@ -1691,7 +1693,7 @@
                 "issues": "https://github.com/jbboehr/akashi.php/issues",
                 "source": "https://github.com/jbboehr/akashi.php"
             },
-            "time": "2026-08-16T01:27:09+00:00"
+            "time": "2026-08-16T02:48:41+00:00"
         },
         {
             "name": "jbboehr/doctrine-of-the-second-sun",
@@ -7357,8 +7359,7 @@
     "stability-flags": {
         "jbboehr/akashi": 20,
         "jbboehr/doctrine-of-the-second-sun": 20,
-        "jbboehr/phpbench-perfidious": 20,
-        "jbboehr/yumemi": 20
+        "jbboehr/phpbench-perfidious": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

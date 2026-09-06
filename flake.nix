@@ -35,7 +35,8 @@
       flake = false;
     };
     yumemi-development-head = {
-      url = "github:jbboehr/yumemi.php";
+      # Keep the full Git tree; GitHub archives omit Yumemi's export-ignore paths.
+      url = "git+https://github.com/jbboehr/yumemi.php?ref=master";
       flake = false;
     };
   };

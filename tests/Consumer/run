@@ -253,9 +253,9 @@ if ($apocryphaVersion !== $argv[3]) {
     exit(1);
 }
 
-if ($yumemiVersion === null || preg_match("/^v?0\\.1\\.[0-9]+$/D", $yumemiVersion) !== 1) {
+if ($yumemiVersion === null || preg_match("/^v?0\\.2\\.[0-9]+$/D", $yumemiVersion) !== 1) {
     fwrite(STDERR, sprintf(
-        "Expected a stable Yumemi 0.1 release, resolved %s.\n",
+        "Expected a stable Yumemi 0.2 release, resolved %s.\n",
         var_export($yumemiVersion, true),
     ));
     exit(1);
