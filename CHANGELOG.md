@@ -7,9 +7,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-09-06
+
 ### Changed
 
-- Require Yumemi `^0.2` for third-party unit annotations.
+- Require Yumemi `^0.2` instead of `^0.1` for third-party unit annotations.
 
 ## [0.2.0] - 2026-08-16
 
@@ -47,6 +49,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Automatic registration through `phpstan/extension-installer`, manual `extension.neon` registration, and public
   documentation examples verified against the real upstream packages.
 
-[Unreleased]: https://github.com/jbboehr/yumemi-apocrypha.php/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/jbboehr/yumemi-apocrypha.php/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/jbboehr/yumemi-apocrypha.php/releases/tag/v0.3.0
 [0.2.0]: https://github.com/jbboehr/yumemi-apocrypha.php/releases/tag/v0.2.0
 [0.1.0]: https://github.com/jbboehr/yumemi-apocrypha.php/releases/tag/v0.1.0
