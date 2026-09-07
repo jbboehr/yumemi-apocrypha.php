@@ -95,6 +95,9 @@ upstream versions it claims to support and semantically accurate about the repre
   seconds (0.3%) while preserving the exact diagnostic contract.
 - Yumemi's generic `@yumemi-*` annotation mechanism remains in the core package; Apocrypha owns only package-specific
   stubs, metadata adapters, and their selection policy.
+- The [generated PHPStan stress fixture](phpstan-stress-fixture.md) checks exact diagnostic locations and counts,
+  wall-time growth, and peak RSS at 50, 200, and 800 generated groups. It exercises direct, facade, helper, named, and
+  unpacked calls against the locked Laravel 12 / Larastan consumer and runs in the Linux Nix checks.
 - The provisional [pre-1.0 compatibility contract](../pages/integrations.md#compatibility-before-10) records the public
   configuration keys and defaults, exact integration identifiers, selection behavior, adapter diagnostic identifier, and
   diagnostic-producing boundary changes. `ExceptionInterface` and `InvalidConfigurationException` are public; concrete
@@ -153,9 +156,8 @@ fixture, splitting mutation CI, or making advisory portability jobs blocking.
 - Make scheduled upstream-drift testing operational across the lowest and latest supported Yumemi and PHPStan lines.
   Require a history of green macOS and Windows core checks, then make portability failures release-blocking once the
   workflow is reliable.
-- Complete the generated PHPStan stress fixture and establish diagnostic-count, wall-time, and peak-memory regression
-  expectations. Re-audit every public exception, configuration key, integration identifier, diagnostic identifier, and
-  documented selection rule while breaking changes can still be made in the 0.x line.
+- Re-audit every public exception, configuration key, integration identifier, diagnostic identifier, and documented
+  selection rule while breaking changes can still be made in the 0.x line.
 
 Integration breadth is not a 1.0 gate. The distinction between 0.1 and 1.0 is demonstrated maintenance capacity and a
 stable, documented compatibility contract for the integrations already shipped.
@@ -167,9 +169,6 @@ stable, documented compatibility contract for the integrations already shipped.
 
 ## Performance and Robustness Backlog
 
-- Add a generated PHPStan stress fixture with enough direct calls, facade calls, helpers, named arguments, and unpacked
-  arguments to expose nonlinear extension behavior. Verify its diagnostic count as well as its analysis time and peak
-  memory; complete this before 1.0.
 - Consider Eris only for pure loader and version-profile invariants that can be generated independently of Composer and
   PHPStan. Do not add Probator unless Apocrypha gains its own parser or another grammar whose behavior merits fuzzing.
 

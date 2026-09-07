@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+project_root=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)
+readonly project_root
+
+unset APOCRYPHA_PACKAGE_VERSION COMPOSER_ROOT_VERSION CONSUMER_LOCK_OUTPUT
+unset PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR YUMEMI_PACKAGE_DIR
+export CONSUMER_LOCK_FILE="$project_root/tests/Consumer/locks/laravel-framework-php82-source-v12-larastan-2b3f75a4c6.lock"
+export CONSUMER_MINIMUM_STABILITY=dev
+export CONSUMER_VENDOR_DIR=vendor
+export CONSUMER_DEPENDENCIES_ONLY=0
+export CONSUMER_DOWNLOAD_ONLY=0
+export VERIFY_GIT_ARCHIVE=0
+export CONSUMER_STRESS=1
+export LC_ALL=C
+export CONSUMER_STRESS_OUTPUT=${CONSUMER_STRESS_OUTPUT:-"$project_root/.phpbench/stress/$(date -u +%Y%m%dT%H%M%SZ)-$$"}
+
+exec bash "$project_root/tests/Consumer/run" source laravel-framework 12 larastan

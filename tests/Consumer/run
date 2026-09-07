@@ -26,6 +26,20 @@ readonly CONSUMER_LOCK_OUTPUT=${CONSUMER_LOCK_OUTPUT:-}
 readonly VERIFY_GIT_ARCHIVE=${VERIFY_GIT_ARCHIVE:-1}
 readonly PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR=${PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR:-}
 readonly YUMEMI_PACKAGE_DIR=${YUMEMI_PACKAGE_DIR:-}
+readonly CONSUMER_STRESS=${CONSUMER_STRESS:-0}
+readonly CONSUMER_STRESS_OUTPUT=${CONSUMER_STRESS_OUTPUT:-}
+
+if [[ $CONSUMER_STRESS != 0 && $CONSUMER_STRESS != 1 ]]; then
+    printf 'Consumer stress mode must be 0 or 1.\n' >&2
+    exit 2
+fi
+if [[ $CONSUMER_STRESS == 1 && (
+    $PACKAGE_MODE:$FIXTURE_SUITE:$PACKAGE_MAJOR:$COMPATIBILITY_MODE != source:laravel-framework:12:larastan
+    || -z $CONSUMER_STRESS_OUTPUT || $CONSUMER_DEPENDENCIES_ONLY != 0
+) ]]; then
+    printf 'Stress mode requires the source Laravel 12 Larastan profile and a results directory.\n' >&2
+    exit 2
+fi
 
 if [[ $CONSUMER_DEPENDENCIES_ONLY != 1 && ! -x $AKASHI ]]; then
     printf 'Akashi is not installed; run composer install in %s.\n' "$PROJECT_ROOT" >&2
@@ -1147,6 +1161,10 @@ run_laravel_framework() {
     install_consumer_dependencies "$project_dir"
 
     php "$project_dir/verify.php" "$PACKAGE_MAJOR"
+    if [[ $CONSUMER_STRESS == 1 ]]; then
+        php "$PROJECT_ROOT/benchmarks/stress/run.php" "$project_dir" "$CONSUMER_STRESS_OUTPUT"
+        exit
+    fi
     run_phpstan_case "$project_dir" phpstan.neon valid.php
     run_phpstan_case "$project_dir" phpstan-autodetect.neon valid.php
     if [[ $PACKAGE_MAJOR == 13 ]]; then

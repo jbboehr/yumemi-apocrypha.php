@@ -105,6 +105,16 @@ requires the review described there.
 
 ## Benchmarks
 
+Run the [generated PHPStan stress fixture](docs/development/phpstan-stress-fixture.md) to check diagnostic counts,
+wall-time growth, and peak memory across increasing numbers of direct, facade, helper, named, and unpacked calls:
+
+```shell
+nix develop --command composer benchmark:stress
+```
+
+It uses the committed Laravel 12 / Larastan consumer lock and writes replay artifacts beneath `.phpbench/stress/`. The
+Linux Nix checks include the same workload with offline dependency installation.
+
 Run the portable benchmark suite, or its one-revolution discovery check, with:
 
 ```shell

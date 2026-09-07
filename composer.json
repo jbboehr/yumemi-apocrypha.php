@@ -121,6 +121,10 @@
         ],
         "benchmark:perf": "phpbench run --config=phpbench-perfidious.json --report=perfidious",
         "benchmark:smoke": "phpbench run --iterations=1 --revs=1 --warmup=1 --progress=none",
+        "benchmark:stress": [
+            "Composer\\Config::disableProcessTimeout",
+            "bash benchmarks/stress/run"
+        ],
         "check": [
             "@composer:validate",
             "@check:whitespace",

@@ -301,6 +301,10 @@
           pkgs.gnutar
           pkgs.unzip
         ];
+        stressTools = [
+          pkgs.coreutils
+          pkgs.time
+        ];
         profileEnvironment =
           consumerProfile:
           lib.concatStringsSep "\n" (
@@ -318,6 +322,8 @@
             CONSUMER_LOCK_FILE \
             CONSUMER_LOCK_OUTPUT \
             CONSUMER_MINIMUM_STABILITY \
+            CONSUMER_STRESS \
+            CONSUMER_STRESS_OUTPUT \
             CONSUMER_VENDOR_DIR \
             PHPSTAN_LARAVEL_VALIDATION_PACKAGE_DIR \
             VERIFY_GIT_ARCHIVE \
@@ -688,7 +694,8 @@
               nativeBuildInputs = [
                 canonicalComposer
                 canonicalPhp
-              ];
+              ]
+              ++ stressTools;
             }
             ''
               cp -R -- ${src}/. "$NIX_BUILD_TOP/project"
@@ -740,6 +747,7 @@
         mutation = mkProjectCheck {
           name = "mutation";
           phpPackage = canonicalPhp;
+          extraNativeBuildInputs = stressTools;
           command = ''
             mkdir -p -- vendor/phpunit/phpunit/11.5
             ln -s -- ../phpunit.xsd vendor/phpunit/phpunit/11.5/phpunit.xsd
@@ -761,6 +769,7 @@
             buildInputs = with pkgs; [
               actionlint
               agent-badge.packages.${system}.default
+              coreutils
               mdbook
               phpPackage
               phpPackage.packages.composer
@@ -781,21 +790,25 @@
           phpunit-php82 = mkProjectCheck {
             name = "phpunit-php82";
             phpPackage = php."82";
+            extraNativeBuildInputs = stressTools;
             command = "vendor/bin/phpunit --colors=never --no-coverage";
           };
           phpunit-php83 = mkProjectCheck {
             name = "phpunit-php83";
             phpPackage = php."83";
+            extraNativeBuildInputs = stressTools;
             command = "vendor/bin/phpunit --colors=never --no-coverage";
           };
           phpunit-php84 = mkProjectCheck {
             name = "phpunit-php84";
             phpPackage = php."84";
+            extraNativeBuildInputs = stressTools;
             command = "vendor/bin/phpunit --colors=never --no-coverage";
           };
           phpunit-php85 = mkProjectCheck {
             name = "phpunit-php85";
             phpPackage = php."85";
+            extraNativeBuildInputs = stressTools;
             command = "vendor/bin/phpunit --colors=never --no-coverage";
           };
           phpstan = mkProjectCheck {
@@ -829,7 +842,24 @@
           };
           lowest-dependencies = lowestDependenciesCheck;
         }
-        // lib.optionalAttrs pkgs.stdenv.isLinux consumerChecks;
+        // lib.optionalAttrs pkgs.stdenv.isLinux (
+          consumerChecks
+          // {
+            phpstan-stress = mkProjectCheck {
+              name = "phpstan-stress";
+              extraNativeBuildInputs = consumerTools ++ stressTools;
+              command = ''
+                ${sanitizeConsumerEnvironment}
+                export COMPOSER_CACHE_DIR=${lib.escapeShellArg (toString consumerComposerCache)}
+                export COMPOSER_CACHE_READ_ONLY=1
+                export COMPOSER_DISABLE_NETWORK=1
+                export CONSUMER_STRESS_OUTPUT="$NIX_BUILD_TOP/stress-results"
+                composer benchmark:stress
+                cp -R -- "$CONSUMER_STRESS_OUTPUT" "$out"
+              '';
+            };
+          }
+        );
 
         packages = {
           inherit mutation;
